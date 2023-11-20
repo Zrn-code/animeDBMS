@@ -1,7 +1,7 @@
 {
   "name": "admin-dashboard-template-dashwind",
   "version": "1.0.0",
-  "proxy": "http://localhost:5000",
+  "proxy": "http://localhost:8800",
   "description": "Admin Dashboard template built with create-react-app, tailwind css and daisy UI. Template uses rich tailwind css utility classes and have components of daisy UI, also have redux toolkit implemented for store management.",
   "scripts": {
     "start": "react-scripts start",
@@ -34,7 +34,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/srobbin01/tailwind-dashboard-template-dashwind"
+    "url": "git+https://github.com/"
   },
   "keywords": [
     "reactjs",

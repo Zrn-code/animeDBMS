@@ -9,11 +9,20 @@ const pool = mysql.createPool({
     database: process.env.MYSQL_DATABASE,
 }).promise();
 
-async function getid_values() {
-    const result = await pool.query('SELECT * FROM id_test');
+async function getAnimes() {
+    const result = await pool.query('SELECT * FROM anime_dataset');
     return result[0];
 }
 
-//console.log(country);
+async function getAnime(id) {
+    const result = await pool.query('SELECT * FROM anime_dataset WHERE anime_id = ?', [id]);
+    return result[0];
+}
 
-export {getid_values};
+async function getAnimeDetails(id) {
+    const result = await pool.query('SELECT * FROM anime_details WHERE anime_id = ?', [id]);
+    return result[0];
+}
+
+
+export { getAnimes, getAnime, getAnimeDetails};
