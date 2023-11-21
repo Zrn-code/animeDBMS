@@ -20,8 +20,15 @@ app.get('/api/getAnimes', async (req, res) => {
     res.send(animes);
 });
 
+app.get('/api/getAnime/:id', async (req, res) => {
+    const id = req.params.id;
+    const animes = await getAnime(id);
+    res.send(animes);
+});
+
 app.get('/api/getAnimeDetails/:id', async (req, res) => {
     const id = req.params.id;
+    //console.log(id);
     const anime_details = await getAnimeDetails(id);
     res.send(anime_details);
 });

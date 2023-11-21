@@ -10,7 +10,7 @@ const pool = mysql.createPool({
 }).promise();
 
 async function getAnimes() {
-    const result = await pool.query('SELECT * FROM anime_dataset');
+    const result = await pool.query('SELECT * FROM anime_dataset limit 10');
     return result[0];
 }
 

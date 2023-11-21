@@ -108,7 +108,7 @@ function InternalPage(){
                                 </td>
                                 <td>
                                 <div className='max-h-48'>
-                                    <Link to={"../details/id=" + l.anime_id}>
+                                    <Link to={"../details/" + l.anime_id}>
                                         <img className='max-h-36' src={l["Image_URL"]} alt='img' />
                                     </Link>
                                 </div></td>
