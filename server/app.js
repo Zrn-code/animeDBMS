@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { getAnime,getAnimes,getAnimeDetails } from './database.js';
+import { getAnime,getAnimes,getAnimeDetails,getGenres,getGenresCnt } from './database.js';
 const app = express();
 
 app.use(cors());
@@ -33,6 +33,15 @@ app.get('/api/getAnimeDetails/:id', async (req, res) => {
     res.send(anime_details);
 });
 
+app.get('/api/getGenres', async (req, res) => {
+    const genres = await getGenres();
+    res.send(genres);
+});
+
+app.get('/api/getGenresCnt', async (req, res) => {
+    const genres_cnt = await getGenresCnt();
+    res.send(genres_cnt);
+});
 
 app.listen(8800, () => {
     console.log('Server started on port 8800');

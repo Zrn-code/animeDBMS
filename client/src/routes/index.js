@@ -19,6 +19,7 @@ const DocFeatures = lazy(() => import('../pages/DocFeatures'))
 const DocComponents = lazy(() => import('../pages/DocComponents'))
 const TopAnime = lazy(() => import('../pages/protected/TopAnime'))
 const DetailsPage = lazy(() => import('../pages/protected/DetailsPage'))
+const AnimeSearch = lazy(() => import('../pages/protected/AnimeSearch'))
 
 const routes = [
   {
@@ -87,7 +88,10 @@ const routes = [
   },{
     path: '/details/:id',
     component: DetailsPage,
-  }
+  },{
+    path: '/search',
+    component: AnimeSearch,
+  },
 ]
 
 export default routes

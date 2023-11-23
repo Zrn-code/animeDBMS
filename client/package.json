@@ -1,5 +1,5 @@
 {
-  "name": "admin-dashboard-template-dashwind",
+  "name": "animedbms",
   "version": "1.0.0",
   "proxy": "http://localhost:8800",
   "description": "Admin Dashboard template built with create-react-app, tailwind css and daisy UI. Template uses rich tailwind css utility classes and have components of daisy UI, also have redux toolkit implemented for store management.",
@@ -36,22 +36,9 @@
     "type": "git",
     "url": "git+https://github.com/"
   },
-  "keywords": [
-    "reactjs",
-    "tailwind-css",
-    "starter-kit",
-    "saas-starter-kit",
-    "reduxt-toolkit-dashboard-template",
-    "daisyui-template",
-    "dashboard-template",
-    "react-router",
-    "react-charts"
-  ],
-  "author": "srobbin01",
+  "keywords": [],
+  "author": "Zrn",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/srobbin01/tailwind-dashboard-template-dashwind/issues"
-  },
   "homepage": "",
   "eslintConfig": {
     "extends": [

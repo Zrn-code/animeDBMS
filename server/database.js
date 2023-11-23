@@ -24,5 +24,14 @@ async function getAnimeDetails(id) {
     return result[0];
 }
 
+async function getGenres(){
+    const result = await pool.query('SELECT * FROM genres');
+    return result[0];
+}
 
-export { getAnimes, getAnime, getAnimeDetails};
+async function getGenresCnt(){
+    const result = await pool.query('SELECT anime_genres.Genre_id, count(anime_genres.anime_id) as cnt FROM anime_genres GROUP BY anime_genres.Genre_id');
+    return result[0];
+}
+
+export { getAnimes, getAnime, getAnimeDetails, getGenres ,getGenresCnt};
