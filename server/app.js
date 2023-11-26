@@ -15,6 +15,32 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something broke!');
 });
 
+
+app.post('/api/login', async (req, res) => {
+    const { email, password } = req.body;
+  
+    try {
+      const user = await findByEmail(email);
+  
+      if (!user) {
+        return res.status(401).json({ message: 'The email is not correct.' });
+      }
+  
+      const isPasswordValid = await checkPassword(password, user.password);
+  
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: 'The email or password is not correct.' });
+      }
+  
+      return res.status(200).json({ message: 'login success', user: user });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'server failed' });
+    }
+  });
+  
+
+
 app.get('/api/getAnimes', async (req, res) => {
     const animes = await getAnimes();
     res.send(animes);
