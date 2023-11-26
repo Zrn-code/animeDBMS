@@ -45,4 +45,10 @@ async function getGenresCnt(id) {
 }
 
 
-export { getAnimes, getAnime, getAnimeDetails, getGenres ,getGenresCnt,getGenreName};
+async function findUserByEmail(email){
+    const result = await pool.query('SELECT * FROM users_account WHERE users_account.user_email = ?', [email]);
+    return result[0][0];
+  };
+
+
+export { getAnimes, getAnime, getAnimeDetails, getGenres ,getGenresCnt,getGenreName,findUserByEmail};

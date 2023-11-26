@@ -1,9 +1,11 @@
 import express from 'express';
 import cors from 'cors';
-import { getAnime,getAnimes,getAnimeDetails,getGenres,getGenresCnt,getGenreName } from './database.js';
+import bodyParser from 'body-parser';
+import { getAnime,getAnimes,getAnimeDetails,getGenres,getGenresCnt,getGenreName,findUserByEmail } from './database.js';
 const app = express();
 
 app.use(cors());
+app.use(bodyParser.json());
 
 app.get('/api/', (req, res) => {
     res.send('Hello World!');
@@ -18,16 +20,18 @@ app.use((err, req, res, next) => {
 
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
-  
+    console.log(email);
     try {
-      const user = await findByEmail(email);
-  
+      const user = await findUserByEmail(email);
+      //console.log(email);
+      console.log(user);
       if (!user) {
-        return res.status(401).json({ message: 'The email is not correct.' });
+        return res.status(401).json({ message: 'The email is not found.' });
       }
   
-      const isPasswordValid = await checkPassword(password, user.password);
-  
+    let isPasswordValid = false;
+    if(user.user_password === password) isPasswordValid = true;
+
       if (!isPasswordValid) {
         return res.status(401).json({ message: 'The email or password is not correct.' });
       }

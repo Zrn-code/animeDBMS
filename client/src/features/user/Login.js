@@ -4,37 +4,58 @@ import LandingIntro from './LandingIntro'
 import ErrorText from  '../../components/Typography/ErrorText'
 import InputText from '../../components/Input/InputText'
 
-function Login(){
-
+function Login() {
     const INITIAL_LOGIN_OBJ = {
-        password : "",
-        emailId : ""
-    }
+        password: '',
+        email: ''
+    };
 
-    const [loading, setLoading] = useState(false)
-    const [errorMessage, setErrorMessage] = useState("")
-    const [loginObj, setLoginObj] = useState(INITIAL_LOGIN_OBJ)
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [loginObj, setLoginObj] = useState(INITIAL_LOGIN_OBJ);
 
-    const submitForm = (e) =>{
-        e.preventDefault()
-        setErrorMessage("")
+    const submitForm = async (e) => {
+        e.preventDefault();
+        setErrorMessage('');
 
-        if(loginObj.emailId.trim() === "")return setErrorMessage("Email Id is required! (use any value)")
-        if(loginObj.password.trim() === "")return setErrorMessage("Password is required! (use any value)")
-        else{
-            setLoading(true)
-            // Call API to check user credentials and save token in localstorage
-            localStorage.setItem("token", "DumyTokenHere")
-            setLoading(false)
-            window.location.href = '/app/welcome'
+        if (loginObj.email.trim() === '') return setErrorMessage('Email Id is required! (use any value)');
+        if (loginObj.password.trim() === '') return setErrorMessage('Password is required! (use any value)');
+        else {
+            setLoading(true);
+            try {
+                const response = await fetch('http://localhost:8800/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loginObj)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Assuming the API returns success message or token
+                    localStorage.setItem('token', data.token || 'DummyTokenHere');
+                    setLoading(false);
+                    window.location.href = '/app/welcome'; // Redirect to the welcome page after successful login
+                } else {
+                    // Handling API error messages
+                    setErrorMessage(data.message || 'Login failed');
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                setErrorMessage('Something went wrong');
+                setLoading(false);
+            }
         }
-    }
+    };
 
-    const updateFormValue = ({updateType, value}) => {
-        setErrorMessage("")
-        setLoginObj({...loginObj, [updateType] : value})
-    }
-
+    const updateFormValue = ({ updateType, value }) => {
+        setErrorMessage('');
+        setLoginObj({ ...loginObj, [updateType]: value });
+    };
+    
     return(
         <div className="min-h-screen bg-base-200 flex items-center">
             <div className="card mx-auto w-full max-w-5xl  shadow-xl">
@@ -48,7 +69,7 @@ function Login(){
 
                         <div className="mb-4">
 
-                            <InputText type="emailId" defaultValue={loginObj.emailId} updateType="emailId" containerStyle="mt-4" labelTitle="Email Id" updateFormValue={updateFormValue}/>
+                            <InputText type="email" defaultValue={loginObj.email} updateType="email" containerStyle="mt-4" labelTitle="Email" updateFormValue={updateFormValue}/>
 
                             <InputText defaultValue={loginObj.password} type="password" updateType="password" containerStyle="mt-4" labelTitle="Password" updateFormValue={updateFormValue}/>
 

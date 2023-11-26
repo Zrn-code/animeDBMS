@@ -32,7 +32,7 @@ function InternalPage(){
             </div>
             <div className='divider'> Genres </div>
             
-            <div className='grid grid-cols-4 gap-4'>
+            <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
                 {genres && genres.map((genre,idx) => (
                     <Link className='flex font-bold bg-base-100 rounded-xl m-4 p-4 justify-between items-center' key={idx}  to={`../genre/${genre["Genre_id"]}/1`}>
                         <div className='text-left font-bold'>{genre["Genre_name"]}</div>
