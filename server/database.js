@@ -51,4 +51,10 @@ async function findUserByEmail(email){
   };
 
 
-export { getAnimes, getAnime, getAnimeDetails, getGenres ,getGenresCnt,getGenreName,findUserByEmail};
+async function getProfile(id) {
+    const result = await pool.query('SELECT * FROM users_details WHERE users_details.Mal_id = ?', [id]);
+    return result[0][0];
+}
+
+
+export { getAnimes, getAnime, getAnimeDetails, getGenres ,getGenresCnt,getGenreName,findUserByEmail,getProfile};

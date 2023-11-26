@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from 'cors';
+import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
-import { getAnime,getAnimes,getAnimeDetails,getGenres,getGenresCnt,getGenreName,findUserByEmail } from './database.js';
+import { getAnime,getAnimes,getAnimeDetails,getGenres,getGenresCnt,getGenreName,findUserByEmail,getProfile } from './database.js';
 const app = express();
 
 app.use(cors());
@@ -35,14 +36,34 @@ app.post('/api/login', async (req, res) => {
       if (!isPasswordValid) {
         return res.status(401).json({ message: 'The email or password is not correct.' });
       }
-  
-      return res.status(200).json({ message: 'login success', user: user });
+      const payload = {
+        id: user.user_id,
+        email: user.user_email,
+      };
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+      return res.status(200).json({ message: 'login success', user: user ,token: token});
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: 'server failed' });
     }
   });
   
+
+app.get('/api/getProfile', async (req, res) => {
+    
+    console.log(req.headers.authorization);
+    jwt.verify(req.headers.authorization, process.env.JWT_SECRET, async (err, authData) => {
+        if(err) {
+            //console.log(err);
+            res.sendStatus(403);
+        } else {
+            const id = authData.id;
+            const profile = await getProfile(id);
+            res.send(profile);
+        }
+    });
+});
+
 
 
 app.get('/api/getAnimes', async (req, res) => {
