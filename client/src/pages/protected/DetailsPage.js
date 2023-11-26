@@ -156,7 +156,7 @@ function Overview({value,detail}){
         <div className='bg-base-100 rounded-xl p-4 mt-5 font-extrabold '>{detail["Synopsis"]}</div>
         <div className='flex w-full mt-5'>
             <div className='grow-0 bg-base-100 rounded-xl p-4 mx-2 font-extrabold'>genres</div>
-            {"Award Winning, Drama, Fantasy, Suspense".split(',').map((genre) => <div className='grow bg-base-100 rounded-xl p-4 mx-2 font-extrabold tooltip' data-tip={genre}>{genre}</div>)}
+            {"Award Winning, Drama, Fantasy, Suspense".split(',').map((genre,idx) => <div key={idx}  className='grow bg-base-100 rounded-xl p-4 mx-2 font-extrabold tooltip' data-tip={genre}>{genre}</div>)}
         </div>
 
     </div>
@@ -227,7 +227,6 @@ function InternalPage(){
     const [detail, setDetail] = useState(null);
     const [value, setValue] = useState(null);
     const { id } = useParams();
-
 
     useEffect(() => {
         fetch(`/api/getAnimeDetails/${id}`).then(res => res.json()).then(data => setDetail(data[0]));

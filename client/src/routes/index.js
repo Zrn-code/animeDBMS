@@ -2,7 +2,7 @@
 
 import { lazy } from 'react'
 
-const Dashboard = lazy(() => import('../pages/protected/Dashboard'))
+const HomePage = lazy(() => import('../pages/protected/HomePage'))
 const Welcome = lazy(() => import('../pages/protected/Welcome'))
 const Page404 = lazy(() => import('../pages/protected/404'))
 const Blank = lazy(() => import('../pages/protected/Blank'))
@@ -25,8 +25,8 @@ const DiscoverPage = lazy(() => import('../pages/protected/Discover'))
 
 const routes = [
   {
-    path: '/dashboard', // the url
-    component: Dashboard, // view rendered
+    path: '/homepage', // the url
+    component: HomePage, // view rendered
   },
   {
     path: '/welcome', // the url

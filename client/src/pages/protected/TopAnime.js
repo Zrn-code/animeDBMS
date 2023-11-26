@@ -30,7 +30,9 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
     const applyFilters = () => {
         applyFilter(selectedFilters);
     };
-
+    useEffect(() => {
+        console.log(localStorage.getItem('token'))
+    }, [])
     const removeAppliedFilter = () => {
         removeFilter();
         setSelectedFilters([]);

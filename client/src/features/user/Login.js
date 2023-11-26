@@ -36,11 +36,14 @@ function Login() {
                 if (response.ok) {
                     // Assuming the API returns success message or token
                     localStorage.setItem('token', data.token || 'DummyTokenHere');
+                    localStorage.setItem('user_id', JSON.stringify(data.user_id));
+                    //console.log(localStorage.getItem('token'));
                     setLoading(false);
-                    window.location.href = '/app/welcome'; // Redirect to the welcome page after successful login
+                    window.location.href = '/app/homepage'; // Redirect to the home page after successful login
                 } else {
                     // Handling API error messages
                     setErrorMessage(data.message || 'Login failed');
+                
                     setLoading(false);
                 }
             } catch (error) {
