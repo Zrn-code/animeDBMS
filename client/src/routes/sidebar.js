@@ -1,5 +1,4 @@
 /** Icons are imported separatly to reduce build time */
-import BellIcon from '@heroicons/react/24/outline/BellIcon'
 import DocumentTextIcon from '@heroicons/react/24/outline/DocumentTextIcon'
 import Squares2X2Icon from '@heroicons/react/24/outline/Squares2X2Icon'
 import TableCellsIcon from '@heroicons/react/24/outline/TableCellsIcon'
@@ -19,6 +18,7 @@ import UsersIcon from '@heroicons/react/24/outline/UsersIcon'
 import KeyIcon from '@heroicons/react/24/outline/KeyIcon'
 import DocumentDuplicateIcon from '@heroicons/react/24/outline/DocumentDuplicateIcon'
 import SearchIcon from '@heroicons/react/24/outline/MagnifyingGlassIcon'
+import ViewfinderCircleIcon from '@heroicons/react/24/outline/ViewfinderCircleIcon'
 
 const iconClasses = `h-6 w-6`
 const submenuIconClasses = `h-5 w-5`
@@ -40,6 +40,12 @@ const routes = [
     icon: <SearchIcon className={iconClasses}/>,
     name: 'Search Anime',
   },
+  {
+    path: '/app/discover/1',
+    icon: <ViewfinderCircleIcon className={iconClasses}/>,
+    name: 'Discover',
+  }
+  /*
   {
     path: '/app/leads', // url
     icon: <InboxArrowDownIcon className={iconClasses}/>, // icon component
@@ -141,7 +147,7 @@ const routes = [
         name: 'Components',
       }
     ]
-  },
+  },*/
   
 ]
 

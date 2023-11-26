@@ -155,7 +155,7 @@ function Overview({value,detail}){
         </div>
         <div className='bg-base-100 rounded-xl p-4 mt-5 font-extrabold '>{detail["Synopsis"]}</div>
         <div className='flex w-full mt-5'>
-            <div className='grow-0 bg-base-100 rounded-xl p-4 mx-2 font-extrabold'>tags</div>
+            <div className='grow-0 bg-base-100 rounded-xl p-4 mx-2 font-extrabold'>genres</div>
             {"Award Winning, Drama, Fantasy, Suspense".split(',').map((genre) => <div className='grow bg-base-100 rounded-xl p-4 mx-2 font-extrabold tooltip' data-tip={genre}>{genre}</div>)}
         </div>
 
@@ -250,12 +250,12 @@ function InternalPage(){
                     {/* Your existing buttons */}
                     <img className='max-h-90 rounded-xl' src={value["Image_URL"]} alt="img" />
                     <div className='flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4'>
-                        <div className='text-left font-bold text-l'>watch status</div>
-                        <div className='text-right text-l ml-2'>Unknown</div>
+                        <div className='text-left font-bold'>watch status</div>
+                        <div className='text-right ml-2'>Unknown</div>
                     </div>
                     <div className='flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4'>
-                        <div className='text-left font-bold text-l'>your score</div>
-                        <div className='text-right text-l ml-2'>N/A ⭐</div>
+                        <div className='text-left font-bold '>your score</div>
+                        <div className='text-right  ml-2'>N/A ⭐</div>
                     </div>
 
 

@@ -20,6 +20,8 @@ const DocComponents = lazy(() => import('../pages/DocComponents'))
 const TopAnime = lazy(() => import('../pages/protected/TopAnime'))
 const DetailsPage = lazy(() => import('../pages/protected/DetailsPage'))
 const AnimeSearch = lazy(() => import('../pages/protected/AnimeSearch'))
+const GenrePage = lazy(() => import('../pages/protected/GenrePage'))
+const DiscoverPage = lazy(() => import('../pages/protected/Discover'))
 
 const routes = [
   {
@@ -91,7 +93,13 @@ const routes = [
   },{
     path: '/search',
     component: AnimeSearch,
-  },
+  },{
+    path: '/genre/:genre_id/:page',
+    component: GenrePage,
+  },{
+    path: '/discover/:page',
+    component: DiscoverPage,
+  }
 ]
 
 export default routes

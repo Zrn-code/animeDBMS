@@ -6,53 +6,99 @@ import { Link, useParams } from 'react-router-dom'
 import SearchBar from "../../components/Input/SearchBar"
 import FunnelIcon from '@heroicons/react/24/outline/FunnelIcon'
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon'
+import TrashIcon from '@heroicons/react/24/outline/TrashIcon'
 
 
-const TopSideButtons = ({removeFilter, applyFilter, applySearch}) => {
+const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
+    const [selectedFilters, setSelectedFilters] = useState([]);
+    //const [searchText, setSearchText] = useState('');
+    const typeFilters = ["TV", "Movie", "OVA", "Special", "ONA", "Music", "Unknown"];
 
-    const [filterParam, setFilterParam] = useState("")
-    const [searchText, setSearchText] = useState("")
-    const locationFilters = ["TV", "London", "Canada", "Peru", "Tokyo"]
+    const addOrRemoveFilter = (filter) => {
+        const index = selectedFilters.indexOf(filter);
+        let updatedFilters = [...selectedFilters];
 
-    const showFiltersAndApply = (params) => {
-        applyFilter(params)
-        setFilterParam(params)
-    }
+        if (index === -1) {
+            updatedFilters.push(filter);
+        } else {
+            updatedFilters.splice(index, 1);
+        }
+
+        setSelectedFilters(updatedFilters);
+    };
+
+    const applyFilters = () => {
+        applyFilter(selectedFilters);
+    };
 
     const removeAppliedFilter = () => {
-        removeFilter()
-        setFilterParam("")
-        setSearchText("")
-    }
+        removeFilter();
+        setSelectedFilters([]);
+        //setSearchText('');
+    };
+    /*
+    const handleInputChange = (event) => {
+        setSearchText(event.target.value);
+    };
 
-    useEffect(() => {
-        if(searchText == ""){
-            removeAppliedFilter()
-        }else{
-            applySearch(searchText)
+    const handleApplySearch = () => {
+        if (searchText === '') {
+            removeAppliedFilter();
+        } else {
+            applySearch(searchText);
         }
-    }, [searchText])
-
-    return(
+    };
+    */
+    return (
         <div className="inline-block float-right">
-            {/*<SearchBar searchText={searchText} styleClass="mr-4" setSearchText={setSearchText}/>*/}
-            {filterParam != "" && <button onClick={() => removeAppliedFilter()} className="btn btn-xs mr-2 btn-active btn-ghost normal-case">{filterParam}<XMarkIcon className="w-4 ml-2"/></button>}
+            {/*
+            <input
+                type="text"
+                value={searchText}
+                onChange={handleInputChange}
+                placeholder="Search..."
+                className="mr-4"
+            />
+            */}
+            
+            {selectedFilters.length > 0 && (
+                <button onClick={removeAppliedFilter} className="btn btn-xs mr-2 btn-active btn-ghost normal-case">
+                    {selectedFilters.join(', ')}<span className="ml-2">×</span>
+                </button>
+            )}
             <div className="dropdown dropdown-bottom dropdown-end">
-                <label tabIndex={0} className="btn btn-sm btn-outline"><FunnelIcon className="w-5 mr-2"/>Filter</label>
+                <label tabIndex={0} className="btn btn-sm btn-outline">
+                    Filter
+                </label>
                 <ul tabIndex={0} className="dropdown-content menu p-2 text-sm shadow bg-base-100 rounded-box w-52">
-                    {
-                        locationFilters.map((l, k) => {
-                            return  <li key={k}><a onClick={() => showFiltersAndApply(l)}>{l}</a></li>
-                        })
-                    }
+                    {typeFilters.map((filter, index) => (
+                        <li key={index}>
+                            <label className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedFilters.includes(filter)}
+                                    onChange={() => addOrRemoveFilter(filter)}
+                                    className="mr-2"
+                                />
+                                {filter}
+                            </label>
+                        </li>
+                    ))}
                     <div className="divider mt-0 mb-0"></div>
-                    <li><a onClick={() => removeAppliedFilter()}>Remove Filter</a></li>
+                    <li>
+                        <button onClick={applyFilters} >Apply</button>
+                    </li>
                 </ul>
             </div>
+            
+            {/*
+            <button onClick={handleApplySearch} className="btn btn-secondary ml-2">
+                Apply Search
+            </button>
+            */}
         </div>
-    )
-}
-
+    );
+};
 
 function InternalPage(){    
 
@@ -84,7 +130,7 @@ function InternalPage(){
 
 
     return(
-        <TitleCard title="Top 10 Anime" topMargin="mt-2" TopSideButtons={<TopSideButtons applySearch={applySearch} applyFilter={applyFilter} removeFilter={removeFilter}/>}>
+        <TitleCard title="Top 10 Anime" topMargin="mt-2" TopSideButtons={<TopSideButtons applyFilter={applyFilter} removeFilter={removeFilter}/>}>
         <div className="overflow-x-auto w-full">
         <table className="table w-full">
             <thead>
