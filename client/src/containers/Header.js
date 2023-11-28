@@ -16,6 +16,8 @@ function Header(){
     const dispatch = useDispatch()
     const {noOfNotifications, pageTitle} = useSelector(state => state.header)
     const [currentTheme, setCurrentTheme] = useState(localStorage.getItem("theme"))
+    const token = localStorage.getItem('token');
+    
 
     useEffect(() => {
         themeChange(false)
@@ -87,11 +89,15 @@ function Header(){
                 </button>
                 */}
 
+            
+
                 {/* Profile icon, opening menu on click */}
+
+                { token ?
                 <div className="dropdown dropdown-end ml-4">
                     <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                         <div className="w-10 rounded-full">
-                        <img src="https://zrn-code.github.io/images/avatar.jpg" alt="profile" />
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXrIBnP4Ppijsc0z3IRH6A6mQEs0OSaVlmFw&usqp=CAU" alt="profile" />
                         </div>
                     </label>
                     <ul tabIndex={0} className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
@@ -106,7 +112,12 @@ function Header(){
                         <li><a onClick={logoutUser}>Logout</a></li>
                     </ul>
                 </div>
+                :   <div> 
+                        <Link to='/login' className='mx-2'><button className='btn'>Login</button></Link>
+                        
+                    </div>}
             </div>
+
             </div>
 
         </>

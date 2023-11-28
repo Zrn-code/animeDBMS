@@ -8,7 +8,7 @@ import CheckCircleIcon  from '@heroicons/react/24/solid/CheckCircleIcon'
 function ForgotPassword(){
 
     const INITIAL_USER_OBJ = {
-        emailId : ""
+        email : ""
     }
 
     const [loading, setLoading] = useState(false)
@@ -20,7 +20,7 @@ function ForgotPassword(){
         e.preventDefault()
         setErrorMessage("")
 
-        if(userObj.emailId.trim() === "")return setErrorMessage("Email Id is required! (use any value)")
+        if(userObj.email.trim() === "")return setErrorMessage("Email Id is required! (use any value)")
         else{
             setLoading(true)
             // Call API to send password reset link
@@ -72,6 +72,7 @@ function ForgotPassword(){
                                 <button type="submit" className={"btn mt-2 w-full btn-primary" + (loading ? " loading" : "")}>Send Reset Link</button>
 
                                 <div className='text-center mt-4'>Don't have an account yet? <Link to="/register"><button className="  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">Register</button></Link></div>
+                                <div className='text-center mt-4'><Link to="/app/welcome">Go to website without login</Link></div>
                             </form>
                         </>
                     }

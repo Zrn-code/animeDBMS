@@ -11,9 +11,7 @@ function InternalPage(){
     useEffect(() => {
         dispatch(setPageTitle({ title : ""}))
       }, [])
-    useEffect(() => {
-      fetch('/get_values').then(res => res.json()).then(data => console.log(data));
-    }, [])
+
 
     return(
       <div className="hero h-4/5 bg-base-200">

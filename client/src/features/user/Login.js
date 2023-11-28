@@ -23,7 +23,7 @@ function Login() {
         else {
             setLoading(true);
             try {
-                const response = await fetch('http://localhost:8800/api/login', {
+                const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -85,6 +85,7 @@ function Login() {
                         <button type="submit" className={"btn mt-2 w-full btn-primary" + (loading ? " loading" : "")}>Login</button>
 
                         <div className='text-center mt-4'>Don't have an account yet? <Link to="/register"><span className="  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">Register</span></Link></div>
+                        <div className='text-center mt-4'><Link to="/app/welcome"><span className="  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">Go to app without login</span></Link></div>
                     </form>
                 </div>
             </div>
