@@ -1,8 +1,8 @@
 // All components mapping with path for internal routes
 
 import { lazy } from 'react'
-
 const HomePage = lazy(() => import('../pages/protected/HomePage'))
+const Dashboard = lazy(() => import('../pages/protected/Dashboard'))
 const Welcome = lazy(() => import('../pages/protected/Welcome'))
 const Page404 = lazy(() => import('../pages/protected/404'))
 const Blank = lazy(() => import('../pages/protected/Blank'))
@@ -23,6 +23,7 @@ const AnimeSearch = lazy(() => import('../pages/protected/AnimeSearch'))
 const GenrePage = lazy(() => import('../pages/protected/GenrePage'))
 const DiscoverPage = lazy(() => import('../pages/protected/Discover'))
 
+
 const routes = [
   {
     path: '/homepage', // the url
@@ -31,6 +32,10 @@ const routes = [
   {
     path: '/welcome', // the url
     component: Welcome, // view rendered
+  },
+  {
+    path: '/dashboard', // the url
+    component: Dashboard, // view rendered
   },
   {
     path: '/leads',
