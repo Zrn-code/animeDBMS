@@ -25,7 +25,7 @@ const TopSideButtons = () => {
 
 function Leads(){
 
-    const {leads } = useSelector(state => state.lead)
+    const {leads} = useSelector(state => state.lead)
     const dispatch = useDispatch()
 
     useEffect(() => {

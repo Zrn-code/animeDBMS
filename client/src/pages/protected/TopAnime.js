@@ -7,7 +7,8 @@ import SearchBar from "../../components/Input/SearchBar"
 import FunnelIcon from '@heroicons/react/24/outline/FunnelIcon'
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon'
 import TrashIcon from '@heroicons/react/24/outline/TrashIcon'
-
+import { openModal } from '../../features/common/modalSlice'
+import { CONFIRMATION_MODAL_CLOSE_TYPES, MODAL_BODY_TYPES } from '../../utils/globalConstantUtil'
 
 const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
     const [selectedFilters, setSelectedFilters] = useState([]);
@@ -102,6 +103,22 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
     );
 };
 
+const WatchListButtons = () => {
+
+    const dispatch = useDispatch()
+
+    const openAddNewLeadModal = () => {
+        dispatch(openModal({title : "Add New Lead", bodyType : MODAL_BODY_TYPES.LEAD_ADD_NEW}))
+    }
+
+    return(
+        <div className="inline-block ">
+            <button className="btn btn-sm normal-case btn-primary" onClick={() => openAddNewLeadModal()}>Add Status</button>
+        </div>
+    )
+}
+
+
 function InternalPage(){    
 
     const dispatch = useDispatch()
@@ -163,7 +180,7 @@ function InternalPage(){
                                 <td><div className="font-bold">{l.Name}</div></td>
                                 <td><div className="font-bold">⭐{0}</div></td>
                                 <td><div className="font-bold">⭐N/A</div></td> 
-                                <td><button className="btn glass">Watch List</button></td>                               
+                                <td><WatchListButtons /></td>                               
                             </tr>
                         )
                     })
