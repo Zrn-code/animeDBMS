@@ -25,17 +25,14 @@ function ProfileSettings(){
                 Authorization: `${token}`,
             },
         }).then((res) => {
-            if (res.ok) {
-                res.json().then((data) => {
-                    console.log(data);
-                    setProfile(data);
-                }
-            );
-            } else {
-                res.json().then((data) => {
-                    console.log(data);
-                }
-            );
+            if(!res.ok){
+                console.log("Eraffasdror",res.status)
+                throw new Error(res.status);
+            }
+            return res.text();
+        }).catch((err) => {
+            if(err === 403){
+                console.log("Error 403")
             }
         });
     }, []);
@@ -45,7 +42,6 @@ function ProfileSettings(){
         console.log(updateType)
         console.log(value)
     }
-
 
 
     return(

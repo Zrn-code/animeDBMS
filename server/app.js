@@ -40,7 +40,7 @@ app.post('/api/login', async (req, res) => {
         id: user.user_id,
         email: user.user_email,
       };
-      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1m' });
       return res.status(200).json({ message: 'login success', user: user ,token: token});
     } catch (error) {
       console.error(error);
@@ -50,17 +50,22 @@ app.post('/api/login', async (req, res) => {
   
 
 app.get('/api/getProfile', async (req, res) => {
-    
     console.log(req.headers.authorization);
-    jwt.verify(req.headers.authorization, process.env.JWT_SECRET, async (err, authData) => {
+    const token = req.headers.authorization;
+    if(!token) return res.status(403).send('Token not found');
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
         if(err) {
-            //console.log(err);
-            res.sendStatus(403);
-        } else {
-            const id = authData.id;
-            const profile = await getProfile(id);
-            res.send(profile);
+            if(err.name === 'TokenExpiredError') {
+                return res.status(403).send('Token expired');
+            }else{
+                return res.status(403).send('Token is invalid');
+            }
         }
+        const id = authData.id;
+        const profile = await getProfile(id);
+        res.send(profile);
+
     });
 });
 
