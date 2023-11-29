@@ -18,22 +18,21 @@ function Login() {
     const submitForm = async (e) => {
         e.preventDefault();
         setErrorMessage('');
-
+    
         if (loginObj.email.trim() === '') return setErrorMessage('Email Id is required! (use any value)');
         if (loginObj.password.trim() === '') return setErrorMessage('Password is required! (use any value)');
         else {
             setLoading(true);
             try {
-                const response = await axiosInstance.post('/api/login', {
+                const response = await axiosInstance.post('/api/login', loginObj, {
                     headers: {
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(loginObj)
+                    }
                 });
-
-                const data = await response.data;
-
-                if (response.ok) {
+    
+                const data = response.data;
+    
+                if (response.status === 200) {
                     // Assuming the API returns success message or token
                     localStorage.setItem('token', data.token || 'DummyTokenHere');
                     localStorage.setItem('user_id', JSON.stringify(data.user_id));
@@ -43,7 +42,6 @@ function Login() {
                 } else {
                     // Handling API error messages
                     setErrorMessage(data.message || 'Login failed');
-                
                     setLoading(false);
                 }
             } catch (error) {
@@ -53,6 +51,7 @@ function Login() {
             }
         }
     };
+    
 
     const updateFormValue = ({ updateType, value }) => {
         setErrorMessage('');
