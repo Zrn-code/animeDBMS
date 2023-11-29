@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import { setPageTitle } from '../../features/common/headerSlice'
 import { useState } from 'react'
 import { Link } from 'react-router-dom' 
-
+import axiosInstance from '../../app/axios'
 
 function InternalPage(){
 
@@ -14,11 +14,8 @@ function InternalPage(){
 
     useEffect(() => {
         dispatch(setPageTitle({ title : "Page Title"}))
-        fetch(`/api/getGenres`).then(res => res.json()).then(data => setGenres(data));  
-    }, [])
-
-    useEffect(() => {
-        fetch(`/api/getGenresCnt`).then(res => res.json()).then(data => setGenre_cnt(data));
+        axiosInstance.get(`/api/getGenres`).then(res => res.data).then(data => setGenres(data)); 
+        axiosInstance.get(`/api/getGenresCnt`).then(res => res.data).then(data => setGenre_cnt(data));
     },[])
 
     return(

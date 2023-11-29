@@ -6,6 +6,7 @@ import { showNotification } from '../../common/headerSlice'
 import InputText from '../../../components/Input/InputText'
 import TextAreaInput from '../../../components/Input/TextAreaInput'
 import ToogleInput from '../../../components/Input/ToogleInput'
+import axiosInstance from "../../../app/axios"
 
 function ProfileSettings(){
 
@@ -17,9 +18,9 @@ function ProfileSettings(){
     const updateProfile = () => {
         dispatch(showNotification({message : "Profile Updated", status : 1}))    
     }
+    
     useEffect(() => {
-        fetch("/api/getProfile", {
-            method: "GET",
+        axiosInstance.get("/api/getProfile", {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `${token}`,

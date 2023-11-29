@@ -7,6 +7,7 @@ import SearchBar from "../../components/Input/SearchBar"
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon'
 import Squares2X2Icon from '@heroicons/react/24/outline/Squares2X2Icon'
 import ListBulletIcon from '@heroicons/react/24/outline/ListBulletIcon'
+import axiosInstance from '../../app/axios'
 
 const TopSideButtons = ({removeFilter, applyFilter, applySearch}) => {
 
@@ -68,20 +69,17 @@ function InternalPage(){
       }, [])
     
     useEffect(() => {
-        fetch(`/api/getGenreName/${genre_id}`).then(res => res.json()).then(data => setGenreName(data[0]["Genre_name"]));
+        axiosInstance.get(`/api/getGenreName/${genre_id}`).then(res => res.data).then(data => setGenreName(data[0]["Genre_name"]));
     }, [genre_id])
 
     useEffect(() => {
-        fetch('/api/getAnimes').then(res => res.json()).then(data => setValues(data));
-    }, [])
-    
-    useEffect(() => {
-        fetch(`/api/getGenresCnt/${genre_id}`).then(res => res.json()).then(data => setGenre_cnt(data["0"]["cnt"]));
+        axiosInstance.get('/api/getAnimes').then(res => res.data).then(data => setValues(data));
+        axiosInstance.get(`/api/getGenresCnt/${genre_id}`).then(res => res.data).then(data => setGenre_cnt(data[0]["cnt"]));
     }  ,[])
 
 
     const removeFilter = () => {
-        fetch('/api/getAnimes').then(res => res.json()).then(data => setValues(data));
+        axiosInstance.get('/api/getAnimes').then(res => res.data).then(data => setValues(data));
     }
     
 

@@ -7,7 +7,7 @@ const checkAuth = () => {
     const PUBLIC_ROUTES = ["login", "forgot-password", "register", "documentation","homepage","details","search","genre","discover","welcome"]
 
     const isPublicPage = PUBLIC_ROUTES.some( r => window.location.href.includes(r))
-    /*
+    
     if(!TOKEN && !isPublicPage){
         window.location.href = '/login'
         return;
@@ -32,7 +32,7 @@ const checkAuth = () => {
           });
         return TOKEN
     }
-    */
+    
 }
 
 export default checkAuth

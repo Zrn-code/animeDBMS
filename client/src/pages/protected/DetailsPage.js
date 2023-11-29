@@ -17,6 +17,8 @@ import {
     Legend,
   } from 'chart.js';
   import { Bar } from 'react-chartjs-2';
+import axios from 'axios';
+import axiosInstance from '../../app/axios';
   
   ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
   ChartJS.register(ArcElement, Tooltip, Legend, Tooltip,Filler,Legend);
@@ -229,10 +231,8 @@ function InternalPage(){
     const { id } = useParams();
 
     useEffect(() => {
-        fetch(`/api/getAnimeDetails/${id}`).then(res => res.json()).then(data => setDetail(data[0]));
-    },[] );
-    useEffect(() => {
-        fetch(`/api/getAnime/${id}`).then(res => res.json()).then(data => setValue(data[0]));
+        axiosInstance.get(`/api/getAnimeDetails/${id}`).then(res => res.data).then(data => setDetail(data[0]));
+        axiosInstance.get(`/api/getAnime/${id}`).then(res => res.data).then(data => setValue(data[0]));
     },[] );
 
     if (detail === null || value === null) {

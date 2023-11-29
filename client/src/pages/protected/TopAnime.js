@@ -9,6 +9,8 @@ import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon'
 import TrashIcon from '@heroicons/react/24/outline/TrashIcon'
 import { openModal } from '../../features/common/modalSlice'
 import { CONFIRMATION_MODAL_CLOSE_TYPES, MODAL_BODY_TYPES } from '../../utils/globalConstantUtil'
+import axiosInstance from '../../app/axios'
+import axios from 'axios'
 
 const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
     const [selectedFilters, setSelectedFilters] = useState([]);
@@ -129,11 +131,11 @@ function InternalPage(){
     const [values, setValues] = useState()
 
     useEffect(() => {
-        fetch('/api/getAnimes').then(res => res.json()).then(data => setValues(data));
+        axiosInstance.get('/api/getAnimes').then(res => res.data).then(data => setValues(data));
     }, [])
     
     const removeFilter = () => {
-        fetch('/api/getAnimes').then(res => res.json()).then(data => setValues(data));
+        axiosInstance.get('/api/getAnimes').then(res => res.data).then(data => setValues(data));
     }
 
     const applyFilter = (params) => {

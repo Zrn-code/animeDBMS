@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom'
 import LandingIntro from './LandingIntro'
 import ErrorText from  '../../components/Typography/ErrorText'
 import InputText from '../../components/Input/InputText'
+import axiosInstance from '../../app/axios'
 
 function Login() {
     const INITIAL_LOGIN_OBJ = {
@@ -23,15 +24,14 @@ function Login() {
         else {
             setLoading(true);
             try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
+                const response = await axiosInstance.post('/api/login', {
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(loginObj)
                 });
 
-                const data = await response.json();
+                const data = await response.data;
 
                 if (response.ok) {
                     // Assuming the API returns success message or token
