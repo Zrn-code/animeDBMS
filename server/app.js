@@ -52,14 +52,14 @@ app.post('/api/login', async (req, res) => {
 app.get('/api/getProfile', async (req, res) => {
     console.log(req.headers.authorization);
     const token = req.headers.authorization;
-    if(!token) return res.status(403).send('Token not found');
+    if(!token) return res.status(401).send('Token not found');
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
         if(err) {
             if(err.name === 'TokenExpiredError') {
-                return res.status(403).send('Token expired');
+                return res.status(401).send('Token expired');
             }else{
-                return res.status(403).send('Token is invalid');
+                return res.status(401).send('Token is invalid');
             }
         }
         const id = authData.id;

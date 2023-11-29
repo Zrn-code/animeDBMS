@@ -18,25 +18,46 @@ function ProfileSettings(){
     const updateProfile = () => {
         dispatch(showNotification({message : "Profile Updated", status : 1}))    
     }
-    
+
+    // 假设这段代码是用于获取用户资料的地方
+// 在某个合适的地方，比如一个专门的函数、组件或者拦截器中发送请求，接收响应，并处理 401 错误
+const getProfile = async () => {
+    try {
+      const response = await axiosInstance.get("/api/getProfile", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`,
+        },
+      });
+  
+      // 处理成功获取用户资料的情况
+      const profileData = response.data;
+      setProfile(profileData)
+      // 进行进一步处理...
+  
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        const errorMessage = error.response.data;
+        if (errorMessage === 'Token expired') {
+          console.log('Token expired. Logging out...');
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        } else {
+          console.log('Other 401 error:', errorMessage);
+        }
+      } else {
+        console.error('Error:', error);
+        // 处理其他错误
+      }
+    }
+  };
+  
+
+
     useEffect(() => {
-        axiosInstance.get("/api/getProfile", {
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `${token}`,
-            },
-        }).then((res) => {
-            if(!res.ok){
-                console.log("Eraffasdror",res.status)
-                throw new Error(res.status);
-            }
-            return res.text();
-        }).catch((err) => {
-            if(err === 403){
-                console.log("Error 403")
-            }
-        });
+        getProfile()    
     }, []);
+
 
 
     const updateFormValue = ({updateType, value}) => {
