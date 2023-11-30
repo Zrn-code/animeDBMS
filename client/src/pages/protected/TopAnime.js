@@ -132,6 +132,7 @@ function InternalPage(){
 
     useEffect(() => {
         axiosInstance.get('/api/getAnimes').then(res => res.data).then(data => setValues(data));
+        console.log(values)
     }, [])
     
     const removeFilter = () => {
@@ -151,13 +152,13 @@ function InternalPage(){
 
 
     return(
-        <TitleCard title="Top 10 Anime" topMargin="mt-2" TopSideButtons={<TopSideButtons applyFilter={applyFilter} removeFilter={removeFilter}/>}>
+        <TitleCard title="Top Anime Series" topMargin="mt-2" TopSideButtons={<TopSideButtons applyFilter={applyFilter} removeFilter={removeFilter}/>}>
         <div className="overflow-x-auto w-full">
         <table className="table w-full">
             <thead>
                 <tr>
                     <th>Rank</th>
-                    <th colSpan="2">Title</th>
+                    <th>Title</th>
                     <th>Score</th>
                     <th>Your Score</th>
                     <th>Status</th>
@@ -170,16 +171,19 @@ function InternalPage(){
                             <tr key={k}>
                                 <td>
                                     <div className="flex items-center space-x-3">
-                                        <div className='font-bold text-7xl'>{k+1}</div>
+                                        <div className='font-bold text-5xl'>{k+1}</div>
                                     </div>
                                 </td>
                                 <td>
-                                <div className='max-h-48'>
-                                    <Link to={"../details/" + l.anime_id}>
-                                        <img className='max-h-36' src={l["Image_URL"]} alt='img' />
-                                    </Link>
-                                </div></td>
-                                <td><div className="font-bold">{l.Name}</div></td>
+                                        <Link to={"../details/" + l.anime_id} className='flex'>
+                                            <img className='max-h-24 flex' src={l["Image_URL"]} alt='img' />
+                                            <div className='flex mx-5 flex-col'>
+                                                <div className="font-bold  text-lg hover:underline">{l.Name}</div>
+                                                <div className='mt-2 font-extralight text-sm'>{l.type} ( {l.Premiered!==-1?l.Premiered:'n/a'} )</div>
+                                                <div className='mt-2 font-extralight text-sm'>{l.members?l.members:0} Members</div>
+                                            </div>
+                                        </Link>
+                                </td>
                                 <td><div className="font-bold">⭐{0}</div></td>
                                 <td><div className="font-bold">⭐N/A</div></td> 
                                 <td><WatchListButtons /></td>                               

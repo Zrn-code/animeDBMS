@@ -41,7 +41,7 @@ const getProfile = async () => {
         if (errorMessage === 'Token expired') {
           console.log('Token expired. Logging out...');
           localStorage.removeItem('token');
-          window.location.href = '/login';
+          window.location.href = '/app/welcome';
         } else {
           console.log('Other 401 error:', errorMessage);
         }
