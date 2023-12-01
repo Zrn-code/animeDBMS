@@ -33,9 +33,7 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
     const applyFilters = () => {
         applyFilter(selectedFilters);
     };
-    useEffect(() => {
-        console.log(localStorage.getItem('token'))
-    }, [])
+
     const removeAppliedFilter = () => {
         removeFilter();
         setSelectedFilters([]);
@@ -105,12 +103,12 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
     );
 };
 
-const WatchListButtons = () => {
+const WatchListButtons = ({id,name,img,state}) => {
 
     const dispatch = useDispatch()
 
     const openAddNewLeadModal = () => {
-        dispatch(openModal({title : "Add New Lead", bodyType : MODAL_BODY_TYPES.LEAD_ADD_NEW}))
+        dispatch(openModal({title : "Update Watch Status", bodyType : MODAL_BODY_TYPES.WATCHLIST_ADD_NEW,extraObject:{"id":id,"name":name,"img":img,"state":state}}))
     }
 
     return(
@@ -132,7 +130,6 @@ function InternalPage(){
 
     useEffect(() => {
         axiosInstance.get('/api/getAnimes').then(res => res.data).then(data => setValues(data));
-        console.log(values)
     }, [])
     
     const removeFilter = () => {
@@ -190,7 +187,7 @@ function InternalPage(){
                                 </td>
                                 <td><div className="font-bold">⭐{0}</div></td>
                                 <td><div className="font-bold">⭐N/A</div></td> 
-                                <td><WatchListButtons /></td>                               
+                                <td><WatchListButtons id={l["anime_id"]} name={l["Name"]} img={l["Image_URL"]} state={l["state"]} /></td>                               
                             </tr>
                         )
                     })
