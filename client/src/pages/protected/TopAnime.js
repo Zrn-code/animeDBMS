@@ -125,7 +125,7 @@ function InternalPage(){
 
     const dispatch = useDispatch()
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Home Page"}))
+        dispatch(setPageTitle({ title : "Top Anime Series"}))
       }, [])
     
     const [values, setValues] = useState()
@@ -175,14 +175,18 @@ function InternalPage(){
                                     </div>
                                 </td>
                                 <td>
+                                    <div className='flex'>
                                         <Link to={"../details/" + l.anime_id} className='flex'>
                                             <img className='max-h-24 flex' src={l["Image_URL"]} alt='img' />
-                                            <div className='flex mx-5 flex-col'>
-                                                <div className="font-bold  text-lg hover:underline">{l.Name}</div>
-                                                <div className='mt-2 font-extralight text-sm'>{l.type} ( {l.Premiered!==-1?l.Premiered:'n/a'} )</div>
-                                                <div className='mt-2 font-extralight text-sm'>{l.members?l.members:0} Members</div>
-                                            </div>
                                         </Link>
+                                        <div className='flex mx-5 flex-col'>
+                                            <Link to={"../details/" + l.anime_id} className='flex'>
+                                                <div className="font-bold  text-lg hover:underline">{l.Name}</div>
+                                            </Link>
+                                            <div className='mt-2 font-extralight text-sm'>{l.type} ( {l.Premiered!==-1?l.Premiered:'n/a'} )</div>
+                                            <div className='mt-2 font-extralight text-sm'>{l.members?l.members:0} Members</div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td><div className="font-bold">⭐{0}</div></td>
                                 <td><div className="font-bold">⭐N/A</div></td> 

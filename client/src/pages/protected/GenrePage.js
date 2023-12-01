@@ -111,7 +111,12 @@ function InternalPage(){
             {!compact ?
                 <div className='grid grid-cols-4 gap-4'>
                     {values && values.map((value, index) => {
-                        return <TitleCard  key={index} title={value.Name} ><Link to={'../details/' + value["anime_id"]}><img src={value["Image_URL"]} alt="img"></img></Link></TitleCard>
+                        return <TitleCard  key={index} title={value.Name} >
+                                    <Link to={'../details/' + value["anime_id"]}>
+                                        <img src={value["Image_URL"]} alt="img"></img>
+                                    </Link>
+                                    <div className='divider' />
+                                </TitleCard>
                     })}
                 </div>
                 :

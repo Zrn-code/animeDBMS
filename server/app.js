@@ -111,7 +111,8 @@ app.get('/api/getGenresCnt/:id', async (req, res) => {
     res.send(genre_cnt);
 });
 
+const port = process.env.PORT || 8800;
 
-app.listen(8800, () => {
-    console.log('Server started on port 8800');
+app.listen(port, () => {
+    console.log('Server started on port '+ port);
 });
