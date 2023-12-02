@@ -106,9 +106,13 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
 const WatchListButtons = ({id,name,img,state}) => {
 
     const dispatch = useDispatch()
-
+    const token = localStorage.getItem('token')
     const openAddWatchListModal = () => {
-        dispatch(openModal({title : "Update Watch Status", bodyType : MODAL_BODY_TYPES.WATCHLIST_ADD_NEW,extraObject:{"id":id,"name":name,"img":img,"state":state}}))
+        if(!token){
+            dispatch(openModal({title : "You need to login", bodyType : MODAL_BODY_TYPES.REQUIRE_LOGIN}))
+        }else{
+            dispatch(openModal({title : "Update Watch Status", bodyType : MODAL_BODY_TYPES.WATCHLIST_ADD_NEW,extraObject:{"id":id,"name":name,"img":img,"state":state}}))
+        }
     }
 
     return(
@@ -121,16 +125,18 @@ const WatchListButtons = ({id,name,img,state}) => {
 const RatingButtons = ({id,name,img,state}) => {
 
     const dispatch = useDispatch()
-
+    const token = localStorage.getItem('token')
     const openAddWatchListModal = () => {
-        dispatch(openModal({title : "Update Rating Score", bodyType : MODAL_BODY_TYPES.RATING_ADD_NEW,extraObject:{"id":id,"name":name,"img":img,"state":state}}))
+        if(!token){
+            dispatch(openModal({title : "You need to login", bodyType : MODAL_BODY_TYPES.REQUIRE_LOGIN}))
+        } else {
+            dispatch(openModal({title : "Update Rating Score", bodyType : MODAL_BODY_TYPES.RATING_ADD_NEW,extraObject:{"id":id,"name":name,"img":img,"state":state}}))
+        }
     }
-
+        
     return(
         <div className="inline-block cursor-pointer" onClick={openAddWatchListModal}>
-            <div className='flex'>⭐ <div className='ml-1 underline'>N/A</div></div>
-            <div className='flex mt-1'>📝 <div className='ml-1 underline'>N/A</div></div>
-            
+            <div className='flex items-center'>⭐ <div className='mr-2 font-bold underline'>N/A</div></div>
         </div>
     )
 }

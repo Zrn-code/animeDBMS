@@ -6,6 +6,7 @@ module.exports = Object.freeze({
         WATCHLIST_ADD_NEW: "WATCHLIST_ADD_NEW",
         CONFIRMATION : "CONFIRMATION",
         RATING_ADD_NEW: "RATING_ADD_NEW",
+        REQUIRE_LOGIN: "REQUIRE_LOGIN",
         DEFAULT : "",
     },
 
