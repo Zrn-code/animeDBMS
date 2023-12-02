@@ -107,13 +107,30 @@ const WatchListButtons = ({id,name,img,state}) => {
 
     const dispatch = useDispatch()
 
-    const openAddNewLeadModal = () => {
+    const openAddWatchListModal = () => {
         dispatch(openModal({title : "Update Watch Status", bodyType : MODAL_BODY_TYPES.WATCHLIST_ADD_NEW,extraObject:{"id":id,"name":name,"img":img,"state":state}}))
     }
 
     return(
         <div className="inline-block ">
-            <button className="btn btn-sm normal-case btn-primary" onClick={() => openAddNewLeadModal()}>Add Status</button>
+            <button className="btn btn-sm normal-case btn-primary" onClick={() => openAddWatchListModal()}>Add Status</button>
+        </div>
+    )
+}
+
+const RatingButtons = ({id,name,img,state}) => {
+
+    const dispatch = useDispatch()
+
+    const openAddWatchListModal = () => {
+        dispatch(openModal({title : "Update Rating Score", bodyType : MODAL_BODY_TYPES.RATING_ADD_NEW,extraObject:{"id":id,"name":name,"img":img,"state":state}}))
+    }
+
+    return(
+        <div className="inline-block cursor-pointer" onClick={openAddWatchListModal}>
+            <div className='flex'>⭐ <div className='ml-1 underline'>N/A</div></div>
+            <div className='flex mt-1'>📝 <div className='ml-1 underline'>N/A</div></div>
+            
         </div>
     )
 }
@@ -157,7 +174,7 @@ function InternalPage(){
                     <th>Rank</th>
                     <th>Title</th>
                     <th>Score</th>
-                    <th>Your Score</th>
+                    <th>Your Review</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -186,7 +203,7 @@ function InternalPage(){
                                     </div>
                                 </td>
                                 <td><div className="font-bold">⭐{0}</div></td>
-                                <td><div className="font-bold">⭐N/A</div></td> 
+                                <td><RatingButtons id={l["anime_id"]} img={l["Image_URL"]}  name={l["Name"]} /></td> 
                                 <td><WatchListButtons id={l["anime_id"]} name={l["Name"]} img={l["Image_URL"]} state={l["state"]} /></td>                               
                             </tr>
                         )
