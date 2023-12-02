@@ -37,22 +37,23 @@ function AddWatchListModalBody({closeModal, extraObject}){
 
     return(
         <>
-            <div className="modal-body">
-                <div className="divider"></div>
+            <div className="modal-body mt-5">
                 <div className="flex"> 
                     <img className="flex-1" src={watchList['img']} alt={watchList['name'] + 'imgURL'}></img>
                     <div className="flex-1 ml-5">
-                        <div className="text-2xl font-bold mb-2">{watchList['name']}</div>
+                        <div className="text-2xl font-bold mb-5">{watchList['name']}</div>
                         {stateOptions.map((state) => {
                             return (
-                                <div key={state.id}>
-                                    <input
-                                        type="radio"
-                                        checked={watchList['state'] === state.value}
-                                        onChange={() => setWatchList({...watchList, state: state.value})}
-                                        className="mr-2 mt-4"
-                                    />
-                                    {state.label}
+                                <div key={state.id} className="form-control">
+                                    <label className="cursor-pointer label">
+                                        <span className="ml-2 ">{state.label}</span>                                    
+                                        <input
+                                            type="radio"
+                                            checked={watchList['state'] === state.value}
+                                            onChange={() => setWatchList({...watchList, state: state.value})}
+                                            className="radio"
+                                        />
+                                    </label>
                                 </div>
                             )
                         })}
