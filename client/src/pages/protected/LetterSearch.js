@@ -117,24 +117,16 @@ function InternalPage(){
 
     const dispatch = useDispatch()
     const [values, setValues] = useState()
-    const [genreName, setGenreName] = useState()
-    const {genre_id, page } = useParams()
-    const [genre_cnt, setGenre_cnt] = useState()
+    const {letter} = useParams()
     const [compact, setCompact] = useState(false)
-
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Home Page"}))
+        dispatch(setPageTitle({ title : "Letter Search"}))
       }, [])
     
     useEffect(() => {
-        axiosInstance.get(`/api/getGenreName/${genre_id}`).then(res => res.data).then(data => setGenreName(data[0]["Genre_name"]));
-    }, [genre_id])
-
-    useEffect(() => {
-        axiosInstance.get('/api/getAnimes').then(res => res.data).then(data => setValues(data));
-        axiosInstance.get(`/api/getGenresCnt/${genre_id}`).then(res => res.data).then(data => setGenre_cnt(data[0]["cnt"]));
-    }  ,[])
-
+        axiosInstance.get(`/api/getAnimes`).then(res => res.data).then(data => setValues(data)); 
+    })
 
     const removeFilter = () => {
         axiosInstance.get('/api/getAnimes').then(res => res.data).then(data => setValues(data));
@@ -158,10 +150,16 @@ function InternalPage(){
 
     return(
         <>
-            
+            <div className='flex'>
+            {alphabet.map((letter, index) => (
+                <Link to={"../search/" + letter} className='bg-base-100 rounded mx-2 flex items-center justify-center w-8 h-8' key={index}>
+                    {letter}
+                </Link>
+            ))}
+            </div>
 
-            <div className='flex p-2 mb-2 justify-between items-center'>
-                <div className='font-bold text-2xl'>{genreName} Anime ({genre_cnt})</div>
+            <div className='flex p-2 mt-5 justify-between items-center'>
+                <div className='font-bold text-2xl'>Search Result: {letter}</div>
                 <div className='flex items-center'>
                     <TopSideButtons removeFilter={removeFilter} applyFilter={applyFilter} applySearch={applySearch}/>
                     <button className='mx-2' onClick={()=>setCompact(!compact)}>{compact?<ListBulletIcon className='h-6 w-6' />:<Squares2X2Icon className='h-6 w-6' />}</button>

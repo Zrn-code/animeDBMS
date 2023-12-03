@@ -22,9 +22,9 @@ function InternalPage(){
         <>
             <div className='flex'>
             {alphabet.map((letter, index) => (
-                <button className='bg-base-100 rounded mx-2 flex-auto' key={index} onClick={() => console.log(letter)}>
+                <Link to={"./" + letter} className='bg-base-100 rounded mx-2 flex items-center justify-center w-8 h-8' key={index} onClick={() => console.log(letter)}>
                     {letter}
-                </button>
+                </Link>
             ))}
             </div>
             <div className='divider'> Genres </div>
