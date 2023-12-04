@@ -189,7 +189,7 @@ function Details({value,detail}){
 
 
         <div className="btn-group grid grid-cols-2 mt-5">
-            <button className="btn btn-outline">Previous page</button>
+            <button className="btn btn-outline">Previous</button>
             <button className="btn btn-outline">Next</button>
         </div>
     </div>

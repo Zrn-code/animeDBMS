@@ -167,6 +167,7 @@ function InternalPage(){
 
 
     return(
+    <>
         <TitleCard title="Top Anime Series" topMargin="mt-2" TopSideButtons={<TopSideButtons applyFilter={applyFilter} removeFilter={removeFilter}/>}>
         <div className="overflow-x-auto w-full">
         <table className="table w-full">
@@ -214,6 +215,16 @@ function InternalPage(){
         </table>
     </div>
     </TitleCard>
+    <div className="flex justify-center mt-4">
+                <div className="btn-group">
+                    <button className="btn">1</button>
+                    <button className="btn">2</button>
+                    <button className="btn btn-disabled">...</button>
+                    <button className="btn">99</button>
+                    <button className="btn">100</button>
+                </div>
+            </div>
+    </>
     )
 }
 

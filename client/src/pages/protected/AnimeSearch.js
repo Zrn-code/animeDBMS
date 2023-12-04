@@ -22,7 +22,7 @@ function InternalPage(){
         <>
             <div className='flex'>
             {alphabet.map((letter, index) => (
-                <Link to={"./" + letter} className='bg-base-100 rounded mx-2 flex items-center justify-center w-8 h-8' key={index} onClick={() => console.log(letter)}>
+                <Link to={"./" + letter } className='bg-base-100 rounded mx-2 flex items-center justify-center w-8 h-8' key={index} onClick={() => console.log(letter)}>
                     {letter}
                 </Link>
             ))}
@@ -31,7 +31,7 @@ function InternalPage(){
             
             <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
                 {genres && genres.map((genre,idx) => (
-                    <Link className='flex font-bold bg-base-100 rounded-xl m-4 p-4 justify-between items-center' key={idx}  to={`../genre/${genre["Genre_id"]}/1`}>
+                    <Link className='flex font-bold bg-base-100 rounded-xl m-4 p-4 justify-between items-center' key={idx}  to={`../genre/${genre["Genre_id"]}`}>
                         <div className='text-left font-bold'>{genre["Genre_name"]}</div>
                         <div className='text-right ml-2'>{genre_cnt && genre_cnt.map((genre_cnt) => (genre_cnt["Genre_id"] === genre["Genre_id"] ? `(${genre_cnt["cnt"]})` : null))} </div>
                          

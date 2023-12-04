@@ -101,13 +101,13 @@ const routes = [
     path: '/search',
     component: AnimeSearch,
   },{
-    path: '/genre/:genre_id/:page',
+    path: '/genre/:genre_id',
     component: GenrePage,
   },{
-    path: '/discover/:page',
+    path: '/discover',
     component: DiscoverPage,
   },{
-    path: '/search/:letter/:page',
+    path: '/search/:letter',
     component: LetterSearch,
   },{
     path: '/profile',

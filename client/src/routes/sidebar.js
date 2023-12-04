@@ -41,7 +41,7 @@ const routes = [
     name: 'Search Anime',
   },
   {
-    path: '/app/discover/1',
+    path: '/app/discover',
     icon: <ViewfinderCircleIcon className={iconClasses}/>,
     name: 'Discover',
   }

@@ -26,9 +26,9 @@ const ratingOptions = [
 function AddRatingModalBody({closeModal, extraObject}){
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
-    const [errorMessage, setErrorMessage] = useState("")
     const [Rating, setRating] = useState(extraObject || INITIAL_WATCH_STATE)
-    
+    const [showReview, setShowReview] = useState(false);
+
     const saveWatchList = () => {
         setLoading(true)
         // Call API to save watch list
@@ -55,7 +55,19 @@ function AddRatingModalBody({closeModal, extraObject}){
                         </select>
                         <div className="divider font-bold mt-5">Review</div>
 
-                        <textarea className="textarea w-full h-24 textarea-bordered" placeholder="You can write review here..." value={Rating['comment']} onChange={(e) => setRating({...Rating, comment: e.target.value})}></textarea>
+                        {showReview && <textarea className="textarea w-full h-24 textarea-bordered" placeholder="You can write review here..." value={Rating['comment']} onChange={(e) => setRating({...Rating, comment: e.target.value})}></textarea>}
+                        
+                        <div className="form-control">
+                        <label className="label cursor-pointer">
+                            <span className="label-text">Add Review</span>
+                            <input
+                                type="checkbox"
+                                className="toggle"
+                                checked={showReview} 
+                                onChange={() => setShowReview(!showReview)} 
+                            />
+                        </label>
+                    </div>
 
                     </div>
                 </div>
