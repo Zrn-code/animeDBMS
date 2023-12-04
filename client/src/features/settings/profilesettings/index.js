@@ -1,25 +1,14 @@
 import moment from "moment"
 import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import TitleCard from "../../../components/Cards/TitleCard"
 import { showNotification } from '../../common/headerSlice'
-import InputText from '../../../components/Input/InputText'
-import TextAreaInput from '../../../components/Input/TextAreaInput'
-import ToogleInput from '../../../components/Input/ToogleInput'
 import axiosInstance from "../../../app/axios"
 
 function ProfileSettings(){
-
-
     const dispatch = useDispatch()
     const token = localStorage.getItem('token')
     const [profile, setProfile] = useState({})
-    const [birthday, setBirthday] = useState("")
-    const [gender,setGender] = useState("")
-    // Call API to update profile settings changes
-    const updateProfile = () => {
-        dispatch(showNotification({message : "Profile Updated", status : 1}))    
-    }
 
 const getProfile = async () => {
     try {
@@ -29,13 +18,9 @@ const getProfile = async () => {
           Authorization: `${token}`,
         },
       });
-  
       const profileData = response.data;
       profileData.Birthday = moment(profileData.Birthday).format('YYYY-MM-DD')
       setProfile(profileData)
-      setBirthday(profileData.Birthday)
-      setGender(profileData.Gender)
-      //console.log(profileData)
     } catch (error) {
       if (error.response && error.response.status === 401) {
         const errorMessage = error.response.data;
@@ -57,26 +42,20 @@ const getProfile = async () => {
     }, []);
 
 
-
-    const updateFormValue = ({updateType, value}) => {
-        console.log(updateType)
-        console.log(value)
-    }
-
-
     const handleGenderChange = (event) => {
-      // 处理性别的变化
       const genderValue = event.target.value;
-      // 更新 React 组件的状态
       setProfile({ ...profile, Gender: genderValue });
     };
   
     const handleBirthdayChange = (event) => {
-      // 处理生日的变化
       const birthdayValue = event.target.value;
-      // 更新 React 组件的状态
       setProfile({ ...profile, Birthday: birthdayValue });
     };
+
+    const updateProfile = () => {
+      dispatch(showNotification({message : "Profile Updated", status : 1}))
+      //axiosInstance.post('/api/updateProfile', profile).then(res => res.data).then(data => console.log(data))
+    }
   
     return (
       <>

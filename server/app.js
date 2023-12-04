@@ -2,8 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
-import { getAnime,getAnimes,getAnimeDetails,getGenres,getGenresCnt,getGenreName,findUserByEmail,getProfile } from './database.js';
+import * as db  from './database.js'
 const app = express();
+
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -21,11 +22,12 @@ app.use((err, req, res, next) => {
 
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
+    
     console.log(email);
     try {
-      const user = await findUserByEmail(email);
+      const user = await db.findUserByEmail(email);
       //console.log(email);
-      console.log(user);
+      //console.log(user);
       if (!user) {
         return res.status(401).json({ message: 'The email is not found.' });
       }
@@ -63,7 +65,7 @@ app.get('/api/getProfile', async (req, res) => {
             }
         }
         const id = authData.id;
-        const profile = await getProfile(id);
+        const profile = await db.getProfile(id);
         res.send(profile);
 
     });
@@ -72,42 +74,42 @@ app.get('/api/getProfile', async (req, res) => {
 
 
 app.get('/api/getAnimes', async (req, res) => {
-    const animes = await getAnimes();
+    const animes = await db.getAnimes();
     res.send(animes);
 });
 
 app.get('/api/getAnime/:id', async (req, res) => {
     const id = req.params.id;
-    const animes = await getAnime(id);
+    const animes = await db.getAnime(id);
     res.send(animes);
 });
 
 app.get('/api/getAnimeDetails/:id', async (req, res) => {
     const id = req.params.id;
     //console.log(id);
-    const anime_details = await getAnimeDetails(id);
+    const anime_details = await db.getAnimeDetails(id);
     res.send(anime_details);
 });
 
 app.get('/api/getGenres', async (req, res) => {
-    const genres = await getGenres();
+    const genres = await db.getGenres();
     res.send(genres);
 });
 
 app.get('/api/getGenresCnt', async (req, res) => {
-    const genres_cnt = await getGenresCnt();
+    const genres_cnt = await db.getGenresCnt();
     res.send(genres_cnt);
 });
 
 app.get('/api/getGenreName/:id', async (req, res) => {
     const id = req.params.id;
-    const genre_name = await getGenreName(id);
+    const genre_name = await db.getGenreName(id);
     res.send(genre_name);
 });
 
 app.get('/api/getGenresCnt/:id', async (req, res) => {
     const id = req.params.id;
-    const genre_cnt = await getGenresCnt(id);
+    const genre_cnt = await db.getGenresCnt(id);
     res.send(genre_cnt);
 });
 
