@@ -3,32 +3,55 @@ import {Link} from 'react-router-dom'
 import LandingIntro from './LandingIntro'
 import ErrorText from  '../../components/Typography/ErrorText'
 import InputText from '../../components/Input/InputText'
+import axiosInstance from '../../app/axios'
 
 function Register(){
 
     const INITIAL_REGISTER_OBJ = {
         name : "",
         password : "",
-        emailId : ""
+        email : ""
     }
 
     const [loading, setLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
     const [registerObj, setRegisterObj] = useState(INITIAL_REGISTER_OBJ)
 
-    const submitForm = (e) =>{
+    const submitForm = async(e) =>{
         e.preventDefault()
         setErrorMessage("")
 
         if(registerObj.name.trim() === "")return setErrorMessage("Name is required! (use any value)")
-        if(registerObj.emailId.trim() === "")return setErrorMessage("Email Id is required! (use any value)")
+        if(registerObj.email.trim() === "")return setErrorMessage("Email is required! (use any value)")
         if(registerObj.password.trim() === "")return setErrorMessage("Password is required! (use any value)")
         else{
-            setLoading(true)
-            // Call API to check user credentials and save token in localstorage
-            localStorage.setItem("token", "DumyTokenHere")
-            setLoading(false)
-            window.location.href = '/app/welcome'
+            setLoading(true);
+            try {
+                const response = await axiosInstance.post('/api/register', registerObj, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const data = response.data;
+    
+                if (response.status === 200) {
+                    // Assuming the API returns success message or token
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user_id', JSON.stringify(data.user_id));
+                    //console.log(localStorage.getItem('token'));
+                    setLoading(false);
+                    window.location.href = '/app/homepage'; // Redirect to the home page after successful login
+                } else {
+                    // Handling API error messages
+                    setErrorMessage(data.message || 'Register failed');
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                setErrorMessage(error.response.data.message || 'Something went wrong' );
+                setLoading(false);
+            }
         }
     }
 
@@ -52,7 +75,7 @@ function Register(){
 
                             <InputText defaultValue={registerObj.name} updateType="name" containerStyle="mt-4" labelTitle="Name" updateFormValue={updateFormValue}/>
 
-                            <InputText defaultValue={registerObj.emailId} updateType="emailId" containerStyle="mt-4" labelTitle="Email Id" updateFormValue={updateFormValue}/>
+                            <InputText defaultValue={registerObj.email} updateType="email" containerStyle="mt-4" labelTitle="Email" updateFormValue={updateFormValue}/>
 
                             <InputText defaultValue={registerObj.password} type="password" updateType="password" containerStyle="mt-4" labelTitle="Password" updateFormValue={updateFormValue}/>
 

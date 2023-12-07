@@ -46,7 +46,8 @@ function Login() {
                 }
             } catch (error) {
                 console.error('Error:', error);
-                setErrorMessage('Something went wrong');
+                
+                setErrorMessage(error.response.data.message || 'Something went wrong');
                 setLoading(false);
             }
         }

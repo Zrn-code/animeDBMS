@@ -16,7 +16,7 @@ const TopSideButtons = ({removeFilter, applyFilter, applySearch}) => {
 
     const [filterParam, setFilterParam] = useState("Members")
     const [searchText, setSearchText] = useState("")
-    const locationFilters = ["Members", "Newest", "Score"]
+    const locationFilters = ["Members", "Newest", "Score","Title"]
 
     const showFiltersAndApply = (params) => {
         applyFilter(params)

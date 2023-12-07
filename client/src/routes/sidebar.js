@@ -44,7 +44,7 @@ const routes = [
     path: '/app/discover',
     icon: <ViewfinderCircleIcon className={iconClasses}/>,
     name: 'Discover',
-  }
+  },
   /*
   {
     path: '/app/leads', // url
@@ -71,7 +71,7 @@ const routes = [
     icon: <CalendarDaysIcon className={iconClasses}/>, // icon component
     name: 'Calendar', // name that appear in Sidebar
   },
-
+  */
   {
     path: '', //no url needed as this has submenu
     icon: <DocumentDuplicateIcon className={`${iconClasses} inline` }/>, // icon component
@@ -104,6 +104,7 @@ const routes = [
       },
     ]
   },
+  /*
   {
     path: '', //no url needed as this has submenu
     icon: <Cog6ToothIcon className={`${iconClasses} inline` }/>, // icon component
