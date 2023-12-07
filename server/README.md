@@ -18,6 +18,7 @@
    - Open your command line or terminal and navigate to the root directory of your project.
    - Run the following command to install all project dependencies listed in `package.json`:
      ```
+     cd server
      npm install
      ```
    - This command will install all the necessary dependencies required for your project.
