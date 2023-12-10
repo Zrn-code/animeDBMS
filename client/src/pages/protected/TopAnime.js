@@ -144,10 +144,47 @@ function InternalPage(){
         dispatch(setPageTitle({ title : "Top Anime Series"}))
       }, [])
     
-    const [values, setValues] = useState()
+    const [values, setValues] = useState([])
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [inputPage, setInputPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const itemsPerPage = 50; 
+
+    const fetchData = async () => {
+        const startItem = (currentPage - 1) * itemsPerPage +1;
+        const endItem = currentPage * itemsPerPage;
+        try{
+            const response = await axiosInstance.get(`/api/getTopAnime/default/${startItem}/${endItem}`).then(res => res.data).then(data => setValues(data));
+            const data = response.data;
+            setValues(data);
+        }catch(err){
+            console.log("error:" + err);
+        }
+    };
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [currentPage]);
+
+
+    
+
+    useEffect(() => {
+        if (inputPage < 1 || inputPage > totalPages) {
+            setInputPage(currentPage);
+            return;
+        }
+        setCurrentPage(inputPage);
+    }, [inputPage, currentPage, totalPages]);
 
     useEffect(() => {
         axiosInstance.get('/api/getAnimes').then(res => res.data).then(data => setValues(data));
+        setTotalPages(Math.ceil(values.length / itemsPerPage));
     }, [])
     
     const removeFilter = () => {
@@ -165,6 +202,7 @@ function InternalPage(){
         setValues(filteredTransactions)
     }
 
+    
 
     return(
     <>
@@ -215,15 +253,29 @@ function InternalPage(){
         </table>
     </div>
     </TitleCard>
-    <div className="flex justify-center mt-4">
-                <div className="btn-group">
-                    <button className="btn">1</button>
-                    <button className="btn">2</button>
-                    <button className="btn btn-disabled">...</button>
-                    <button className="btn">99</button>
-                    <button className="btn">100</button>
+        <div className="flex justify-center mt-4">
+        <div className="btn-group">
+                    <button
+                    className="btn"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    >
+                    «
+                    </button>
+                    
+                    <button className="btn" onClick={() => setInputPage(currentPage)}>
+                        Page {currentPage}
+                    </button>
+                    
+                    <button
+                    className="btn"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    >
+                    »
+                    </button>
                 </div>
-            </div>
+        </div>
     </>
     )
 }

@@ -44,7 +44,6 @@ export async function getGenresCnt(id) {
     }
 }
 
-
 export async function findUserByEmail(email){
     const result = await pool.query('SELECT * FROM users_account WHERE users_account.user_email = ?', [email]);
     return result[0][0];
@@ -53,5 +52,10 @@ export async function findUserByEmail(email){
 
 export async function getProfile(id) {
     const result = await pool.query('SELECT * FROM users_details WHERE users_details.Mal_id = ?', [id]);
+    return result[0][0];
+}
+
+export async function getEmail(id) {
+    const result = await pool.query('SELECT user_email FROM users_account WHERE users_account.user_id = ?', [id]);
     return result[0][0];
 }

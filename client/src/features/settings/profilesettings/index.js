@@ -52,9 +52,32 @@ const getProfile = async () => {
       setProfile({ ...profile, Birthday: birthdayValue });
     };
 
-    const updateProfile = () => {
-      dispatch(showNotification({message : "Profile Updated", status : 1}))
-      //axiosInstance.post('/api/updateProfile', profile).then(res => res.data).then(data => console.log(data))
+    const updateProfile = async () => {
+      try{
+        await axiosInstance.post("/api/updateProfile", profile, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `${token}`,
+          },
+        });
+        dispatch(showNotification({'message' : 'Profile updated', 'status' : 1}));
+      }catch(error){
+        if (error.response && error.response.status === 401) {
+          const errorMessage = error.response.data;
+          if (errorMessage === 'Token expired') {
+            console.log('Token expired. Logging out...');
+            localStorage.removeItem('token');
+            window.location.href = '/app/welcome';
+          } else {
+            console.log('Other 401 error:', errorMessage);
+          }
+        } else {
+          console.error('Error:', error);
+
+        }
+        dispatch(showNotification({'message' : 'Error updating profile', 'status' : 0}));
+      }
+      
     }
   
     return (

@@ -16,41 +16,40 @@ import {
     Tooltip,
     Legend,
   } from 'chart.js';
-  import { Bar } from 'react-chartjs-2';
-import axios from 'axios';
+import { Bar } from 'react-chartjs-2';
 import axiosInstance from '../../app/axios';
   
-  ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-  ChartJS.register(ArcElement, Tooltip, Legend, Tooltip,Filler,Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend, Tooltip,Filler,Legend);
 
-  function BarChart(){
+function BarChart(){
     const options = {
         responsive: true,
         plugins: {
-          legend: {
+            legend: {
             position: 'top',
-          }
+            }
         },
-      };
-      
-      const labels = ['1', '2', '3', '4', '5', '6', '7','8','9','10'];
-      
-      const data = {
+        };
+        
+        const labels = ['1', '2', '3', '4', '5', '6', '7','8','9','10'];
+        
+        const data = {
         labels,
         datasets: [
-          {
+            {
             label: 'Users',
             data: labels.map(() => { return Math.random() * 1000 + 500 }),
             backgroundColor: 'grey',
-          },
+            },
 
         ],
-      };
+        };
 
     return(
-      <TitleCard title={"Score Stats"} >
+        <TitleCard title={"Score Stats"} >
             <Bar options={options} data={data} />
-      </TitleCard>
+        </TitleCard>
     )
 }
 
