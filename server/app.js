@@ -108,6 +108,16 @@ app.get('/api/getRatingCnt', async (req, res) => {
     res.send(rating_cnt);
 })
 
+app.get('/api/getUserCnt', async (req, res) => {
+    const user_cnt = await db.getUserCnt();
+    res.send(user_cnt);
+})
+
+app.get('/api/getReviewCnt', async (req, res) => {
+    const review_cnt = await db.getReviewCnt();
+    res.send(review_cnt);
+})
+
 app.get('/api/getAnimes', async (req, res) => {
     const animes = await db.getAnimes();
     res.send(animes);

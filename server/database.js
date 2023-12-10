@@ -24,6 +24,16 @@ export async function getRatingCnt() {
     return result[0];
 }
 
+export async function getUserCnt() {
+    const result = await pool.query('SELECT count(*) as cnt FROM users_details');
+    return result[0];
+}
+
+export async function getReviewCnt() {
+    const result = await pool.query('SELECT count(*) as cnt FROM review');
+    return result[0];
+}
+
 export async function getAnimes() {
     const result = await pool.query('SELECT * FROM anime_dataset limit 10');
     return result[0];
