@@ -9,6 +9,21 @@ const pool = mysql.createPool({
     database: process.env.MYSQL_DATABASE,
 }).promise();
 
+export async function getAnimesCnt() {
+    const result = await pool.query('SELECT count(*) as cnt FROM anime_dataset');
+    return result[0];
+}
+
+export async function getWatchStatusCnt() {
+    const result = await pool.query('SELECT count(*) as cnt FROM users_status');
+    return result[0];
+}
+
+export async function getRatingCnt() {
+    const result = await pool.query('SELECT count(*) as cnt FROM users_score');
+    return result[0];
+}
+
 export async function getAnimes() {
     const result = await pool.query('SELECT * FROM anime_dataset limit 10');
     return result[0];

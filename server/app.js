@@ -93,6 +93,21 @@ app.get('/api/getEmail', async (req, res) => {
     });
 });
 
+app.get('/api/getAnimesCnt', async (req, res) => {
+    const animes_cnt = await db.getAnimesCnt();
+    res.send(animes_cnt);
+})
+
+app.get('/api/getWatchStatusCnt', async (req, res) => {
+    const watch_status_cnt = await db.getWatchStatusCnt();
+    res.send(watch_status_cnt);
+})
+
+app.get('/api/getRatingCnt', async (req, res) => {
+    const rating_cnt = await db.getRatingCnt();
+    res.send(rating_cnt);
+})
+
 app.get('/api/getAnimes', async (req, res) => {
     const animes = await db.getAnimes();
     res.send(animes);
