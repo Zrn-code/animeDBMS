@@ -135,10 +135,10 @@ const DetailCard = ({detail}) => {
 function InternalPage(){    
 
     const dispatch = useDispatch()
-    const [values, setValues] = useState()
-    const [genreName, setGenreName] = useState()
-    const {genre_id } = useParams()
-    const [genre_cnt, setGenre_cnt] = useState()
+    const [values, setValues] = useState([])
+    const [genreName, setGenreName] = useState('')
+    const {genre_id } = useParams('')
+    const [genre_cnt, setGenre_cnt] = useState(0)
     const [compact, setCompact] = useState(false)
     const [inputPage, setInputPage] = useState('');
     const [currentPage, setCurrentPage] = useState(1); 
@@ -161,7 +161,7 @@ function InternalPage(){
         axiosInstance.get('/api/getAnimes').then(res => res.data).then(data => setValues(data));
         axiosInstance.get(`/api/getGenresCnt/${genre_id}`).then(res => res.data).then(data => setGenre_cnt(data[0]["cnt"]));
         setTotalPages(Math.ceil(genre_cnt / itemsPerPage));
-    }  ,[])
+    }  ,[values])
 
 
     const removeFilter = () => {

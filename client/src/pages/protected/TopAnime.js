@@ -34,31 +34,10 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
         setSelectedFilters([]);
         //setSearchText('');
     };
-    /*
-    const handleInputChange = (event) => {
-        setSearchText(event.target.value);
-    };
 
-    const handleApplySearch = () => {
-        if (searchText === '') {
-            removeAppliedFilter();
-        } else {
-            applySearch(searchText);
-        }
-    };
-    */
     return (
         <div className="inline-block float-right">
-            {/*
-            <input
-                type="text"
-                value={searchText}
-                onChange={handleInputChange}
-                placeholder="Search..."
-                className="mr-4"
-            />
-            */}
-            
+           
             {selectedFilters.length > 0 && (
                 <button onClick={removeAppliedFilter} className="btn btn-xs mr-2 btn-active btn-ghost normal-case">
                     {selectedFilters.join(', ')}<span className="ml-2">×</span>
@@ -145,7 +124,7 @@ function InternalPage(){
       }, [])
     
     const [values, setValues] = useState([])
-
+    const [params, setParams] = useState('default')
     const [currentPage, setCurrentPage] = useState(1);
     const [inputPage, setInputPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -155,7 +134,7 @@ function InternalPage(){
         const startItem = (currentPage - 1) * itemsPerPage +1;
         const endItem = currentPage * itemsPerPage;
         try{
-            const response = await axiosInstance.get(`/api/getTopAnime/default/${startItem}/${endItem}`).then(res => res.data).then(data => setValues(data));
+            const response = await axiosInstance.get(`/api/getTopAnime/${params}/${startItem}/${endItem}`).then(res => res.data).then(data => setValues(data));
             const data = response.data;
             setValues(data);
         }catch(err){
@@ -169,7 +148,7 @@ function InternalPage(){
 
     useEffect(() => {
         fetchData();
-    }, [currentPage]);
+    }, [currentPage, params]);
 
 
     
@@ -188,20 +167,13 @@ function InternalPage(){
     }, [])
     
     const removeFilter = () => {
-        axiosInstance.get('/api/getAnimes').then(res => res.data).then(data => setValues(data));
+        setParams('default');
     }
 
-    const applyFilter = (params) => {
-        let filteredTransactions = values.filter((t) => {return t.location == params})
-        setValues(filteredTransactions)
+    const applyFilter = async(params) => {
+        const paramsString = params.join('+');
+        setParams(paramsString);
     }
-
-    // Search according to name
-    const applySearch = (value) => {
-        let filteredTransactions = values.filter((t) => {return t.email.toLowerCase().includes(value.toLowerCase()) ||  t.email.toLowerCase().includes(value.toLowerCase())})
-        setValues(filteredTransactions)
-    }
-
     
 
     return(

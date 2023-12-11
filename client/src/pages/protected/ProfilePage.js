@@ -22,6 +22,8 @@ import {
   } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { Pie } from 'react-chartjs-2';
+import { openModal } from '../../features/common/modalSlice'
+import {  MODAL_BODY_TYPES } from '../../utils/globalConstantUtil'
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 ChartJS.register(ArcElement, Tooltip, Legend, Tooltip,Filler,Legend);
   
@@ -121,6 +123,9 @@ function InternalPage(){
     const endIndexRating = RatingPage * 10
     const itemsPerPage = 10
 
+    if(!token){
+        dispatch(openModal({title : "You need to login", bodyType : MODAL_BODY_TYPES.REQUIRE_LOGIN}))
+    }
 
     const getProfile = async () => {
         try {
@@ -273,6 +278,7 @@ function InternalPage(){
 
     return(
         <>
+        { token &&
             <div className='flex'>
                 <div className='w-1/3 px-5 pt-5'>
                     <TitleCard title="Profile" TopSideButtons={<Link to='../settings-profile'><PencilSquareIcon className='w-6'></PencilSquareIcon></Link>}>
@@ -372,7 +378,7 @@ function InternalPage(){
 
             </div>
         
-        
+                            }
         </>
     )
 }
