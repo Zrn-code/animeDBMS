@@ -1,51 +1,50 @@
 /** Icons are imported separatly to reduce build time */
-import DocumentTextIcon from '@heroicons/react/24/outline/DocumentTextIcon'
-import Squares2X2Icon from '@heroicons/react/24/outline/Squares2X2Icon'
-import TableCellsIcon from '@heroicons/react/24/outline/TableCellsIcon'
-import WalletIcon from '@heroicons/react/24/outline/WalletIcon'
-import CodeBracketSquareIcon from '@heroicons/react/24/outline/CodeBracketSquareIcon'
-import DocumentIcon from '@heroicons/react/24/outline/DocumentIcon'
-import ExclamationTriangleIcon from '@heroicons/react/24/outline/ExclamationTriangleIcon'
-import CalendarDaysIcon from '@heroicons/react/24/outline/CalendarDaysIcon'
-import ArrowRightOnRectangleIcon from '@heroicons/react/24/outline/ArrowRightOnRectangleIcon'
-import UserIcon from '@heroicons/react/24/outline/UserIcon'
-import Cog6ToothIcon from '@heroicons/react/24/outline/Cog6ToothIcon'
-import BoltIcon from '@heroicons/react/24/outline/BoltIcon'
-import ChartBarIcon from '@heroicons/react/24/outline/ChartBarIcon'
-import CurrencyDollarIcon from '@heroicons/react/24/outline/CurrencyDollarIcon'
-import InboxArrowDownIcon from '@heroicons/react/24/outline/InboxArrowDownIcon'
-import UsersIcon from '@heroicons/react/24/outline/UsersIcon'
-import KeyIcon from '@heroicons/react/24/outline/KeyIcon'
-import DocumentDuplicateIcon from '@heroicons/react/24/outline/DocumentDuplicateIcon'
-import SearchIcon from '@heroicons/react/24/outline/MagnifyingGlassIcon'
-import ViewfinderCircleIcon from '@heroicons/react/24/outline/ViewfinderCircleIcon'
+import DocumentTextIcon from "@heroicons/react/24/outline/DocumentTextIcon"
+import Squares2X2Icon from "@heroicons/react/24/outline/Squares2X2Icon"
+import TableCellsIcon from "@heroicons/react/24/outline/TableCellsIcon"
+import WalletIcon from "@heroicons/react/24/outline/WalletIcon"
+import CodeBracketSquareIcon from "@heroicons/react/24/outline/CodeBracketSquareIcon"
+import DocumentIcon from "@heroicons/react/24/outline/DocumentIcon"
+import ExclamationTriangleIcon from "@heroicons/react/24/outline/ExclamationTriangleIcon"
+import CalendarDaysIcon from "@heroicons/react/24/outline/CalendarDaysIcon"
+import ArrowRightOnRectangleIcon from "@heroicons/react/24/outline/ArrowRightOnRectangleIcon"
+import UserIcon from "@heroicons/react/24/outline/UserIcon"
+import Cog6ToothIcon from "@heroicons/react/24/outline/Cog6ToothIcon"
+import BoltIcon from "@heroicons/react/24/outline/BoltIcon"
+import ChartBarIcon from "@heroicons/react/24/outline/ChartBarIcon"
+import CurrencyDollarIcon from "@heroicons/react/24/outline/CurrencyDollarIcon"
+import InboxArrowDownIcon from "@heroicons/react/24/outline/InboxArrowDownIcon"
+import UsersIcon from "@heroicons/react/24/outline/UsersIcon"
+import KeyIcon from "@heroicons/react/24/outline/KeyIcon"
+import DocumentDuplicateIcon from "@heroicons/react/24/outline/DocumentDuplicateIcon"
+import SearchIcon from "@heroicons/react/24/outline/MagnifyingGlassIcon"
+import ViewfinderCircleIcon from "@heroicons/react/24/outline/ViewfinderCircleIcon"
 
 const iconClasses = `h-6 w-6`
 const submenuIconClasses = `h-5 w-5`
 
 const routes = [
-  
-  {
-    path: '/app/homepage',
-    icon: <Squares2X2Icon className={iconClasses}/>, 
-    name: 'Home Page',
-  },
-  {
-    path: '/app/top',
-    icon: <DocumentDuplicateIcon className={iconClasses}/>,
-    name: 'Top Anime',
-  },
-  {
-    path: '/app/search',
-    icon: <SearchIcon className={iconClasses}/>,
-    name: 'Search Anime',
-  },
-  {
-    path: '/app/discover',
-    icon: <ViewfinderCircleIcon className={iconClasses}/>,
-    name: 'Discover',
-  },
-  /*
+    {
+        path: "/app/homepage",
+        icon: <Squares2X2Icon className={iconClasses} />,
+        name: "Home Page",
+    },
+    {
+        path: "/app/top",
+        icon: <DocumentDuplicateIcon className={iconClasses} />,
+        name: "Top Anime",
+    },
+    {
+        path: "/app/search",
+        icon: <SearchIcon className={iconClasses} />,
+        name: "Search Anime",
+    },
+    {
+        path: "/app/discover",
+        icon: <ViewfinderCircleIcon className={iconClasses} />,
+        name: "Discover",
+    },
+    /*
   {
     path: '/app/leads', // url
     icon: <InboxArrowDownIcon className={iconClasses}/>, // icon component
@@ -72,17 +71,17 @@ const routes = [
     name: 'Calendar', // name that appear in Sidebar
   },
   */
-  {
-    path: '/app/profile', // url
-    icon: <UserIcon className={iconClasses}/>, // icon component
-    name: 'Profile', // name that appear in Sidebar
-  },
-  {
-    path : '/app/settings-profile',
-    icon : <Cog6ToothIcon className={iconClasses}/>,
-    name : 'Settings'
-  }
-  /*
+    {
+        path: "/app/profile", // url
+        icon: <UserIcon className={iconClasses} />, // icon component
+        name: "Profile", // name that appear in Sidebar
+    },
+    {
+        path: "/app/settings-profile",
+        icon: <Cog6ToothIcon className={iconClasses} />,
+        name: "Settings",
+    },
+    /*
   {
     path: '', //no url needed as this has submenu
     icon: <Cog6ToothIcon className={`${iconClasses} inline` }/>, // icon component
@@ -127,9 +126,6 @@ const routes = [
       }
     ]
   },*/
-  
 ]
 
 export default routes
-
-

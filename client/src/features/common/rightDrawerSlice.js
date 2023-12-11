@@ -1,17 +1,16 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from "@reduxjs/toolkit"
 
 export const rightDrawerSlice = createSlice({
-    name: 'rightDrawer',
+    name: "rightDrawer",
     initialState: {
-        header: "",  // current  title state management
-        isOpen : false,   // right drawer state management for opening closing
-        bodyType : "",   // right drawer content management
-        extraObject : {},   
+        header: "", // current  title state management
+        isOpen: false, // right drawer state management for opening closing
+        bodyType: "", // right drawer content management
+        extraObject: {},
     },
     reducers: {
-
         openRightDrawer: (state, action) => {
-            const {header, bodyType, extraObject} = action.payload
+            const { header, bodyType, extraObject } = action.payload
             state.isOpen = true
             state.bodyType = bodyType
             state.header = header
@@ -24,8 +23,7 @@ export const rightDrawerSlice = createSlice({
             state.header = ""
             state.extraObject = {}
         },
-
-    }
+    },
 })
 
 export const { openRightDrawer, closeRightDrawer } = rightDrawerSlice.actions
