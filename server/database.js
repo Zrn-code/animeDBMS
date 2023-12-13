@@ -89,3 +89,53 @@ export async function getEmail(id) {
     const result = await pool.query("SELECT user_email FROM users_account WHERE users_account.user_id = ?", [id])
     return result[0][0]
 }
+
+export async function getRank(id) {
+    const result = await pool.query(
+        "SELECT ranking FROM (SELECT anime_id, RANK() OVER ( ORDER BY mean_score DESC) ranking FROM anime_statistic )A where anime_id = ?;",
+        [id]
+    )
+    return result[0]
+}
+
+export async function getPopularity(id) {
+    const result = await pool.query(
+        "SELECT popularity,members FROM (SELECT anime_id,members,RANK() OVER (ORDER BY members DESC) popularity FROM anime_statistic)A WHERE anime_id = ?",
+        [id]
+    )
+    return result[0]
+}
+
+export async function getMeanScore(id) {
+    const result = await pool.query("SELECT mean_score,scored_by FROM anime_statistic WHERE anime_statistic.anime_id = ?", [id])
+    return result[0]
+}
+
+export async function getAnimeGenres(id) {
+    const result = await pool.query(
+        "select genre_name, anime_genres.genre_id from genres,anime_dataset,anime_genres where anime_dataset.anime_id = ? and genres.Genre_id = anime_genres.Genre_id and anime_dataset.anime_id = anime_genres.anime_id",
+        [id]
+    )
+    return result[0]
+}
+
+export async function getScoreDistrubtion(id) {
+    const result = await pool.query(
+        "SELECT rating as score,COUNT(*) as cnt FROM (SELECT anime_id,rating FROM users_score where anime_id = ?)A GROUP BY anime_id,rating ORDER BY rating",
+        [id]
+    )
+    return result[0]
+}
+
+export async function getWatchStatus(id) {
+    const result = await pool.query(
+        "SELECT status_id as watch_status_id,COUNT(*) as cnt FROM (SELECT anime_id,status_id FROM users_status where anime_id = ?)A GROUP BY anime_id,status_id ORDER BY status_id",
+        [id]
+    )
+    return result[0]
+}
+
+export async function getReviews(id) {
+    const result = await pool.query("SELECT profile as username,text as review,score from review WHERE anime_id = ? limit 100;", [id])
+    return result[0]
+}
