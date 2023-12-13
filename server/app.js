@@ -156,3 +156,45 @@ const port = process.env.PORT || 8800
 app.listen(port, () => {
     console.log("Server started on port " + port)
 })
+
+app.get("/api/getRank/:id", async (req, res) => {
+    const id = req.params.id
+    const ranking = await db.getRank(id)
+    res.send(ranking)
+})
+
+app.get("/api/getPopularity/:id", async (req, res) => {
+    const id = req.params.id
+    const popularity = await db.getPopularity(id)
+    res.send(popularity)
+})
+
+app.get("/api/getMeanScore/:id", async (req, res) => {
+    const id = req.params.id
+    const meanScore = await db.getMeanScore(id)
+    res.send(meanScore)
+})
+
+app.get("/api/getAnimeGenres/:id", async (req, res) => {
+    const id = req.params.id
+    const genres = await db.getAnimeGenres(id)
+    res.send(genres)
+})
+
+app.get("/api/getScoreDistrubtion/:id", async (req, res) => {
+    const id = req.params.id
+    const score_distribution = await db.getScoreDistrubtion(id)
+    res.send(score_distribution)
+})
+
+app.get("/api/getWatchStatus/:id", async (req, res) => {
+    const id = req.params.id
+    const watch_status = await db.getWatchStatus(id)
+    res.send(watch_status)
+})
+
+app.get("/api/getReviews/:id", async (req, res) => {
+    const id = req.params.id
+    const reviews = await db.getReviews(id)
+    res.send(reviews)
+})
