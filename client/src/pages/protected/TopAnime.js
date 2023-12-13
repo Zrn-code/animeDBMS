@@ -108,7 +108,7 @@ const WatchListButtons = ({ id, name, img, state }) => {
     )
 }
 
-const RatingButtons = ({ id, name, img, state }) => {
+const RatingButtons = ({ id, name, img, score }) => {
     const dispatch = useDispatch()
     const token = localStorage.getItem("token")
     const openAddWatchListModal = () => {
@@ -124,7 +124,7 @@ const RatingButtons = ({ id, name, img, state }) => {
                 openModal({
                     title: "Update Rating Score",
                     bodyType: MODAL_BODY_TYPES.RATING_ADD_NEW,
-                    extraObject: { id: id, name: name, img: img, state: state },
+                    extraObject: { id: id, name: name, img: img, score: score },
                 })
             )
         }
@@ -133,7 +133,7 @@ const RatingButtons = ({ id, name, img, state }) => {
     return (
         <div className="inline-block cursor-pointer" onClick={openAddWatchListModal}>
             <div className="flex items-center">
-                ⭐ <div className="mr-2 font-bold underline">N/A</div>
+                ⭐ <div className="mr-2 font-bold underline">{score ? score : "N/A"}</div>
             </div>
         </div>
     )
@@ -225,7 +225,7 @@ function InternalPage() {
                                         <tr key={k}>
                                             <td>
                                                 <div className="flex items-center space-x-3">
-                                                    <div className="font-bold text-5xl">{k + 1}</div>
+                                                    <div className="font-bold text-5xl">{l["ranking"] ? l["ranking"] : -1}</div>
                                                 </div>
                                             </td>
                                             <td>
@@ -247,10 +247,15 @@ function InternalPage() {
                                                 </div>
                                             </td>
                                             <td>
-                                                <div className="font-bold">⭐{0}</div>
+                                                <div className="font-bold">⭐{l.score ? l.score : "NaN"}</div>
                                             </td>
                                             <td>
-                                                <RatingButtons id={l["anime_id"]} img={l["Image_URL"]} name={l["Name"]} />
+                                                <RatingButtons
+                                                    id={l["anime_id"]}
+                                                    img={l["Image_URL"]}
+                                                    name={l["Name"]}
+                                                    score={l["user_score"]}
+                                                />
                                             </td>
                                             <td>
                                                 <WatchListButtons

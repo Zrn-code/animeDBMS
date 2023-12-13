@@ -12,7 +12,7 @@ function InternalPage() {
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
 
     useEffect(() => {
-        dispatch(setPageTitle({ title: "Page Title" }))
+        dispatch(setPageTitle({ title: "Anime Search" }))
         axiosInstance
             .get(`/api/getGenres`)
             .then((res) => res.data)

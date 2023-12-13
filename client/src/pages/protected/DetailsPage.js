@@ -12,7 +12,7 @@ import axiosInstance from "../../app/axios"
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 ChartJS.register(ArcElement, Tooltip, Legend, Tooltip, Filler, Legend)
 
-function BarChart() {
+function BarChart(dataset) {
     const options = {
         responsive: true,
         plugins: {
@@ -21,7 +21,7 @@ function BarChart() {
             },
         },
     }
-
+    //console.log(dataset)
     const labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 
     const data = {
@@ -44,7 +44,7 @@ function BarChart() {
     )
 }
 
-function PieChart() {
+function PieChart(dataset) {
     const options = {
         responsive: true,
         plugins: {
@@ -53,7 +53,7 @@ function PieChart() {
             },
         },
     }
-
+    //console.log(dataset)
     const labels = ["Watching", "Completed", "On Hold", "Dropped", "Plan to Watch"]
 
     const data = {
@@ -103,7 +103,7 @@ function Stat({ figureSvg, title, value, desc, addHash }) {
     )
 }
 
-function Overview({ value, detail }) {
+function Overview({ value, detail, id }) {
     return (
         <div className="container mx-auto">
             <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center">
@@ -177,7 +177,19 @@ function Overview({ value, detail }) {
     )
 }
 
-function Details({ value, detail }) {
+function Details({ value, detail, id }) {
+    const [review, setReview] = useState([])
+    useEffect(() => {
+        axiosInstance
+            .get(`/api/getReviews/${id}`)
+            .then((res) => res.data)
+            .then((data) => setReview(data))
+            .catch((error) => {
+                console.error("Error fetching data:", error)
+                setReview([])
+            })
+    }, [id])
+
     return (
         <div className="container mx-auto">
             <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center">
@@ -208,19 +220,47 @@ function Details({ value, detail }) {
                     {detail["Studios"]}
                 </div>
             </div>
-            <TitleCard className="flex w-full mt-5" title={"user"}>
-                content
-            </TitleCard>
+            {review.length > 0 ? (
+                <>
+                    <TitleCard className="flex w-full mt-5" title={"user"}>
+                        content
+                    </TitleCard>
 
-            <div className="btn-group grid grid-cols-2 mt-5">
-                <button className="btn btn-outline">Previous</button>
-                <button className="btn btn-outline">Next</button>
-            </div>
+                    <div className="btn-group grid grid-cols-2 mt-5">
+                        <button className="btn btn-outline">Previous</button>
+                        <button className="btn btn-outline">Next</button>
+                    </div>
+                </>
+            ) : (
+                <div className="rounded p-5 mt-5 bg-base-100 text-center font-bold"> No reviews found</div>
+            )}
         </div>
     )
 }
 
-function Statistics({ value, detail }) {
+function Statistics({ value, detail, id }) {
+    const [ScoreDistribution, setScoreDistribution] = useState([])
+    const [WatchStatus, setWatchList] = useState([])
+
+    useEffect(() => {
+        axiosInstance
+            .get(`/api/getScoreDistrubtion/${id}`)
+            .then((res) => res.data)
+            .then((data) => setScoreDistribution(data))
+            .catch((error) => {
+                console.error("Error fetching data:", error)
+                setScoreDistribution([])
+            })
+        axiosInstance
+            .get(`/api/getWatchStatus/${id}`)
+            .then((res) => res.data)
+            .then((data) => setWatchList(data))
+            .catch((error) => {
+                console.error("Error fetching data:", error)
+                setWatchList([])
+            })
+    }, [])
+
     return (
         <div className="container">
             <div className="flex bg-base-100 rounded-xl p-4 justify-between items-center">
@@ -231,12 +271,12 @@ function Statistics({ value, detail }) {
             </div>
             <div className="flex">
                 <div className="mx-2 grow">
-                    <BarChart />
+                    <BarChart dataset={ScoreDistribution} />
                     <div className="flex mt-5 bg-base-100 rounded-xl p-4 justify-between items-center ">Mean Score 100</div>
                 </div>
 
                 <div className="mx-2">
-                    <PieChart />
+                    <PieChart dataset={WatchStatus} />
                 </div>
             </div>
         </div>
@@ -309,9 +349,9 @@ function InternalPage() {
                 <div className="divider divider-horizontal" />
 
                 {/* Render components based on currentPage */}
-                {currentPage === "overview" && <Overview value={value} detail={detail} />}
-                {currentPage === "details" && <Details value={value} detail={detail} />}
-                {currentPage === "statistics" && <Statistics value={value} detail={detail} />}
+                {currentPage === "overview" && <Overview value={value} detail={detail} id={id} />}
+                {currentPage === "details" && <Details value={value} detail={detail} id={id} />}
+                {currentPage === "statistics" && <Statistics value={value} detail={detail} id={id} />}
             </div>
         </>
     )

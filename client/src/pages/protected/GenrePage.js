@@ -164,7 +164,7 @@ function InternalPage() {
     const [inputPage, setInputPage] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
-    const itemsPerPage = 50
+    const itemsPerPage = 48
 
     useEffect(() => {
         dispatch(setPageTitle({ title: "Search Anime" }))
