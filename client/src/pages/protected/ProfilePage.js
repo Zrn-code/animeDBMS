@@ -135,8 +135,9 @@ function InternalPage() {
                 const errorMessage = error.response.data
                 if (errorMessage === "Token expired") {
                     console.log("Token expired. Logging out...")
+                    dispatch(showNotification({ message: "Token expired. Logging out...", status: 0 }))
                     localStorage.removeItem("token")
-                    window.location.href = "/app/welcome"
+                    //window.location.href = "/app/welcome"
                 } else {
                     console.log("Other 401 error:", errorMessage)
                 }
@@ -162,7 +163,8 @@ function InternalPage() {
                 if (errorMessage === "Token expired") {
                     console.log("Token expired. Logging out...")
                     localStorage.removeItem("token")
-                    window.location.href = "/app/welcome"
+                    dispatch(showNotification({ message: "Token expired. Logging out...", status: 0 }))
+                    //window.location.href = "/app/welcome"
                 } else {
                     console.log("Other 401 error:", errorMessage)
                 }
@@ -190,7 +192,8 @@ function InternalPage() {
                 if (errorMessage === "Token expired") {
                     console.log("Token expired. Logging out...")
                     localStorage.removeItem("token")
-                    window.location.href = "/app/welcome"
+                    dispatch(showNotification({ message: "Token expired. Logging out...", status: 0 }))
+                    //window.location.href = "/app/welcome"
                 } else {
                     console.log("Other 401 error:", errorMessage)
                 }
@@ -218,7 +221,8 @@ function InternalPage() {
                 if (errorMessage === "Token expired") {
                     console.log("Token expired. Logging out...")
                     localStorage.removeItem("token")
-                    window.location.href = "/app/welcome"
+                    dispatch(showNotification({ message: "Token expired. Logging out...", status: 0 }))
+                    //window.location.href = "/app/welcome"
                 } else {
                     console.log("Other 401 error:", errorMessage)
                 }
@@ -258,7 +262,8 @@ function InternalPage() {
                 if (errorMessage === "Token expired") {
                     console.log("Token expired. Logging out...")
                     localStorage.removeItem("token")
-                    window.location.href = "/app/welcome"
+                    dispatch(showNotification({ message: "Token expired. Logging out...", status: 0 }))
+                    //window.location.href = "/app/welcome"
                 } else {
                     console.log("Other 401 error:", errorMessage)
                 }

@@ -40,7 +40,7 @@ function Register() {
                     localStorage.setItem("user_id", JSON.stringify(data.user_id))
                     //console.log(localStorage.getItem('token'));
                     setLoading(false)
-                    window.location.href = "/app/homepage" // Redirect to the home page after successful login
+                    window.location.href = "/app/welcome" // Redirect to the home page after successful login
                 } else {
                     // Handling API error messages
                     setErrorMessage(data.message || "Register failed")
