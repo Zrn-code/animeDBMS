@@ -20,37 +20,41 @@ function Register() {
         e.preventDefault()
         setErrorMessage("")
 
-        if (registerObj.name.trim() === "") return setErrorMessage("Name is required! (use any value)")
-        if (registerObj.email.trim() === "") return setErrorMessage("Email is required! (use any value)")
-        if (registerObj.password.trim() === "") return setErrorMessage("Password is required! (use any value)")
-        else {
-            setLoading(true)
-            try {
-                const response = await axiosInstance.post("/api/register", registerObj, {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                })
+        if (registerObj.name.trim() === "") return setErrorMessage("Name is required!")
+        if (registerObj.email.trim() === "") return setErrorMessage("Email is required!")
+        if (registerObj.password.trim() === "") return setErrorMessage("Password is required!")
+        if (registerObj.email && !registerObj.email.includes("@")) return setErrorMessage("Invalid email address")
+        if (registerObj.password && registerObj.password.length < 6) return setErrorMessage("Password must be at least 6 characters long")
+        if (registerObj.password.length > 50) return setErrorMessage("Password must be less than 50 characters long")
+        if (registerObj.name.length > 50) return setErrorMessage("Name must be less than 50 characters long")
+        if (registerObj.email.length > 200) return setErrorMessage("Email must be less than 200 characters long")
 
-                const data = response.data
+        setLoading(true)
+        try {
+            const response = await axiosInstance.post("/api/register", registerObj, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                method: "POST",
+            })
 
-                if (response.status === 200) {
-                    // Assuming the API returns success message or token
-                    localStorage.setItem("token", data.token)
-                    localStorage.setItem("user_id", JSON.stringify(data.user_id))
-                    //console.log(localStorage.getItem('token'));
-                    setLoading(false)
-                    window.location.href = "/app/welcome" // Redirect to the home page after successful login
-                } else {
-                    // Handling API error messages
-                    setErrorMessage(data.message || "Register failed")
-                    setLoading(false)
-                }
-            } catch (error) {
-                console.error("Error:", error)
-                setErrorMessage(error.response.data.message || "Something went wrong")
+            const data = response.data
+
+            if (response.status === 200) {
+                // Assuming the API returns success message or token
+                localStorage.setItem("token", data.token)
+                localStorage.setItem("user_id", JSON.stringify(data.user_id))
+                //console.log(localStorage.getItem('token'));
+                setLoading(false)
+                window.location.href = "/app/welcome" // Redirect to the home page after successful login
+            } else {
+                setErrorMessage(data.message || "Register failed")
                 setLoading(false)
             }
+        } catch (error) {
+            console.error("Error:", error)
+            setErrorMessage(error.response.data.message || "Something went wrong")
+            setLoading(false)
         }
     }
 
@@ -74,7 +78,7 @@ function Register() {
                                     defaultValue={registerObj.name}
                                     updateType="name"
                                     containerStyle="mt-4"
-                                    labelTitle="Name"
+                                    labelTitle="Username"
                                     updateFormValue={updateFormValue}
                                 />
 
@@ -104,7 +108,7 @@ function Register() {
                             <div className="text-center mt-4">
                                 Already have an account?{" "}
                                 <Link to="/login">
-                                    <span className="  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">
+                                    <span className="font-bold  inline-block hover:underline hover:cursor-pointer transition duration-200">
                                         Login
                                     </span>
                                 </Link>

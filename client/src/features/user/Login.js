@@ -88,14 +88,6 @@ function Login() {
                                 />
                             </div>
 
-                            <div className="text-right text-primary">
-                                <Link to="/forgot-password">
-                                    <span className="text-sm  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">
-                                        Forgot Password?
-                                    </span>
-                                </Link>
-                            </div>
-
                             <ErrorText styleClass="mt-8">{errorMessage}</ErrorText>
                             <button type="submit" className={"btn mt-2 w-full btn-primary" + (loading ? " loading" : "")}>
                                 Login
@@ -104,14 +96,14 @@ function Login() {
                             <div className="text-center mt-4">
                                 Don't have an account yet?{" "}
                                 <Link to="/register">
-                                    <span className="  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">
+                                    <span className="font-bold  inline-block hover:underline hover:cursor-pointer transition duration-200">
                                         Register
                                     </span>
                                 </Link>
                             </div>
                             <div className="text-center mt-4">
                                 <Link to="/app/welcome">
-                                    <span className="  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">
+                                    <span className="font-bold  inline-block  hover:underline hover:cursor-pointer transition duration-200">
                                         Go to app without login
                                     </span>
                                 </Link>
