@@ -4,10 +4,10 @@ import { setPageTitle } from "../../features/common/headerSlice"
 import { useParams } from "react-router-dom"
 import TitleCard from "../../components/Cards/TitleCard"
 import { Pie } from "react-chartjs-2"
-
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, ArcElement, Filler, Tooltip, Legend } from "chart.js"
 import { Bar } from "react-chartjs-2"
 import axiosInstance from "../../app/axios"
+import { Link } from "react-router-dom"
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 ChartJS.register(ArcElement, Tooltip, Legend, Tooltip, Filler, Legend)
@@ -219,9 +219,13 @@ function Overview({ value, detail, id }) {
                 <div className="grow-0 bg-base-100 rounded-xl p-4 mx-2 font-extrabold">genres</div>
                 {Genres &&
                     Genres.map((genre, idx) => (
-                        <div key={idx} className="grow bg-base-100 rounded-xl p-4 mx-2 font-extrabold text-center">
+                        <Link
+                            to={"../genre/" + genre["genre_id"]}
+                            key={idx}
+                            className="grow bg-base-100 rounded-xl p-4 mx-2 font-extrabold text-center"
+                        >
                             {genre["genre_name"]}
-                        </div>
+                        </Link>
                     ))}
             </div>
         </div>
@@ -230,6 +234,7 @@ function Overview({ value, detail, id }) {
 
 function Details({ value, detail, id }) {
     const [review, setReview] = useState([])
+    const [reviewPage, setReviewPage] = useState(1)
     useEffect(() => {
         axiosInstance
             .get(`/api/getReviews/${id}`)
@@ -240,6 +245,16 @@ function Details({ value, detail, id }) {
                 setReview([])
             })
     }, [id])
+
+    function handleNext() {
+        if (reviewPage === review.length) return
+        setReviewPage(reviewPage + 1)
+    }
+
+    function handlePrevious() {
+        if (reviewPage === 1) return
+        setReviewPage(reviewPage - 1)
+    }
 
     return (
         <div className="container mx-auto">
@@ -273,13 +288,23 @@ function Details({ value, detail, id }) {
             </div>
             {review.length > 0 ? (
                 <>
-                    <TitleCard className="flex w-full mt-5" title={"user"}>
-                        content
-                    </TitleCard>
+                    <div className="w-full h-56 overflow-y-auto mt-5 bg-base-100 rounded-xl p-5 shadow">
+                        <div className="flex">
+                            <div className="font-bold text-xl">{review[reviewPage - 1]["username"]}</div>
+                            <div className="flex-grow"></div>
+                            <div>{review[reviewPage - 1]["score"] ? review[reviewPage - 1]["score"] : "no score record"} </div>
+                        </div>
+                        <div className="divider my-0"></div>
+                        {review[reviewPage - 1]["review"]}
+                    </div>
 
                     <div className="btn-group grid grid-cols-2 mt-5">
-                        <button className="btn btn-outline">Previous</button>
-                        <button className="btn btn-outline">Next</button>
+                        <button className="btn btn-outline " onClick={handlePrevious}>
+                            Previous
+                        </button>
+                        <button className="btn btn-outline" onClick={handleNext}>
+                            Next
+                        </button>
                     </div>
                 </>
             ) : (
