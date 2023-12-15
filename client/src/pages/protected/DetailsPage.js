@@ -104,6 +104,56 @@ function Stat({ figureSvg, title, value, desc, addHash }) {
 }
 
 function Overview({ value, detail, id }) {
+    const [Rank, setRank] = useState(-1)
+    const [Popularity, setPopularity] = useState(-1)
+    const [Score, setScore] = useState(-1)
+    const [ScoredBy, setScoredBy] = useState(-1)
+    const [Members, setMembers] = useState(-1)
+    const [Genres, setGenres] = useState([])
+
+    useEffect(() => {
+        axiosInstance
+            .get(`/api/getRank/${id}`)
+            .then((res) => res.data)
+            .then((data) => setRank(data[0]["ranking"]))
+            .catch((error) => {
+                console.error("Error fetching data:", error)
+                setRank(-1)
+            })
+        axiosInstance
+            .get(`/api/getPopularity/${id}`)
+            .then((res) => res.data)
+            .then((data) => {
+                setPopularity(data[0]["popularity"])
+                setMembers(data[0]["members"])
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error)
+                setPopularity(-1)
+                setMembers(-1)
+            })
+        axiosInstance
+            .get(`/api/getMeanScore/${id}`)
+            .then((res) => res.data)
+            .then((data) => {
+                setScore(data[0]["mean_score"])
+                setScoredBy(data[0]["scored_by"])
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error)
+                setScore(-1)
+                setScoredBy(-1)
+            })
+        axiosInstance
+            .get(`/api/getAnimeGenres/${id}`)
+            .then((res) => res.data)
+            .then((data) => setGenres(data))
+            .catch((error) => {
+                console.error("Error fetching data:", error)
+                setGenres([])
+            })
+    }, [])
+
     return (
         <div className="container mx-auto">
             <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center">
@@ -116,7 +166,7 @@ function Overview({ value, detail, id }) {
                 <Stat
                     figureSvg={<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>}
                     title="Rank"
-                    value={detail["Rank"]}
+                    value={Rank}
                     desc="By mean score"
                     addHash={true}
                 />
@@ -131,7 +181,7 @@ function Overview({ value, detail, id }) {
                         ></path>
                     }
                     title="Popularity"
-                    value={detail["Popularity"]}
+                    value={Popularity}
                     desc="By members"
                     addHash={true}
                 />
@@ -146,7 +196,7 @@ function Overview({ value, detail, id }) {
                         />
                     }
                     title="Members"
-                    value={detail["Members"]}
+                    value={Members}
                     desc="Total rating or status users"
                 />
 
@@ -160,18 +210,19 @@ function Overview({ value, detail, id }) {
                         />
                     }
                     title="Mean Score"
-                    value={detail["Score"] ? detail["Score"] : 0}
-                    desc={`Scored by ${detail["Scored By"]} users`}
+                    value={Score ? Score : 0}
+                    desc={`Scored by ${ScoredBy} users`}
                 />
             </div>
             <div className="bg-base-100 rounded-xl p-4 mt-5 font-extrabold ">{detail["Synopsis"]}</div>
             <div className="flex w-full mt-5">
                 <div className="grow-0 bg-base-100 rounded-xl p-4 mx-2 font-extrabold">genres</div>
-                {"Award Winning, Drama, Fantasy, Suspense".split(",").map((genre, idx) => (
-                    <div key={idx} className="grow bg-base-100 rounded-xl p-4 mx-2 font-extrabold tooltip" data-tip={genre}>
-                        {genre}
-                    </div>
-                ))}
+                {Genres &&
+                    Genres.map((genre, idx) => (
+                        <div key={idx} className="grow bg-base-100 rounded-xl p-4 mx-2 font-extrabold text-center">
+                            {genre["genre_name"]}
+                        </div>
+                    ))}
             </div>
         </div>
     )
