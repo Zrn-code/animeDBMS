@@ -142,3 +142,20 @@ export async function getReviews(id) {
     )
     return result[0]
 }
+
+export async function getTopAnime(id, type, st, ed) {
+    const typeValues = type.split("+")
+    if (typeValues != "Default") {
+        const result = await pool.query(
+            "SELECT anime_dataset.anime_id,Name,Image_URL,score,ranking,members_cnt,type,Premiered,user_score,user_status from (SELECT B.anime_id,score,ranking,members_cnt,user_score,user_status FROM (SELECT choosen_id.anime_id,score,ranking,members_cnt,user_score FROM (SELECT anime_statistic.anime_id,mean_score as score,members as members_cnt,RANK() OVER ( ORDER BY mean_score DESC) ranking FROM anime_statistic WHERE anime_id in(SELECT anime_id FROM anime_dataset WHERE type in (?)) ORDER BY ranking limit ? OFFSET ?)choosen_id LEFT OUTER join (SELECT anime_id,rating as user_score from users_score WHERE user_id = ?)A on A.anime_id = choosen_id.anime_id) B LEFT OUTER JOIN (SELECT anime_id,status_name as user_status from users_status,status WHERE user_id = ? and users_status.status_id = status.status_id)A on B.anime_id = A.anime_id) result LEFT OUTER JOIN anime_dataset on result.anime_id = anime_dataset.anime_id",
+            [typeValues, ed - st + 1, parseInt(st), id, id]
+        )
+        return result[0]
+    } else {
+        const result = await pool.query(
+            "SELECT anime_dataset.anime_id,Name,Image_URL,score,ranking,members_cnt,type,Premiered,user_score,user_status from (SELECT B.anime_id,score,ranking,members_cnt,user_score,user_status FROM (SELECT choosen_id.anime_id,score,ranking,members_cnt,user_score FROM (SELECT anime_statistic.anime_id,mean_score as score,members as members_cnt,RANK() OVER ( ORDER BY mean_score DESC) ranking FROM anime_statistic WHERE anime_id in(SELECT anime_id FROM anime_dataset) ORDER BY ranking limit ? OFFSET ?)choosen_id LEFT OUTER join (SELECT anime_id,rating as user_score from users_score WHERE user_id = ?)A on A.anime_id = choosen_id.anime_id) B LEFT OUTER JOIN (SELECT anime_id,status_name as user_status from users_status,status WHERE user_id = ? and users_status.status_id = status.status_id)A on B.anime_id = A.anime_id) result LEFT OUTER JOIN anime_dataset on result.anime_id = anime_dataset.anime_id",
+            [ed - st + 1, parseInt(st), id, id]
+        )
+        return result[0]
+    }
+}
