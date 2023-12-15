@@ -40,7 +40,7 @@ app.post("/api/login", async (req, res) => {
             email: user.user_email,
         }
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "2h" })
-        return res.status(200).json({ message: "login success", user: user, token: token })
+        return res.status(200).json({ message: "login success", token: token })
     } catch (error) {
         console.error(error)
         return res.status(500).json({ message: "server failed" })

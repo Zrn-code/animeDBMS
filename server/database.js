@@ -136,6 +136,9 @@ export async function getWatchStatus(id) {
 }
 
 export async function getReviews(id) {
-    const result = await pool.query("SELECT profile as username,text as review,score from review WHERE anime_id = ? limit 100;", [id])
+    const result = await pool.query(
+        "SELECT Username as username,review,rating as score from users_details,(SELECT users_review.user_id, users_review.review, users_score.rating FROM users_review LEFT OUTER JOIN users_score ON users_review.user_id = users_score.user_id AND users_review.anime_id = users_score.anime_id WHERE users_review.anime_id = ?) C WHERE users_details.Mal_ID = C.user_id LIMIT 100",
+        [id]
+    )
     return result[0]
 }
