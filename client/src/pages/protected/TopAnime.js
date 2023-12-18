@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { setPageTitle } from "../../features/common/headerSlice"
 import TitleCard from "../../components/Cards/TitleCard"
-import { Link, useParams } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { openModal } from "../../features/common/modalSlice"
 import { MODAL_BODY_TYPES } from "../../utils/globalConstantUtil"
 import axiosInstance from "../../app/axios"
@@ -146,7 +146,7 @@ function InternalPage() {
     }, [])
 
     const [values, setValues] = useState([])
-    const [params, setParams] = useState("default")
+    const [params, setParams] = useState("Default")
     const [currentPage, setCurrentPage] = useState(1)
     const [inputPage, setInputPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
@@ -157,7 +157,7 @@ function InternalPage() {
         const endItem = currentPage * itemsPerPage
         try {
             const response = await axiosInstance
-                .get(`/api/getTopAnime/${params}/${startItem}/${endItem}`)
+                .get(`/api/getTopAnime/${params}/${startItem}/${endItem}`, { headers: { Authorization: localStorage.getItem("token") } })
                 .then((res) => res.data)
                 .then((data) => setValues(data))
             const data = response.data
@@ -229,19 +229,24 @@ function InternalPage() {
                                                 </div>
                                             </td>
                                             <td>
-                                                <div className="flex">
+                                                <div className="flex w-72">
                                                     <Link to={"../details/" + l.anime_id} className="flex">
-                                                        <img className="max-h-24 flex" src={l["Image_URL"]} alt="img" />
+                                                        <img className="flex h-24" src={l["Image_URL"]} alt="img" />
                                                     </Link>
                                                     <div className="flex mx-5 flex-col">
-                                                        <Link to={"../details/" + l.anime_id} className="flex">
-                                                            <div className="font-bold  text-lg hover:underline">{l.Name}</div>
+                                                        <Link
+                                                            to={"../details/" + l.anime_id}
+                                                            className="flex text-ellipsis overflow-hidden"
+                                                        >
+                                                            <div className="font-bold text-ellipsis overflow-hidden text-lg hover:underline">
+                                                                {l.Name}
+                                                            </div>
                                                         </Link>
                                                         <div className="mt-2 font-extralight text-sm">
                                                             {l.type} ( {l.Premiered !== -1 ? l.Premiered : "n/a"} )
                                                         </div>
                                                         <div className="mt-2 font-extralight text-sm">
-                                                            {l.members ? l.members : 0} Members
+                                                            {l.members_cnt ? l.members_cnt : 0} Members
                                                         </div>
                                                     </div>
                                                 </div>
