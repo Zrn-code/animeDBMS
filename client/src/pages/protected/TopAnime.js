@@ -152,19 +152,21 @@ function InternalPage() {
     const [totalPages, setTotalPages] = useState(1)
     const itemsPerPage = 50
 
-    const fetchData = async () => {
+    const fetchData = () => {
         const startItem = (currentPage - 1) * itemsPerPage + 1
         const endItem = currentPage * itemsPerPage
-        try {
-            const response = await axiosInstance
-                .get(`/api/getTopAnime/${params}/${startItem}/${endItem}`, { headers: { Authorization: localStorage.getItem("token") } })
-                .then((res) => res.data)
-                .then((data) => setValues(data))
-            const data = response.data
-            setValues(data)
-        } catch (err) {
-            console.log("error:" + err)
-        }
+        axiosInstance
+            .get("/api/getTopAnime/" + params + "/" + startItem + "/" + endItem)
+            .then((res) => {
+                setValues(res.data)
+            })
+            .catch((err) => {
+                console.log(err)
+                if (err.response.status === 401) {
+                    localStorage.removeItem("token")
+                    window.location.reload()
+                }
+            })
     }
 
     const handlePageChange = (pageNumber) => {
@@ -192,7 +194,7 @@ function InternalPage() {
     }, [])
 
     const removeFilter = () => {
-        setParams("default")
+        setParams("Default")
     }
 
     const applyFilter = async (params) => {
