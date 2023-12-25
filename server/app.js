@@ -233,3 +233,65 @@ app.get("/api/getTopAnime/:type/:st/:ed", async (req, res) => {
         })
     }
 })
+
+app.get("/api/getAnimesByGenre/:genre/:type/:st/:ed", async (req, res) => {
+    console.log(req.headers.authorization)
+    const token = req.headers.authorization
+    if (!token) {
+        const id = 0
+        const genre = req.params.genre
+        const type = req.params.type
+        const st = req.params.st
+        const ed = req.params.ed
+        const Anime = await db.getAnimesByGenre(id, genre, type, st, ed)
+        res.send(Anime)
+    } else {
+        jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+            if (err) {
+                if (err.name === "TokenExpiredError") {
+                    return res.status(401).send("Token expired")
+                } else {
+                    return res.status(401).send("Token is invalid")
+                }
+            }
+            const id = authData.id
+            const genre = req.params.genre
+            const type = req.params.type
+            const st = req.params.st
+            const ed = req.params.ed
+            const Anime = await db.getAnimesByGenre(id, genre, type, st, ed)
+            res.send(Anime)
+        })
+    }
+})
+
+app.get("/api/getAnimesByLetter/:letter/:type/:st/:ed", async (req, res) => {
+    console.log(req.headers.authorization)
+    const token = req.headers.authorization
+    if (!token) {
+        const id = 0
+        const letter = req.params.letter
+        const type = req.params.type
+        const st = req.params.st
+        const ed = req.params.ed
+        const Anime = await db.getAnimesByLetter(id, letter, type, st, ed)
+        res.send(Anime)
+    } else {
+        jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+            if (err) {
+                if (err.name === "TokenExpiredError") {
+                    return res.status(401).send("Token expired")
+                } else {
+                    return res.status(401).send("Token is invalid")
+                }
+            }
+            const id = authData.id
+            const letter = req.params.letter
+            const type = req.params.type
+            const st = req.params.st
+            const ed = req.params.ed
+            const Anime = await db.getAnimesByLetter(id, letter, type, st, ed)
+            res.send(Anime)
+        })
+    }
+})
