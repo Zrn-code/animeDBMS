@@ -92,7 +92,7 @@ export async function getEmail(id) {
 
 export async function getRank(id) {
     const result = await pool.query(
-        "SELECT ranking FROM (SELECT anime_id, RANK() OVER ( ORDER BY mean_score DESC) ranking FROM anime_statistic )A where anime_id = ?;",
+        "SELECT ranking FROM (SELECT anime_id,RANK() OVER (ORDER BY weight_score DESC,mean_score DESC,members DESC,anime_id)AS ranking FROM anime_statistic )A WHERE A.anime_id = ?;",
         [id]
     )
     return result[0]
@@ -140,6 +140,11 @@ export async function getReviews(id) {
         "SELECT Username as username,review,rating as score from users_details,(SELECT users_review.user_id, users_review.review, users_score.rating FROM users_review LEFT OUTER JOIN users_score ON users_review.user_id = users_score.user_id AND users_review.anime_id = users_score.anime_id WHERE users_review.anime_id = ?) C WHERE users_details.Mal_ID = C.user_id LIMIT 100",
         [id]
     )
+    return result[0]
+}
+
+export async function getWeightScore(id) {
+    const result = await pool.query("SELECT weight_score FROM anime_statistic WHERE anime_id = ?;", [id])
     return result[0]
 }
 
