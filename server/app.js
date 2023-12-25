@@ -199,6 +199,12 @@ app.get("/api/getReviews/:id", async (req, res) => {
     res.send(reviews)
 })
 
+app.get("/api/getWeightScore/:id", async (req, res) => {
+    const id = req.params.id
+    const weight_score = await db.getWeightScore(id)
+    res.send(weight_score)
+})
+
 app.get("/api/getTopAnime/:type/:st/:ed", async (req, res) => {
     console.log(req.headers.authorization)
     const token = req.headers.authorization
