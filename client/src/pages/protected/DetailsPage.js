@@ -13,6 +13,8 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 ChartJS.register(ArcElement, Tooltip, Legend, Tooltip, Filler, Legend)
 
 function BarChart(dataset) {
+    dataset = dataset["dataset"]
+    //console.log(dataset)
     const options = {
         responsive: true,
         plugins: {
@@ -29,9 +31,7 @@ function BarChart(dataset) {
         datasets: [
             {
                 label: "Users",
-                data: labels.map(() => {
-                    return Math.random() * 1000 + 500
-                }),
+                data: dataset.map((item) => item["cnt"]),
                 backgroundColor: "grey",
             },
         ],
@@ -45,6 +45,14 @@ function BarChart(dataset) {
 }
 
 function PieChart(dataset) {
+    dataset = dataset["dataset"]
+    const cntArray = Array(5).fill(0)
+
+    dataset.forEach((item) => {
+        if (item.watch_status_id <= 0) return
+        const index = item.watch_status_id === 6 ? 4 : item.watch_status_id - 1
+        cntArray[index] = item.cnt
+    })
     const options = {
         responsive: true,
         plugins: {
@@ -61,7 +69,7 @@ function PieChart(dataset) {
         datasets: [
             {
                 label: "users",
-                data: [122, 219, 30, 51, 82],
+                data: cntArray,
                 backgroundColor: [
                     "rgba(255, 99, 255, 0.8)",
                     "rgba(54, 162, 235, 0.8)",
@@ -235,14 +243,20 @@ function Overview({ value, detail, id }) {
 function Details({ value, detail, id }) {
     const [review, setReview] = useState([])
     const [reviewPage, setReviewPage] = useState(1)
+    const [loading, setLoading] = useState(true)
+
     useEffect(() => {
         axiosInstance
             .get(`/api/getReviews/${id}`)
             .then((res) => res.data)
-            .then((data) => setReview(data))
+            .then((data) => {
+                setReview(data)
+                setLoading(false)
+            })
             .catch((error) => {
                 console.error("Error fetching data:", error)
                 setReview([])
+                setLoading(false)
             })
     }, [id])
 
@@ -307,6 +321,8 @@ function Details({ value, detail, id }) {
                         </button>
                     </div>
                 </>
+            ) : loading ? (
+                <div className="loading loading-spinner">Loading...</div>
             ) : (
                 <div className="rounded p-5 mt-5 bg-base-100 text-center font-bold"> No reviews found</div>
             )}
@@ -317,8 +333,23 @@ function Details({ value, detail, id }) {
 function Statistics({ value, detail, id }) {
     const [ScoreDistribution, setScoreDistribution] = useState([])
     const [WatchStatus, setWatchList] = useState([])
+    const [meanScore, setMeanScore] = useState(0)
+    const [ScoredBy, setScoredBy] = useState(0)
 
     useEffect(() => {
+        axiosInstance
+            .get(`/api/getMeanScore/${id}`)
+            .then((res) => res.data)
+            .then((data) => {
+                setMeanScore(data[0]["mean_score"])
+                setScoredBy(data[0]["scored_by"])
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error)
+                setMeanScore(0)
+                setScoredBy(0)
+            })
+
         axiosInstance
             .get(`/api/getScoreDistrubtion/${id}`)
             .then((res) => res.data)
@@ -346,13 +377,24 @@ function Statistics({ value, detail, id }) {
                 </div>
             </div>
             <div className="flex">
-                <div className="mx-2 grow">
-                    <BarChart dataset={ScoreDistribution} />
-                    <div className="flex mt-5 bg-base-100 rounded-xl p-4 justify-between items-center ">Mean Score 100</div>
-                </div>
-
                 <div className="mx-2">
-                    <PieChart dataset={WatchStatus} />
+                    {ScoreDistribution.length ? (
+                        <BarChart dataset={ScoreDistribution} />
+                    ) : (
+                        <div className="rounded p-5 mt-5 bg-base-100 text-center font-bold"> No data found</div>
+                    )}
+                    <div className="flex mt-5 bg-base-100 rounded-xl p-4 justify-between items-center ">
+                        <div className="text-left">Mean Score : {meanScore}</div>
+                        <div className="divider divider-horizontal"></div>
+                        <div className="text-right ml-2">Scored By : {ScoredBy}</div>
+                    </div>
+                </div>
+                <div className="mx-2">
+                    {WatchStatus.length ? (
+                        <PieChart dataset={WatchStatus} />
+                    ) : (
+                        <div className="rounded p-5 mt-5 bg-base-100 text-center font-bold"> No data found</div>
+                    )}
                 </div>
             </div>
         </div>
