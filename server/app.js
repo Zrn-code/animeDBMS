@@ -295,3 +295,87 @@ app.get("/api/getAnimesByLetter/:letter/:type/:st/:ed", async (req, res) => {
         })
     }
 })
+
+app.get("/api/getRecommend", async (req, res) => {
+    console.log(req.headers.authorization)
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const id = authData.id
+        const recommend = await db.getRecommend(id)
+        res.send(recommend)
+    })
+})
+
+app.get("/api/getTopAnimeByYear/:year/:st/:ed", async (req, res) => {
+    console.log(req.headers.authorization)
+    const token = req.headers.authorization
+    if (!token) {
+        const id = 0
+        const year = req.params.year
+        const st = req.params.st
+        const ed = req.params.ed
+        const Anime = await db.getTopAnimeByYear(id, year, st, ed)
+        res.send(Anime)
+    } else {
+        jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+            if (err) {
+                if (err.name === "TokenExpiredError") {
+                    return res.status(401).send("Token expired")
+                } else {
+                    return res.status(401).send("Token is invalid")
+                }
+            }
+            const id = authData.id
+            const year = req.params.year
+            const st = req.params.st
+            const ed = req.params.ed
+            const Anime = await db.getTopAnimeByYear(id, year, st, ed)
+            res.send(Anime)
+        })
+    }
+})
+
+app.get("/api/searchAnime/:keyword/:st/:ed", async (req, res) => {
+    console.log(req.headers.authorization)
+    const token = req.headers.authorization
+    if (!token) {
+        const id = 0
+        const keyword = req.params.keyword
+        const st = req.params.st
+        const ed = req.params.ed
+        const Anime = await db.searchAnime(id, keyword, st, ed)
+        res.send(Anime)
+    } else {
+        jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+            if (err) {
+                if (err.name === "TokenExpiredError") {
+                    return res.status(401).send("Token expired")
+                } else {
+                    return res.status(401).send("Token is invalid")
+                }
+            }
+            const id = authData.id
+            const keyword = req.params.keyword
+            const st = req.params.st
+            const ed = req.params.ed
+            const Anime = await db.searchAnime(id, keyword, st, ed)
+            res.send(Anime)
+        })
+    }
+})
+
+app.get("/api/getAnimesCnt/:type/:param", async (req, res) => {
+    const type = req.params.type
+    const param = req.params.param
+    const cnt = await db.getAnimesCntWithCondition(type, param)
+    res.send(cnt)
+})
