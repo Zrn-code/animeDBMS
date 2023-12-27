@@ -315,6 +315,35 @@ app.get("/api/getRecommend", async (req, res) => {
     })
 })
 
+app.get("/api/getTopAnimeByGender/:gender/:st/:ed", async (req, res) => {
+    console.log(req.headers.authorization)
+    const token = req.headers.authorization
+    if (!token) {
+        const id = 0
+        const gender = req.params.gender
+        const st = req.params.st
+        const ed = req.params.ed
+        const Anime = await db.getTopAnimeByGender(id, gender, st, ed)
+        res.send(Anime)
+    } else {
+        jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+            if (err) {
+                if (err.name === "TokenExpiredError") {
+                    return res.status(401).send("Token expired")
+                } else {
+                    return res.status(401).send("Token is invalid")
+                }
+            }
+            const id = authData.id
+            const gender = req.params.gender
+            const st = req.params.st
+            const ed = req.params.ed
+            const Anime = await db.getTopAnimeByGender(id, gender, st, ed)
+            res.send(Anime)
+        })
+    }
+})
+
 app.get("/api/getTopAnimeByYear/:year/:st/:ed", async (req, res) => {
     console.log(req.headers.authorization)
     const token = req.headers.authorization
