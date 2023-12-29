@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { setPageTitle } from "../../features/common/headerSlice"
-import TitleCard from "../../components/Cards/TitleCard"
 import { Link, useParams } from "react-router-dom"
-import SearchBar from "../../components/Input/SearchBar"
-import XMarkIcon from "@heroicons/react/24/outline/XMarkIcon"
 import Squares2X2Icon from "@heroicons/react/24/outline/Squares2X2Icon"
 import ListBulletIcon from "@heroicons/react/24/outline/ListBulletIcon"
 import axiosInstance from "../../app/axios"
@@ -126,7 +123,7 @@ const DetailCard = ({ detail }) => {
 function InternalPage() {
     const dispatch = useDispatch()
     const [values, setValues] = useState()
-    const { letter } = useParams()
+    const { text } = useParams()
     const [params, setParams] = useState("Score")
     const [compact, setCompact] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
@@ -141,7 +138,7 @@ function InternalPage() {
     useEffect(() => {
         setLoading(true)
         fetchData()
-    }, [currentPage, letter, params])
+    }, [currentPage, text, params])
 
     const applyFilter = (params) => {
         setParams(params)
@@ -152,7 +149,7 @@ function InternalPage() {
         const endItem = currentPage * itemsPerPage
         try {
             axiosInstance
-                .get(`/api/getAnimesByLetter/${letter}/${params}/${startItem}/${endItem}`)
+                .get(`/api/searchAnime/${text}/${startItem}/${endItem}`)
                 .then((res) => res.data)
                 .then((data) => setValues(data))
                 .then(setLoading(false))
@@ -174,20 +171,8 @@ function InternalPage() {
 
     return (
         <>
-            <div className="flex">
-                {alphabet.map((letter, index) => (
-                    <Link
-                        to={"../letter/" + letter}
-                        className="bg-base-100 rounded mx-2 flex items-center justify-center w-8 h-8"
-                        key={index}
-                    >
-                        {letter}
-                    </Link>
-                ))}
-            </div>
-
             <div className="flex p-2 mt-5 justify-between items-center">
-                <div className="font-bold text-2xl">Search Result: {letter}</div>
+                <div className="font-bold text-2xl">Search Result: {text}</div>
                 <div className="flex items-center">
                     <TopSideButtons applyFilter={applyFilter} />
                     <button className="mx-2" onClick={() => setCompact(!compact)}>

@@ -24,6 +24,7 @@ const GenrePage = lazy(() => import("../pages/protected/GenrePage"))
 const DiscoverPage = lazy(() => import("../pages/protected/Discover"))
 const LetterSearch = lazy(() => import("../pages/protected/LetterSearch"))
 const ProfilePage = lazy(() => import("../pages/protected/ProfilePage"))
+const TextSearch = lazy(() => import("../pages/protected/TextSearch"))
 
 const routes = [
     {
@@ -111,8 +112,12 @@ const routes = [
         component: DiscoverPage,
     },
     {
-        path: "/search/:letter",
+        path: "/letter/:letter",
         component: LetterSearch,
+    },
+    {
+        path: "/search/:text",
+        component: TextSearch,
     },
     {
         path: "/profile",
