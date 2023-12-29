@@ -11,18 +11,13 @@ import axiosInstance from "../../app/axios"
 import { openModal } from "../../features/common/modalSlice"
 import { MODAL_BODY_TYPES } from "../../utils/globalConstantUtil"
 
-const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
+const TopSideButtons = ({ applyFilter }) => {
     const [filterParam, setFilterParam] = useState("Score")
     const locationFilters = ["Members", "Newest", "Score", "Title"]
 
     const showFiltersAndApply = (params) => {
         applyFilter(params)
         setFilterParam(params)
-    }
-
-    const removeAppliedFilter = () => {
-        removeFilter()
-        setFilterParam("")
     }
 
     return (
@@ -39,10 +34,6 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
                             </li>
                         )
                     })}
-                    <div className="divider mt-0 mb-0"></div>
-                    <li>
-                        <a onClick={() => removeAppliedFilter()}>Remove Filter</a>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -140,6 +131,7 @@ function InternalPage() {
     const [compact, setCompact] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
+    const [loading, setLoading] = useState(true)
     const itemsPerPage = 48
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
     useEffect(() => {
@@ -147,27 +139,23 @@ function InternalPage() {
     }, [])
 
     useEffect(() => {
+        setLoading(true)
         fetchData()
     }, [currentPage, letter, params])
-
-    const removeFilter = () => {
-        setParams("Score")
-    }
 
     const applyFilter = (params) => {
         setParams(params)
     }
 
-    const fetchData = async () => {
+    const fetchData = () => {
         const startItem = (currentPage - 1) * itemsPerPage + 1
         const endItem = currentPage * itemsPerPage
         try {
-            const response = await axiosInstance
+            axiosInstance
                 .get(`/api/getAnimesByLetter/${letter}/${params}/${startItem}/${endItem}`)
                 .then((res) => res.data)
                 .then((data) => setValues(data))
-            const data = response.data
-            setValues(data)
+                .then(setLoading(false))
         } catch (err) {
             console.log("error:" + err)
         }
@@ -177,9 +165,12 @@ function InternalPage() {
         setCurrentPage(pageNumber)
     }
 
-    if (!values) {
-        return <div>Loading...</div>
-    }
+    if (loading)
+        return (
+            <div className="flex justify-center items-center h-full">
+                <div className="border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600" />
+            </div>
+        )
 
     return (
         <>
@@ -198,7 +189,7 @@ function InternalPage() {
             <div className="flex p-2 mt-5 justify-between items-center">
                 <div className="font-bold text-2xl">Search Result: {letter}</div>
                 <div className="flex items-center">
-                    <TopSideButtons removeFilter={removeFilter} applyFilter={applyFilter} />
+                    <TopSideButtons applyFilter={applyFilter} />
                     <button className="mx-2" onClick={() => setCompact(!compact)}>
                         {compact ? <ListBulletIcon className="h-6 w-6" /> : <Squares2X2Icon className="h-6 w-6" />}
                     </button>

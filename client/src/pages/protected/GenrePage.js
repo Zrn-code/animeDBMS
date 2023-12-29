@@ -11,18 +11,13 @@ import axiosInstance from "../../app/axios"
 import { openModal } from "../../features/common/modalSlice"
 import { MODAL_BODY_TYPES } from "../../utils/globalConstantUtil"
 
-const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
-    const [filterParam, setFilterParam] = useState("Members")
+const TopSideButtons = ({ applyFilter }) => {
+    const [filterParam, setFilterParam] = useState("Score")
     const locationFilters = ["Members", "Newest", "Score", "Title"]
 
     const showFiltersAndApply = (params) => {
         applyFilter(params)
         setFilterParam(params)
-    }
-
-    const removeAppliedFilter = () => {
-        removeFilter()
-        setFilterParam("")
     }
 
     return (
@@ -39,10 +34,6 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
                             </li>
                         )
                     })}
-                    <div className="divider mt-0 mb-0"></div>
-                    <li>
-                        <a onClick={() => removeAppliedFilter()}>Remove Filter</a>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -117,7 +108,7 @@ const DetailCard = ({ detail }) => {
         return <div>Loading...</div>
     }
     return (
-        <div className="rounded-lg bg-base-100 shadow-md flex flex-col">
+        <div className="rounded-lg bg-base-100 shadow-md flex flex-col h-96">
             <div className="p-6 flex-grow">
                 <Link to={"../details/" + detail["anime_id"]} className="flex items-center justify-between">
                     <h2 className="text-lg font-bold">{detail["Name"]}</h2>
@@ -125,14 +116,12 @@ const DetailCard = ({ detail }) => {
                 <hr className="my-4" />
                 <div className="flex items-stretch">
                     <div className="w-2/5 max-w-2/5">
-                        <Link to={"../details/" + detail["anime_id"]} className="flex items-center justify-between max-h-48">
+                        <Link to={"../details/" + detail["anime_id"]} className="flex items-center justify-between h-48">
                             <img src={detail["Image_URL"]} alt="圖片描述" className="w-full h-full object-cover rounded-lg" />
                         </Link>
                     </div>
                     <div className="w-3/5 px-4 overflow-y-auto max-h-48 ">
-                        <p className="h-full break-words">
-                            文字描述文字描述文ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd字描述文字描述文字描述文字描述
-                        </p>
+                        <p className="h-full break-words">{detail["Synopsis"]}</p>
                     </div>
                 </div>
             </div>
@@ -154,6 +143,7 @@ function InternalPage() {
     const [inputPage, setInputPage] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
+    const [loading, setLoading] = useState(false)
     const itemsPerPage = 48
     const [params, setParams] = useState("Score")
 
@@ -163,7 +153,7 @@ function InternalPage() {
 
     useEffect(() => {
         fetchData()
-    }, [currentPage])
+    }, [currentPage, params])
 
     useEffect(() => {
         axiosInstance
@@ -180,12 +170,6 @@ function InternalPage() {
         setTotalPages(Math.ceil(genre_cnt / itemsPerPage))
     }, [values])
 
-    const removeFilter = () => {
-        axiosInstance
-            .get("/api/getAnimes")
-            .then((res) => res.data)
-            .then((data) => setValues(data))
-    }
     const fetchData = async () => {
         const startItem = (currentPage - 1) * itemsPerPage + 1
         const endItem = currentPage * itemsPerPage
@@ -207,7 +191,6 @@ function InternalPage() {
 
     const applyFilter = (params) => {
         setParams(params)
-        fetchData()
     }
 
     // Search according to name
@@ -229,7 +212,7 @@ function InternalPage() {
                     {genreName} Anime ({genre_cnt})
                 </div>
                 <div className="flex items-center">
-                    <TopSideButtons removeFilter={removeFilter} applyFilter={applyFilter} applySearch={applySearch} />
+                    <TopSideButtons applyFilter={applyFilter} applySearch={applySearch} />
                     <button className="mx-2" onClick={() => setCompact(!compact)}>
                         {compact ? <ListBulletIcon className="h-6 w-6" /> : <Squares2X2Icon className="h-6 w-6" />}
                     </button>
@@ -237,7 +220,7 @@ function InternalPage() {
             </div>
             <div className="divider" />
             {!compact ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {values &&
                         values.map((value, index) => {
                             return <DetailCard key={index} detail={value} />
