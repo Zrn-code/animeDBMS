@@ -150,6 +150,7 @@ function InternalPage() {
     const [currentPage, setCurrentPage] = useState(1)
     const [inputPage, setInputPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
+    const [loading, setLoading] = useState(true)
     const itemsPerPage = 50
 
     const fetchData = () => {
@@ -159,6 +160,8 @@ function InternalPage() {
             .get("/api/getTopAnime/" + params + "/" + startItem + "/" + endItem)
             .then((res) => {
                 setValues(res.data)
+                //setTotalPages(Math.ceil(res.data / itemsPerPage))
+                setLoading(false)
             })
             .catch((err) => {
                 console.log(err)
@@ -185,14 +188,6 @@ function InternalPage() {
         setCurrentPage(inputPage)
     }, [inputPage, currentPage, totalPages])
 
-    useEffect(() => {
-        axiosInstance
-            .get("/api/getAnimes")
-            .then((res) => res.data)
-            .then((data) => setValues(data))
-        setTotalPages(Math.ceil(values.length / itemsPerPage))
-    }, [])
-
     const removeFilter = () => {
         setParams("Default")
     }
@@ -209,75 +204,79 @@ function InternalPage() {
                 topMargin="mt-2"
                 TopSideButtons={<TopSideButtons applyFilter={applyFilter} removeFilter={removeFilter} />}
             >
-                <div className="overflow-x-auto w-full">
-                    <table className="table w-full">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Title</th>
-                                <th>Score</th>
-                                <th>Your Review</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {values &&
-                                values.map((l, k) => {
-                                    return (
-                                        <tr key={k}>
-                                            <td>
-                                                <div className="flex items-center space-x-3">
-                                                    <div className="font-bold text-5xl">{l["ranking"] ? l["ranking"] : -1}</div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div className="flex w-72">
-                                                    <Link to={"../details/" + l.anime_id} className="flex">
-                                                        <img className="flex h-24" src={l["Image_URL"]} alt="img" />
-                                                    </Link>
-                                                    <div className="flex mx-5 flex-col">
-                                                        <Link
-                                                            to={"../details/" + l.anime_id}
-                                                            className="flex text-ellipsis overflow-hidden"
-                                                        >
-                                                            <div className="font-bold text-ellipsis overflow-hidden text-lg hover:underline">
-                                                                {l.Name}
-                                                            </div>
+                {loading ? (
+                    <div className="border-gray-300  h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600" />
+                ) : (
+                    <div className="overflow-x-auto w-full">
+                        <table className="table w-full">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Title</th>
+                                    <th>Score</th>
+                                    <th>Your Review</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {values &&
+                                    values.map((l, k) => {
+                                        return (
+                                            <tr key={k}>
+                                                <td>
+                                                    <div className="flex items-center space-x-3">
+                                                        <div className="font-bold text-5xl">{l["ranking"] ? l["ranking"] : -1}</div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div className="flex w-72">
+                                                        <Link to={"../details/" + l.anime_id} className="flex">
+                                                            <img className="flex h-24" src={l["Image_URL"]} alt="img" />
                                                         </Link>
-                                                        <div className="mt-2 font-extralight text-sm">
-                                                            {l.type} ( {l.Premiered !== -1 ? l.Premiered : "n/a"} )
-                                                        </div>
-                                                        <div className="mt-2 font-extralight text-sm">
-                                                            {l.members_cnt ? l.members_cnt : 0} Members
+                                                        <div className="flex mx-5 flex-col">
+                                                            <Link
+                                                                to={"../details/" + l.anime_id}
+                                                                className="flex text-ellipsis overflow-hidden"
+                                                            >
+                                                                <div className="font-bold text-ellipsis overflow-hidden text-lg hover:underline">
+                                                                    {l.Name}
+                                                                </div>
+                                                            </Link>
+                                                            <div className="mt-2 font-extralight text-sm">
+                                                                {l.type} ( {l.Premiered !== -1 ? l.Premiered : "n/a"} )
+                                                            </div>
+                                                            <div className="mt-2 font-extralight text-sm">
+                                                                {l.members_cnt ? l.members_cnt : 0} Members
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div className="font-bold">⭐{l.score ? l.score : "NaN"}</div>
-                                            </td>
-                                            <td>
-                                                <RatingButtons
-                                                    id={l["anime_id"]}
-                                                    img={l["Image_URL"]}
-                                                    name={l["Name"]}
-                                                    score={l["user_score"]}
-                                                />
-                                            </td>
-                                            <td>
-                                                <WatchListButtons
-                                                    id={l["anime_id"]}
-                                                    name={l["Name"]}
-                                                    img={l["Image_URL"]}
-                                                    state={l["state"]}
-                                                />
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-                        </tbody>
-                    </table>
-                </div>
+                                                </td>
+                                                <td>
+                                                    <div className="font-bold">⭐{l.score ? l.score : "NaN"}</div>
+                                                </td>
+                                                <td>
+                                                    <RatingButtons
+                                                        id={l["anime_id"]}
+                                                        img={l["Image_URL"]}
+                                                        name={l["Name"]}
+                                                        score={l["user_score"]}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <WatchListButtons
+                                                        id={l["anime_id"]}
+                                                        name={l["Name"]}
+                                                        img={l["Image_URL"]}
+                                                        state={l["state"]}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </TitleCard>
             <div className="flex justify-center mt-4">
                 <div className="btn-group">
