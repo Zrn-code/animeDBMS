@@ -13,7 +13,6 @@ import { MODAL_BODY_TYPES } from "../../utils/globalConstantUtil"
 
 const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
     const [filterParam, setFilterParam] = useState("Members")
-    const [searchText, setSearchText] = useState("")
     const locationFilters = ["Members", "Newest", "Score", "Title"]
 
     const showFiltersAndApply = (params) => {
@@ -24,16 +23,7 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
     const removeAppliedFilter = () => {
         removeFilter()
         setFilterParam("")
-        setSearchText("")
     }
-
-    useEffect(() => {
-        if (searchText == "") {
-            removeAppliedFilter()
-        } else {
-            applySearch(searchText)
-        }
-    }, [searchText])
 
     return (
         <div className="inline-block float-right">
@@ -165,6 +155,7 @@ function InternalPage() {
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
     const itemsPerPage = 48
+    const [params, setParams] = useState("Score")
 
     useEffect(() => {
         dispatch(setPageTitle({ title: "Search Anime" }))
@@ -183,10 +174,6 @@ function InternalPage() {
 
     useEffect(() => {
         axiosInstance
-            .get("/api/getAnimes")
-            .then((res) => res.data)
-            .then((data) => setValues(data))
-        axiosInstance
             .get(`/api/getGenresCnt/${genre_id}`)
             .then((res) => res.data)
             .then((data) => setGenre_cnt(data[0]["cnt"]))
@@ -204,7 +191,7 @@ function InternalPage() {
         const endItem = currentPage * itemsPerPage
         try {
             const response = await axiosInstance
-                .get(`/api/getAnimesByGenre/default/${startItem}/${endItem}`)
+                .get(`/api/getAnimesByGenre/${genre_id}/${params}/${startItem}/${endItem}`)
                 .then((res) => res.data)
                 .then((data) => setValues(data))
             const data = response.data
@@ -219,10 +206,8 @@ function InternalPage() {
     }
 
     const applyFilter = (params) => {
-        let filteredTransactions = values.filter((t) => {
-            return t.location == params
-        })
-        setValues(filteredTransactions)
+        setParams(params)
+        fetchData()
     }
 
     // Search according to name

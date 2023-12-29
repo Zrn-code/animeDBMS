@@ -105,7 +105,17 @@ function Stat({ figureSvg, title, value, desc, addHash }) {
                 </svg>
             </div>
             <div className="stat-title">{title}</div>
-            <div className="stat-value">{value === undefined ? -1 : addHash ? `#${value}` : value}</div>
+            <div className="stat-value">
+                {value === undefined ? (
+                    <div className="flex justify-center items-center h-20 mt-10">
+                        <div className="border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600" />
+                    </div>
+                ) : addHash ? (
+                    `#${value}`
+                ) : (
+                    value
+                )}
+            </div>
             <div className="stat-desc">{desc}</div>
         </div>
     )
@@ -175,7 +185,7 @@ function Overview({ value, detail, id }) {
                     figureSvg={<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>}
                     title="Rank"
                     value={Rank}
-                    desc="By mean score"
+                    desc="By weighted score"
                     addHash={true}
                 />
 
@@ -205,7 +215,7 @@ function Overview({ value, detail, id }) {
                     }
                     title="Members"
                     value={Members}
-                    desc="Total rating or status users"
+                    desc="numbers of interact users"
                 />
 
                 <Stat
@@ -322,7 +332,9 @@ function Details({ value, detail, id }) {
                     </div>
                 </>
             ) : loading ? (
-                <div className="loading loading-spinner">Loading...</div>
+                <div className="flex justify-center items-center h-20 mt-10">
+                    <div className="border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600" />
+                </div>
             ) : (
                 <div className="rounded p-5 mt-5 bg-base-100 text-center font-bold"> No reviews found</div>
             )}
@@ -424,7 +436,11 @@ function InternalPage() {
     }, [])
 
     if (detail === null || value === null) {
-        return <div className="loading loading-spinner">Loading...</div>
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="flex justify-center items-center border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600"></div>
+            </div>
+        )
     }
 
     return (
@@ -441,6 +457,11 @@ function InternalPage() {
                     <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4">
                         <div className="text-left font-bold ">your score</div>
                         <div className="text-right  ml-2">N/A ⭐</div>
+                    </div>
+
+                    <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4">
+                        <div className="text-left font-bold ">your review</div>
+                        <div className="text-right ml-2">N/A</div>
                     </div>
 
                     <div className="flex bg-base-100 rounded-xl overflow-hidden">

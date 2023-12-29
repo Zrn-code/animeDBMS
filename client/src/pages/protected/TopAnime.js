@@ -156,16 +156,16 @@ function InternalPage() {
     const fetchData = () => {
         const startItem = (currentPage - 1) * itemsPerPage + 1
         const endItem = currentPage * itemsPerPage
+
         axiosInstance
             .get("/api/getTopAnime/" + params + "/" + startItem + "/" + endItem)
             .then((res) => {
                 setValues(res.data)
-                //setTotalPages(Math.ceil(res.data / itemsPerPage))
                 setLoading(false)
             })
             .catch((err) => {
-                console.log(err)
-                if (err.response.status === 401) {
+                console.error(err)
+                if (err.response.data === "Token expired") {
                     localStorage.removeItem("token")
                     window.location.reload()
                 }
@@ -177,16 +177,9 @@ function InternalPage() {
     }
 
     useEffect(() => {
+        setLoading(true)
         fetchData()
     }, [currentPage, params])
-
-    useEffect(() => {
-        if (inputPage < 1 || inputPage > totalPages) {
-            setInputPage(currentPage)
-            return
-        }
-        setCurrentPage(inputPage)
-    }, [inputPage, currentPage, totalPages])
 
     const removeFilter = () => {
         setParams("Default")
@@ -205,7 +198,9 @@ function InternalPage() {
                 TopSideButtons={<TopSideButtons applyFilter={applyFilter} removeFilter={removeFilter} />}
             >
                 {loading ? (
-                    <div className="border-gray-300  h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600" />
+                    <div className="flex justify-center items-center h-full">
+                        <div className="border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600" />
+                    </div>
                 ) : (
                     <div className="overflow-x-auto w-full">
                         <table className="table w-full">
@@ -288,7 +283,7 @@ function InternalPage() {
                         Page {currentPage}
                     </button>
 
-                    <button className="btn" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                    <button className="btn" onClick={() => handlePageChange(currentPage + 1)}>
                         »
                     </button>
                 </div>

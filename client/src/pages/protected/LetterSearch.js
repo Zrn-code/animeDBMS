@@ -12,8 +12,7 @@ import { openModal } from "../../features/common/modalSlice"
 import { MODAL_BODY_TYPES } from "../../utils/globalConstantUtil"
 
 const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
-    const [filterParam, setFilterParam] = useState("Members")
-    const [searchText, setSearchText] = useState("")
+    const [filterParam, setFilterParam] = useState("Score")
     const locationFilters = ["Members", "Newest", "Score", "Title"]
 
     const showFiltersAndApply = (params) => {
@@ -24,21 +23,10 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
     const removeAppliedFilter = () => {
         removeFilter()
         setFilterParam("")
-        setSearchText("")
     }
-
-    useEffect(() => {
-        if (searchText == "") {
-            removeAppliedFilter()
-        } else {
-            applySearch(searchText)
-        }
-    }, [searchText])
 
     return (
         <div className="inline-block float-right">
-            {/*<SearchBar searchText={searchText} styleClass="mr-4" setSearchText={setSearchText}/>*/}
-            {/*filterParam !== "" && <button onClick={() => removeAppliedFilter()} className="btn btn-xs mr-2 btn-active btn-ghost normal-case">{filterParam}<XMarkIcon className="w-4 ml-2"/></button>*/}
             <div className="dropdown dropdown-bottom dropdown-end">
                 <label tabIndex={0} className="btn btn-sm btn-outline">
                     Sorted By {filterParam}
@@ -119,7 +107,7 @@ const DetailCard = ({ detail }) => {
         return <div>Loading...</div>
     }
     return (
-        <div className="rounded-lg bg-base-100 shadow-md flex flex-col">
+        <div className="rounded-lg bg-base-100 shadow-md flex flex-col h-96">
             <div className="p-6 flex-grow">
                 <Link to={"../details/" + detail["anime_id"]} className="flex items-center justify-between">
                     <h2 className="text-lg font-bold">{detail["Name"]}</h2>
@@ -127,14 +115,12 @@ const DetailCard = ({ detail }) => {
                 <hr className="my-4" />
                 <div className="flex items-stretch">
                     <div className="w-2/5 max-w-2/5">
-                        <Link to={"../details/" + detail["anime_id"]} className="flex items-center justify-between max-h-48">
+                        <Link to={"../details/" + detail["anime_id"]} className="flex items-center justify-between h-48">
                             <img src={detail["Image_URL"]} alt="圖片描述" className="w-full h-full object-cover rounded-lg" />
                         </Link>
                     </div>
                     <div className="w-3/5 px-4 overflow-y-auto max-h-48 ">
-                        <p className="h-full break-words">
-                            文字描述文字描述文ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd字描述文字描述文字描述文字描述
-                        </p>
+                        <p className="h-full break-words">{detail["Synopsis"]}</p>
                     </div>
                 </div>
             </div>
@@ -150,6 +136,7 @@ function InternalPage() {
     const dispatch = useDispatch()
     const [values, setValues] = useState()
     const { letter } = useParams()
+    const [params, setParams] = useState("Score")
     const [compact, setCompact] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
@@ -160,35 +147,15 @@ function InternalPage() {
     }, [])
 
     useEffect(() => {
-        axiosInstance
-            .get(`/api/getAnimes`)
-            .then((res) => res.data)
-            .then((data) => setValues(data))
-    })
-    useEffect(() => {
         fetchData()
-    }, [currentPage])
+    }, [currentPage, letter, params])
 
     const removeFilter = () => {
-        axiosInstance
-            .get("/api/getAnimes")
-            .then((res) => res.data)
-            .then((data) => setValues(data))
+        setParams("Score")
     }
 
     const applyFilter = (params) => {
-        let filteredTransactions = values.filter((t) => {
-            return t.location == params
-        })
-        setValues(filteredTransactions)
-    }
-
-    // Search according to name
-    const applySearch = (value) => {
-        let filteredTransactions = values.filter((t) => {
-            return t.email.toLowerCase().includes(value.toLowerCase()) || t.email.toLowerCase().includes(value.toLowerCase())
-        })
-        setValues(filteredTransactions)
+        setParams(params)
     }
 
     const fetchData = async () => {
@@ -196,7 +163,7 @@ function InternalPage() {
         const endItem = currentPage * itemsPerPage
         try {
             const response = await axiosInstance
-                .get(`/api/getAnimesByLetter/default/${startItem}/${endItem}`)
+                .get(`/api/getAnimesByLetter/${letter}/${params}/${startItem}/${endItem}`)
                 .then((res) => res.data)
                 .then((data) => setValues(data))
             const data = response.data
@@ -231,7 +198,7 @@ function InternalPage() {
             <div className="flex p-2 mt-5 justify-between items-center">
                 <div className="font-bold text-2xl">Search Result: {letter}</div>
                 <div className="flex items-center">
-                    <TopSideButtons removeFilter={removeFilter} applyFilter={applyFilter} applySearch={applySearch} />
+                    <TopSideButtons removeFilter={removeFilter} applyFilter={applyFilter} />
                     <button className="mx-2" onClick={() => setCompact(!compact)}>
                         {compact ? <ListBulletIcon className="h-6 w-6" /> : <Squares2X2Icon className="h-6 w-6" />}
                     </button>
@@ -239,7 +206,7 @@ function InternalPage() {
             </div>
             <div className="divider" />
             {!compact ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {values &&
                         values.map((value, index) => {
                             return <DetailCard key={index} detail={value} />
