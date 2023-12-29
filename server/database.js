@@ -285,3 +285,100 @@ export async function getAnimesByLetter(id, letter, type, st, ed) {
         return result[0]
     }
 }
+
+export async function getRecommend(id) {
+    const result = await pool.query(
+        "SELECT Genre_name FROM anime_genres JOIN genres on anime_genres.Genre_id = genres.Genre_id WHERE anime_id in (SELECT anime_id FROM users_score WHERE user_id = ? AND rating >= 8)GROUP BY anime_genres.Genre_id ORDER BY COUNT(*) DESC LIMIT 5",
+        [id]
+    )
+    return result[0]
+}
+
+export async function getTopAnimeByGender(id, gender, st, ed) {
+    if (id) {
+        if (gender == "Male") {
+            const result = await pool.query(
+                "SELECT anime_dataset.anime_id,Name,Image_URL,score,weight_score,ranking,Male_cnt,Female_cnt,type,Premiered,Synopsis,user_score,user_status FROM (SELECT anime_details.anime_id,score,weight_score,ranking,Male_cnt,Female_cnt,Synopsis,user_score,user_status FROM (SELECT B.anime_id,score,weight_score,ranking,Male_cnt,Female_cnt,user_score,user_status FROM (SELECT choosen_id.anime_id,score,weight_score,ranking,Male_cnt,Female_cnt,user_score FROM (SELECT anime_statistic.anime_id,mean_score as score,weight_score,Male as Male_cnt,Female as Female_cnt,RANK() OVER (ORDER BY Male DESC,weight_score DESC,Name)AS ranking FROM anime_statistic join anime_dataset on anime_statistic.anime_id = anime_dataset.anime_id ORDER BY ranking limit ? OFFSET ?)choosen_id LEFT OUTER join (SELECT anime_id,rating as user_score from users_score WHERE user_id = ?)A on A.anime_id = choosen_id.anime_id) B LEFT OUTER JOIN (SELECT anime_id,status_name as user_status from users_status,status WHERE user_id = ? and users_status.status_id = status.status_id)A on B.anime_id = A.anime_id) result JOIN anime_details on result.anime_id = anime_details.anime_id) final LEFT OUTER JOIN anime_dataset on final.anime_id = anime_dataset.anime_id",
+                [ed - st + 1, parseInt(st - 1), id, id]
+            )
+            return result[0]
+        } else {
+            const result = await pool.query(
+                "SELECT anime_dataset.anime_id,Name,Image_URL,score,weight_score,ranking,Male_cnt,Female_cnt,type,Premiered,Synopsis,user_score,user_status FROM (SELECT anime_details.anime_id,score,weight_score,ranking,Male_cnt,Female_cnt,Synopsis,user_score,user_status FROM (SELECT B.anime_id,score,weight_score,ranking,Male_cnt,Female_cnt,user_score,user_status FROM (SELECT choosen_id.anime_id,score,weight_score,ranking,Male_cnt,Female_cnt,user_score FROM (SELECT anime_statistic.anime_id,mean_score as score,weight_score,Male as Male_cnt,Female as Female_cnt,RANK() OVER (ORDER BY Female DESC,weight_score DESC,Name)AS ranking FROM anime_statistic join anime_dataset on anime_statistic.anime_id = anime_dataset.anime_id ORDER BY ranking limit ? OFFSET ?)choosen_id LEFT OUTER join (SELECT anime_id,rating as user_score from users_score WHERE user_id = ?)A on A.anime_id = choosen_id.anime_id) B LEFT OUTER JOIN (SELECT anime_id,status_name as user_status from users_status,status WHERE user_id = ? and users_status.status_id = status.status_id)A on B.anime_id = A.anime_id) result JOIN anime_details on result.anime_id = anime_details.anime_id) final LEFT OUTER JOIN anime_dataset on final.anime_id = anime_dataset.anime_id",
+                [ed - st + 1, parseInt(st - 1), id, id]
+            )
+            return result[0]
+        }
+    } else {
+        if (gender == "Male") {
+            const result = await pool.query(
+                "SELECT anime_dataset.anime_id,Name,Image_URL,score,weight_score,ranking,Male_cnt,Female_cnt,type,Premiered,Synopsis FROM (SELECT anime_details.anime_id,score,weight_score,ranking,Male_cnt,Female_cnt,Synopsis FROM (SELECT anime_statistic.anime_id,mean_score as score,weight_score,Male as Male_cnt,Female as Female_cnt,RANK() OVER (ORDER BY Male DESC,weight_score DESC,Name)AS ranking FROM anime_statistic join anime_dataset on anime_statistic.anime_id = anime_dataset.anime_id ORDER BY ranking limit ? OFFSET ?)choosen_id JOIN anime_details on choosen_id.anime_id = anime_details.anime_id) final LEFT OUTER JOIN anime_dataset on final.anime_id = anime_dataset.anime_id",
+                [ed - st + 1, parseInt(st - 1)]
+            )
+            return result[0]
+        } else {
+            const result = await pool.query(
+                "SELECT anime_dataset.anime_id,Name,Image_URL,score,weight_score,ranking,Male_cnt,Female_cnt,type,Premiered,Synopsis FROM (SELECT anime_details.anime_id,score,weight_score,ranking,Male_cnt,Female_cnt,Synopsis FROM (SELECT anime_statistic.anime_id,mean_score as score,weight_score,Male as Male_cnt,Female as Female_cnt,RANK() OVER (ORDER BY Female DESC,weight_score DESC,Name)AS ranking FROM anime_statistic join anime_dataset on anime_statistic.anime_id = anime_dataset.anime_id ORDER BY ranking limit ? OFFSET ?)choosen_id JOIN anime_details on choosen_id.anime_id = anime_details.anime_id) final LEFT OUTER JOIN anime_dataset on final.anime_id = anime_dataset.anime_id",
+                [ed - st + 1, parseInt(st - 1)]
+            )
+            return result[0]
+        }
+    }
+}
+
+export async function getTopAnimeByYear(id, year, st, ed) {
+    if (id) {
+        const result = await pool.query(
+            "SELECT anime_dataset.anime_id,Name,Image_URL,score,weight_score,ranking,members_cnt,type,Premiered,Synopsis,user_score,user_status FROM (SELECT anime_details.anime_id,score,weight_score,ranking,members_cnt,Synopsis,user_score,user_status FROM (SELECT B.anime_id,score,weight_score,ranking,members_cnt,user_score,user_status FROM (SELECT choosen_id.anime_id,score,weight_score,ranking,members_cnt,user_score FROM (SELECT anime_statistic.anime_id,mean_score as score,weight_score,members as members_cnt,RANK() OVER (ORDER BY members DESC,weight_score DESC,Name)AS ranking FROM anime_statistic join anime_dataset on anime_statistic.anime_id = anime_dataset.anime_id WHERE Premiered = ? ORDER BY ranking limit ? OFFSET ?)choosen_id LEFT OUTER join (SELECT anime_id,rating as user_score from users_score WHERE user_id = ?)A on A.anime_id = choosen_id.anime_id) B LEFT OUTER JOIN (SELECT anime_id,status_name as user_status from users_status,status WHERE user_id = ? and users_status.status_id = status.status_id)A on B.anime_id = A.anime_id) result JOIN anime_details on result.anime_id = anime_details.anime_id) final LEFT OUTER JOIN anime_dataset on final.anime_id = anime_dataset.anime_id",
+            [year, ed - st + 1, parseInt(st - 1), id, id]
+        )
+        return result[0]
+    } else {
+        const result = await pool.query(
+            "SELECT anime_dataset.anime_id,Name,Image_URL,score,weight_score,ranking,members_cnt,type,Premiered,Synopsis FROM (SELECT anime_details.anime_id,score,weight_score,ranking,members_cnt,Synopsis FROM (SELECT anime_statistic.anime_id,mean_score as score,weight_score,members as members_cnt,RANK() OVER (ORDER BY members DESC,weight_score DESC,Name)AS ranking FROM anime_statistic join anime_dataset on anime_statistic.anime_id = anime_dataset.anime_id WHERE Premiered = ? ORDER BY ranking limit ? OFFSET ?)choosen_id JOIN anime_details on choosen_id.anime_id = anime_details.anime_id) final LEFT OUTER JOIN anime_dataset on final.anime_id = anime_dataset.anime_id",
+            [year, ed - st + 1, parseInt(st - 1)]
+        )
+        return result[0]
+    }
+}
+
+export async function searchAnime(id, keyword, st, ed) {
+    keyword = "%" + keyword + "%"
+    if (id) {
+        const result = await pool.query(
+            "SELECT anime_dataset.anime_id,Name,Image_URL,score,weight_score,ranking,members_cnt,type,Premiered,Synopsis,user_score,user_status FROM (SELECT anime_details.anime_id,score,weight_score,ranking,members_cnt,Synopsis,user_score,user_status FROM (SELECT B.anime_id,score,weight_score,ranking,members_cnt,user_score,user_status FROM (SELECT choosen_id.anime_id,score,weight_score,ranking,members_cnt,user_score FROM (SELECT anime_statistic.anime_id,mean_score as score,weight_score,members as members_cnt,RANK() OVER (ORDER BY members DESC,weight_score DESC,Name)AS ranking FROM anime_statistic join anime_dataset on anime_statistic.anime_id = anime_dataset.anime_id WHERE Name like ? ORDER BY ranking limit ? OFFSET ?)choosen_id LEFT OUTER join (SELECT anime_id,rating as user_score from users_score WHERE user_id = ?)A on A.anime_id = choosen_id.anime_id) B LEFT OUTER JOIN (SELECT anime_id,status_name as user_status from users_status,status WHERE user_id = ? and users_status.status_id = status.status_id)A on B.anime_id = A.anime_id) result JOIN anime_details on result.anime_id = anime_details.anime_id) final LEFT OUTER JOIN anime_dataset on final.anime_id = anime_dataset.anime_id",
+            [keyword, ed - st + 1, parseInt(st - 1), id, id]
+        )
+        return result[0]
+    } else {
+        const result = await pool.query(
+            "SELECT anime_dataset.anime_id,Name,Image_URL,score,weight_score,ranking,members_cnt,type,Premiered,Synopsis FROM (SELECT anime_details.anime_id,score,weight_score,ranking,members_cnt,Synopsis FROM (SELECT anime_statistic.anime_id,mean_score as score,weight_score,members as members_cnt,RANK() OVER (ORDER BY members DESC,weight_score DESC,Name)AS ranking FROM anime_statistic join anime_dataset on anime_statistic.anime_id = anime_dataset.anime_id WHERE Name like ? ORDER BY ranking limit ? OFFSET ?)choosen_id JOIN anime_details on choosen_id.anime_id = anime_details.anime_id) final LEFT OUTER JOIN anime_dataset on final.anime_id = anime_dataset.anime_id",
+            [keyword, ed - st + 1, parseInt(st - 1)]
+        )
+        return result[0]
+    }
+}
+
+export async function getAnimesCntWithCondition(type, param) {
+    if (type == "year") {
+        const result = await pool.query("SELECT count(*) as cnt FROM anime_dataset WHERE Premiered = ?", [param])
+        return result[0]
+    } else if (type == "top") {
+        param = param.split("+")
+        if (param == "Default") {
+            const result = await pool.query("SELECT count(*) as cnt FROM anime_dataset")
+            return result[0]
+        } else {
+            const result = await pool.query("SELECT count(*) as cnt FROM anime_dataset WHERE type in (?)", [param])
+            return result[0]
+        }
+    } else if (type == "letter") {
+        param = param + "%"
+        const result = await pool.query("SELECT count(*) as cnt FROM anime_dataset WHERE Name like ?", [param])
+        return result[0]
+    } else if (type == "search") {
+        param = "%" + param + "%"
+        const result = await pool.query("SELECT count(*) as cnt FROM anime_dataset WHERE Name like ?", [param])
+        return result[0]
+    }
+}
