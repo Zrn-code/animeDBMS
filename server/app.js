@@ -46,6 +46,140 @@ app.post("/api/login", async (req, res) => {
         return res.status(500).json({ message: "server failed" })
     }
 })
+app.post("/api/register", async (req, res) => {
+    const { name, email, password } = req.body
+
+    const ifEmailexist = await db.checkEmail(email)
+    const ifUsernameExist = await db.checkUserName(name)
+
+    if (ifEmailexist > 0) {
+        return res.status(401).send("email exist")
+    } else if (ifUsernameExist > 0) {
+        return res.status(401).send("username exist")
+    } else {
+        const payload = {
+            id: await db.createID(),
+            email: email,
+        }
+
+        await db.insertNewUser(payload.id, name, password, email)
+
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "2h" })
+        return res.status(200).json({ message: "login success", token: token })
+    }
+})
+
+app.get("/api/getRating", async (req, res) => {
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const id = authData.id
+        const inf = await db.getRating(id)
+        res.send(inf)
+    })
+})
+
+app.get("/api/getRating/:id", async (req, res) => {
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+        const anime_id = req.params.id
+
+        const inf = await db.getRatingWithId(user_id, anime_id)
+        res.send(inf)
+    })
+})
+
+app.get("/api/getWatchList", async (req, res) => {
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const id = authData.id
+        const inf = await db.getWatchList(id)
+        res.send(inf)
+    })
+})
+
+app.get("/api/getWatchList/:id", async (req, res) => {
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+        const anime_id = req.params.id
+        const inf = await db.getWatchListWithId(user_id, anime_id)
+        res.send(inf)
+    })
+})
+
+app.get("/api/getReview", async (req, res) => {
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const id = authData.id
+        const inf = await db.getReview(id)
+        res.send(inf)
+    })
+})
+
+app.get("/api/getReview/:id", async (req, res) => {
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+        const anime_id = req.params.id
+        const inf = await db.getReviewWithId(user_id, anime_id)
+        res.send(inf)
+    })
+})
 
 app.get("/api/getProfile", async (req, res) => {
     console.log(req.headers.authorization)
