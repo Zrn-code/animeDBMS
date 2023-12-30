@@ -382,3 +382,67 @@ export async function getAnimesCntWithCondition(type, param) {
         return result[0]
     }
 }
+
+export async function checkEmail(email) {
+    const result = await pool.query("select COUNT(user_email) as cnt from users_account WHERE user_email = ?", [email])
+
+    return result[0][0].cnt
+}
+
+export async function checkUserName(name) {
+    const result = await pool.query("select COUNT(Username) as cnt from users_details WHERE Username = ?", [name])
+    return result[0][0].cnt
+}
+
+export async function createID() {
+    const result = await pool.query("select MAX(user_id) as mid from users_account")
+    return result[0][0].mid + 1
+}
+
+export async function insertNewUser(id, name, password, email) {
+    await pool.query("INSERT INTO users_account VALUES (?, ?, ?)", [id, password, email])
+    await pool.query("INSERT INTO users_details VALUES (?, ?, ?, ?)", [id, name, null, null])
+}
+
+export async function getRating(id) {
+    const result = await pool.query(
+        "select users_score.anime_id, name, Image_URL ,rating from users_score, anime_dataset where user_id = ? and users_score.anime_id = anime_dataset.anime_id",
+        [id]
+    )
+    console.log(result[0])
+    return result[0]
+}
+
+export async function getRatingWithId(user_id, anime_id) {
+    const result = await pool.query("select rating from users_score where user_id = ? and users_score.anime_id = ?", [user_id, anime_id])
+    return result[0]
+}
+
+export async function getWatchList(id) {
+    const result = await pool.query(
+        "select users_status.anime_id, name, Image_URL , status_name from users_status, anime_dataset, status where user_id = ? and users_status.anime_id = anime_dataset.anime_id and status.status_id = users_status.status_id",
+        [id]
+    )
+    return result[0]
+}
+
+export async function getWatchListWithId(user_id, anime_id) {
+    const result = await pool.query(
+        "select status_name from users_status, status where user_id = ? and users_status.anime_id = ? and status.status_id = users_status.status_id",
+        [user_id, anime_id]
+    )
+    return result[0]
+}
+
+export async function getReview(id) {
+    const result = await pool.query(
+        "select users_review.anime_id, name, Image_URL ,review from users_review, anime_dataset where user_id = ? and users_review.anime_id = anime_dataset.anime_id",
+        [id]
+    )
+    return result[0]
+}
+
+export async function getReviewWithId(user_id, anime_id) {
+    const result = await pool.query("select review from users_review where user_id = ? and users_review.anime_id = ?", [user_id, anime_id])
+    return result[0]
+}
