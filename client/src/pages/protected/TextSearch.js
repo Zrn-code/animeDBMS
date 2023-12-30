@@ -8,35 +8,6 @@ import axiosInstance from "../../app/axios"
 import { openModal } from "../../features/common/modalSlice"
 import { MODAL_BODY_TYPES } from "../../utils/globalConstantUtil"
 
-const TopSideButtons = ({ applyFilter }) => {
-    const [filterParam, setFilterParam] = useState("Score")
-    const locationFilters = ["Members", "Newest", "Score", "Title"]
-
-    const showFiltersAndApply = (params) => {
-        applyFilter(params)
-        setFilterParam(params)
-    }
-
-    return (
-        <div className="inline-block float-right">
-            <div className="dropdown dropdown-bottom dropdown-end">
-                <label tabIndex={0} className="btn btn-sm btn-outline">
-                    Sorted By {filterParam}
-                </label>
-                <ul tabIndex={0} className="dropdown-content menu p-2 text-sm shadow bg-base-100 rounded-box w-52">
-                    {locationFilters.map((l, k) => {
-                        return (
-                            <li key={k}>
-                                <a onClick={() => showFiltersAndApply(l)}>{l}</a>
-                            </li>
-                        )
-                    })}
-                </ul>
-            </div>
-        </div>
-    )
-}
-
 const WatchListButtons = ({ id, name, img, state }) => {
     const dispatch = useDispatch()
     const token = localStorage.getItem("token")
@@ -124,38 +95,61 @@ function InternalPage() {
     const dispatch = useDispatch()
     const [values, setValues] = useState()
     const { text } = useParams()
-    const [params, setParams] = useState("Score")
+    const [resultCnt, setResultCnt] = useState(0)
     const [compact, setCompact] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
     const [loading, setLoading] = useState(true)
     const itemsPerPage = 48
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
     useEffect(() => {
-        dispatch(setPageTitle({ title: "Letter Search" }))
+        dispatch(setPageTitle({ title: "Text Search" }))
+        getCount()
     }, [])
 
     useEffect(() => {
         setLoading(true)
         fetchData()
-    }, [currentPage, text, params])
-
-    const applyFilter = (params) => {
-        setParams(params)
-    }
+    }, [currentPage])
 
     const fetchData = () => {
         const startItem = (currentPage - 1) * itemsPerPage + 1
         const endItem = currentPage * itemsPerPage
-        try {
-            axiosInstance
-                .get(`/api/searchAnime/${text}/${startItem}/${endItem}`)
-                .then((res) => res.data)
-                .then((data) => setValues(data))
-                .then(setLoading(false))
-        } catch (err) {
-            console.log("error:" + err)
-        }
+        axiosInstance
+            .get(`/api/searchAnime/${text}/${startItem}/${endItem}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${localStorage.getItem("token")}`,
+                },
+            })
+            .then((res) => res.data)
+            .then((data) => setValues(data))
+            .then(setLoading(false))
+            .catch((err) => {
+                console.error(err)
+                console.log(localStorage.getItem("token"))
+                if (err.response.data === "Token expired") {
+                    localStorage.removeItem("token")
+                    window.location.reload()
+                }
+            })
+    }
+
+    const getCount = () => {
+        axiosInstance
+            .get("/api/getAnimesCnt/search/" + text)
+            .then((res) => res.data)
+            .then((data) => {
+                setResultCnt(data[0]["cnt"])
+                setTotalPages(Math.ceil(data / itemsPerPage))
+            })
+            .catch((err) => {
+                console.error(err)
+                console.log(localStorage.getItem("token"))
+                if (err.response.data === "Token expired") {
+                    localStorage.removeItem("token")
+                    window.location.reload()
+                }
+            })
     }
 
     const handlePageChange = (pageNumber) => {
@@ -171,15 +165,13 @@ function InternalPage() {
 
     return (
         <>
-            <div className="flex p-2 mt-5 justify-between items-center">
-                <div className="font-bold text-2xl">Search Result: {text}</div>
-                <div className="flex items-center">
-                    <TopSideButtons applyFilter={applyFilter} />
-                    <button className="mx-2" onClick={() => setCompact(!compact)}>
-                        {compact ? <ListBulletIcon className="h-6 w-6" /> : <Squares2X2Icon className="h-6 w-6" />}
-                    </button>
-                </div>
+            <div className="m-5 text-xl">
+                Search Result for{" "}
+                <span className="font-bold">
+                    {text} {resultCnt} in total
+                </span>
             </div>
+
             <div className="divider" />
             {!compact ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

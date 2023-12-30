@@ -80,6 +80,8 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
 const WatchListButtons = ({ id, name, img, state }) => {
     const dispatch = useDispatch()
     const token = localStorage.getItem("token")
+    const watchStatusName = ["Unknown", "Watching", "Completed", "On Hold", "Dropped", "Unknown", "Plan to Watch"]
+
     const openAddWatchListModal = () => {
         if (!token) {
             dispatch(
@@ -102,7 +104,7 @@ const WatchListButtons = ({ id, name, img, state }) => {
     return (
         <div className="inline-block ">
             <button className="btn btn-sm normal-case btn-primary" onClick={() => openAddWatchListModal()}>
-                Add Status
+                {state ? watchStatusName[state] : "Add to WatchList"}
             </button>
         </div>
     )
@@ -158,13 +160,17 @@ function InternalPage() {
         const endItem = currentPage * itemsPerPage
 
         axiosInstance
-            .get("/api/getTopAnime/" + params + "/" + startItem + "/" + endItem)
+            .get("/api/getTopAnime/" + params + "/" + startItem + "/" + endItem, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${localStorage.getItem("token")}`,
+                },
+            })
             .then((res) => {
                 setValues(res.data)
                 setLoading(false)
             })
             .catch((err) => {
-                console.error(err)
                 if (err.response.data === "Token expired") {
                     localStorage.removeItem("token")
                     window.location.reload()

@@ -25,7 +25,7 @@ function InternalPage() {
     }, [])
 
     const handleSearch = () => {
-        window.location.href = `./search/${searchText}`
+        window.location.href = `/app/search/${searchText}`
     }
 
     return (
