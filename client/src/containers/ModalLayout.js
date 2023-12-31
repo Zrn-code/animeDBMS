@@ -7,6 +7,8 @@ import ConfirmationModalBody from "../features/common/components/ConfirmationMod
 import AddWatchListModalBody from "../features/modal/AddWatchList"
 import AddRatingModalBody from "../features/modal/AddRating"
 import RequireLoginModalBody from "../features/modal/RequireLogin"
+import AddReviewModalBody from "../features/modal/AddReview"
+
 function ModalLayout() {
     const { isOpen, bodyType, size, extraObject, title } = useSelector((state) => state.modal)
     const dispatch = useDispatch()
@@ -34,6 +36,7 @@ function ModalLayout() {
                             [MODAL_BODY_TYPES.CONFIRMATION]: <ConfirmationModalBody extraObject={extraObject} closeModal={close} />,
                             [MODAL_BODY_TYPES.WATCHLIST_ADD_NEW]: <AddWatchListModalBody closeModal={close} extraObject={extraObject} />,
                             [MODAL_BODY_TYPES.RATING_ADD_NEW]: <AddRatingModalBody closeModal={close} extraObject={extraObject} />,
+                            [MODAL_BODY_TYPES.REVIEW_ADD_NEW]: <AddReviewModalBody closeModal={close} extraObject={extraObject} />,
                             [MODAL_BODY_TYPES.REQUIRE_LOGIN]: <RequireLoginModalBody closeModal={close} extraObject={extraObject} />,
                             [MODAL_BODY_TYPES.DEFAULT]: <div></div>,
                         }[bodyType]

@@ -2,11 +2,11 @@ import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { showNotification } from "../common/headerSlice"
 
-const INITIAL_WATCH_STATE = {
+const INITIAL_RATING = {
     id: "",
     name: "",
     img: "",
-    state: "",
+    score: 10,
 }
 
 const ratingOptions = [
@@ -25,8 +25,7 @@ const ratingOptions = [
 function AddRatingModalBody({ closeModal, extraObject }) {
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
-    const [Rating, setRating] = useState(extraObject || INITIAL_WATCH_STATE)
-    const [showReview, setShowReview] = useState(false)
+    const [Rating, setRating] = useState(extraObject || INITIAL_RATING)
 
     const saveWatchList = () => {
         setLoading(true)
@@ -47,7 +46,7 @@ function AddRatingModalBody({ closeModal, extraObject }) {
                         <div className="divider font-bold">Rating</div>
                         <select
                             className="select w-full max-w-xs select-bordered"
-                            value={Rating["state"]}
+                            value={Rating["score"]}
                             onChange={(e) => setRating({ ...Rating, state: e.target.value })}
                         >
                             {ratingOptions.map((state) => {
@@ -58,28 +57,6 @@ function AddRatingModalBody({ closeModal, extraObject }) {
                                 )
                             })}
                         </select>
-                        <div className="divider font-bold mt-5">Review</div>
-
-                        {showReview && (
-                            <textarea
-                                className="textarea w-full h-24 textarea-bordered"
-                                placeholder="You can write review here..."
-                                value={Rating["comment"]}
-                                onChange={(e) => setRating({ ...Rating, comment: e.target.value })}
-                            ></textarea>
-                        )}
-
-                        <div className="form-control">
-                            <label className="label cursor-pointer">
-                                <span className="label-text">Add Review</span>
-                                <input
-                                    type="checkbox"
-                                    className="toggle"
-                                    checked={showReview}
-                                    onChange={() => setShowReview(!showReview)}
-                                />
-                            </label>
-                        </div>
                     </div>
                 </div>
                 <div className="modal-action">

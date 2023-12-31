@@ -119,7 +119,7 @@ export async function getAnimeGenres(id) {
     return result[0]
 }
 
-export async function getScoreDistrubtion(id) {
+export async function getScoreDistribution(id) {
     const result = await pool.query(
         "SELECT rating as score,COUNT(*) as cnt FROM (SELECT anime_id,rating FROM users_score where anime_id = ?)A GROUP BY anime_id,rating ORDER BY rating",
         [id]

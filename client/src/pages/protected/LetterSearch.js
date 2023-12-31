@@ -150,15 +150,17 @@ function InternalPage() {
     const fetchData = () => {
         const startItem = (currentPage - 1) * itemsPerPage + 1
         const endItem = currentPage * itemsPerPage
-        try {
-            axiosInstance
-                .get(`/api/getAnimesByLetter/${letter}/${params}/${startItem}/${endItem}`)
-                .then((res) => res.data)
-                .then((data) => setValues(data))
-                .then(setLoading(false))
-        } catch (err) {
-            console.log("error:" + err)
-        }
+        axiosInstance
+            .get(`/api/getAnimesByLetter/${letter}/${params}/${startItem}/${endItem}`, {
+                headers: {
+                    Authorization: localStorage.getItem("token") ? localStorage.getItem("token") : null,
+                    "Content-Type": "application/json",
+                },
+            })
+            .then((res) => res.data)
+            .then((data) => setValues(data))
+            .then(setLoading(false))
+            .catch((err) => console.log(err))
     }
 
     const handlePageChange = (pageNumber) => {
