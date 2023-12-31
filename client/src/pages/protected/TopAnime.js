@@ -80,7 +80,6 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
 const WatchListButtons = ({ id, name, img, state }) => {
     const dispatch = useDispatch()
     const token = localStorage.getItem("token")
-    const watchStatusName = ["Unknown", "Watching", "Completed", "On Hold", "Dropped", "Unknown", "Plan to Watch"]
 
     const openAddWatchListModal = () => {
         if (!token) {
@@ -104,7 +103,7 @@ const WatchListButtons = ({ id, name, img, state }) => {
     return (
         <div className="inline-block ">
             <button className="btn btn-sm normal-case btn-primary" onClick={() => openAddWatchListModal()}>
-                {state ? watchStatusName[state] : "Add to WatchList"}
+                {state ? state : "Add to Watch List"}
             </button>
         </div>
     )
@@ -113,7 +112,7 @@ const WatchListButtons = ({ id, name, img, state }) => {
 const RatingButtons = ({ id, name, img, score }) => {
     const dispatch = useDispatch()
     const token = localStorage.getItem("token")
-    const openAddWatchListModal = () => {
+    const openAddRatingModal = () => {
         if (!token) {
             dispatch(
                 openModal({
@@ -133,7 +132,7 @@ const RatingButtons = ({ id, name, img, score }) => {
     }
 
     return (
-        <div className="inline-block cursor-pointer" onClick={openAddWatchListModal}>
+        <div className="inline-block cursor-pointer" onClick={openAddRatingModal}>
             <div className="flex items-center">
                 ⭐ <div className="mr-2 font-bold underline">{score ? score : "N/A"}</div>
             </div>
@@ -271,7 +270,7 @@ function InternalPage() {
                                                         id={l["anime_id"]}
                                                         name={l["Name"]}
                                                         img={l["Image_URL"]}
-                                                        state={l["state"]}
+                                                        state={l["user_status"]}
                                                     />
                                                 </td>
                                             </tr>
