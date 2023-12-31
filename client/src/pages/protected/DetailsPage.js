@@ -477,6 +477,35 @@ const RatingButtons = ({ id, name, img, score }) => {
     )
 }
 
+const ReviewButtons = ({ id, name, img, review }) => {
+    const dispatch = useDispatch()
+    const token = localStorage.getItem("token")
+    const openAddReviewModal = () => {
+        if (!token) {
+            dispatch(
+                openModal({
+                    title: "You need to login",
+                    bodyType: MODAL_BODY_TYPES.REQUIRE_LOGIN,
+                })
+            )
+        } else {
+            dispatch(
+                openModal({
+                    title: "Update Review",
+                    bodyType: MODAL_BODY_TYPES.REVIEW_ADD_NEW,
+                    extraObject: { id: id, name: name, img: img, review: review },
+                })
+            )
+        }
+    }
+
+    return (
+        <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4" onClick={openAddReviewModal}>
+            <div className="text-left font-bold ">your review</div>
+        </div>
+    )
+}
+
 function InternalPage() {
     const dispatch = useDispatch()
     useEffect(() => {
@@ -545,6 +574,28 @@ function InternalPage() {
                         })
                 }
             })
+        axiosInstance
+            .get(`api/getReview/${id}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token,
+                },
+            })
+            .then((res) => res.data)
+            .then((data) => setReview(data["review"]))
+            .catch((error) => {
+                if (error.response.data === "Token expired" || error.response.data === "Token is invalid") {
+                    localStorage
+                        .removeItem("token")
+                        .then(() => {
+                            setToken(null)
+                            setReview(null)
+                        })
+                        .then(() => {
+                            window.location.reload()
+                        })
+                }
+            })
     }, [])
 
     if (!detail || !value) {
@@ -564,11 +615,7 @@ function InternalPage() {
                     <img className="max-h-90 rounded-xl" src={value["Image_URL"]} alt="img" />
                     <WatchListButtons id={value["id"]} img={value["Image_URL"]} score={state} name={value["Name"]} />
                     <RatingButtons id={value["id"]} img={value["Image_URL"]} score={rating} name={value["Name"]} />
-
-                    <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4">
-                        <div className="text-left font-bold ">your review</div>
-                        <div className="text-right ml-2">N/A</div>
-                    </div>
+                    <ReviewButtons id={value["id"]} img={value["Image_URL"]} score={review} name={value["Name"]} />
 
                     <div className="flex bg-base-100 rounded-xl overflow-hidden">
                         <button
