@@ -181,6 +181,52 @@ app.get("/api/getReview/:id", async (req, res) => {
     })
 })
 
+app.post("/api/addRating", async (req, res) => {
+    const { anime_id, score } = req.body
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+        if (Number.isInteger(score) && score >= 0 && score <= 10) {
+            await db.addRating(user_id, anime_id, score)
+            return res.status(200).send("Add Rating Successfully")
+        } else {
+            return res.status(401).send("wrong format")
+        }
+    })
+})
+
+app.post("/api/updateRating", async (req, res) => {
+    const { anime_id, score } = req.body
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+        if (Number.isInteger(score) && score >= 0 && score <= 10) {
+            await db.updateRating(user_id, anime_id, score)
+            return res.status(200).send("Update Rating Successfully")
+        } else {
+            return res.status(401).send("wrong format")
+        }
+    })
+})
+
 app.get("/api/getProfile", async (req, res) => {
     console.log(req.headers.authorization)
     const token = req.headers.authorization
