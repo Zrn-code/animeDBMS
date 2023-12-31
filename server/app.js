@@ -542,3 +542,76 @@ app.get("/api/getAnimesCnt/:type/:param", async (req, res) => {
     const cnt = await db.getAnimesCntWithCondition(type, param)
     res.send(cnt)
 })
+
+app.post("/api/addReview", async (req, res) => {
+    const { anime_id, review } = req.body
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+
+        if ((await db.checkIfUserreviewExist(user_id, anime_id)) > 0) {
+            return res.status(401).send("wrong format(the user's review almost exist)")
+        }
+
+        await db.addReview(user_id, anime_id, review)
+        return res.status(200).send("Add Review Successfully")
+    })
+})
+
+app.put("/api/updateReview", async (req, res) => {
+    const { anime_id, review } = req.body
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+
+        if ((await db.checkIfUserreviewExist(user_id, anime_id)) > 0) {
+            await db.updateReview(user_id, anime_id, review)
+            return res.status(200).send("Update Review Successfully")
+        } else {
+            return res.status(401).send("wrong format")
+        }
+    })
+})
+
+app.post("/api/updateProfile", async (req, res) => {
+    const { gender, birthday } = req.body
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+
+        let year = parseInt(birthday.substring(0, 5))
+        if (!(gender == "Female" || gender == "Male") || !(year >= 1000 && year <= 9999)) {
+            return res.status(401).send("wrong format")
+        } else {
+            await db.updateProfile(user_id, gender, birthday)
+            return res.status(200).send("Update Review Successfully")
+        }
+    })
+})
