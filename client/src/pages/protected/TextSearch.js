@@ -101,6 +101,7 @@ function InternalPage() {
     const [totalPages, setTotalPages] = useState(0)
     const [loading, setLoading] = useState(true)
     const [searchText, setSearchText] = useState(text)
+    const [token, setToken] = useState(localStorage.getItem("token"))
     const itemsPerPage = 48
     useEffect(() => {
         dispatch(setPageTitle({ title: "Text Search" }))
@@ -119,18 +120,15 @@ function InternalPage() {
             .get(`/api/searchAnime/${text}/${startItem}/${endItem}`, {
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `${localStorage.getItem("token")}`,
+                    Authorization: token,
                 },
             })
             .then((res) => res.data)
             .then((data) => setValues(data))
             .then(setLoading(false))
             .catch((err) => {
-                console.error(err)
-                console.log(localStorage.getItem("token"))
                 if (err.response.data === "Token expired") {
-                    localStorage.removeItem("token")
-                    window.location.reload()
+                    localStorage.removeItem("token").then(setToken(null)).then(window.location.reload())
                 }
             })
     }
@@ -142,14 +140,6 @@ function InternalPage() {
             .then((data) => {
                 setResultCnt(data[0]["cnt"])
                 setTotalPages(Math.ceil(data / itemsPerPage))
-            })
-            .catch((err) => {
-                console.error(err)
-                console.log(localStorage.getItem("token"))
-                if (err.response.data === "Token expired") {
-                    localStorage.removeItem("token")
-                    window.location.reload()
-                }
             })
     }
 

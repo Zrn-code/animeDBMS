@@ -37,7 +37,7 @@ function Header() {
     }
 
     function logoutUser() {
-        localStorage.clear()
+        localStorage.removeItem("token")
         window.location.href = "/app/welcome"
     }
 

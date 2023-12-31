@@ -153,6 +153,7 @@ function InternalPage() {
     const [inputPage, setInputPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const [loading, setLoading] = useState(true)
+    const [token, setToken] = useState(localStorage.getItem("token"))
     const itemsPerPage = 50
 
     const fetchData = () => {
@@ -163,7 +164,7 @@ function InternalPage() {
             .get("/api/getTopAnime/" + params + "/" + startItem + "/" + endItem, {
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `${localStorage.getItem("token")}`,
+                    Authorization: token,
                 },
             })
             .then((res) => {
@@ -171,9 +172,11 @@ function InternalPage() {
                 setLoading(false)
             })
             .catch((err) => {
-                if (err.response.data === "Token expired") {
-                    localStorage.removeItem("token")
-                    window.location.reload()
+                if (err.response.data === "Token expired" || err.response.data === "Token is invalid") {
+                    localStorage
+                        .removeItem("token")
+                        .then(setToken(localStorage.getItem("token")))
+                        .then(window.location.reload())
                 }
             })
     }

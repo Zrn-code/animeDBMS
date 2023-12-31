@@ -144,11 +144,13 @@ function InternalPage() {
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
     const [loading, setLoading] = useState(false)
+    const [token, setToken] = useState(localStorage.getItem("token"))
     const itemsPerPage = 48
     const [params, setParams] = useState("Score")
 
     useEffect(() => {
         dispatch(setPageTitle({ title: "Search Anime" }))
+        setToken(localStorage.getItem("token"))
     }, [])
 
     useEffect(() => {
@@ -173,16 +175,25 @@ function InternalPage() {
     const fetchData = async () => {
         const startItem = (currentPage - 1) * itemsPerPage + 1
         const endItem = currentPage * itemsPerPage
-        try {
-            const response = await axiosInstance
-                .get(`/api/getAnimesByGenre/${genre_id}/${params}/${startItem}/${endItem}`)
-                .then((res) => res.data)
-                .then((data) => setValues(data))
-            const data = response.data
-            setValues(data)
-        } catch (err) {
-            console.log("error:" + err)
-        }
+        axiosInstance
+            .get("api/getAnimesByGenre/" + genre_id + "/" + params + "/" + startItem + "/" + endItem, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token,
+                },
+            })
+            .then((res) => {
+                setValues(res.data)
+                setLoading(false)
+            })
+            .catch((err) => {
+                if (err.response.data === "Token expired" || err.response.data === "Token is invalid") {
+                    localStorage
+                        .removeItem("token")
+                        .then(setToken(localStorage.getItem("token")))
+                        .then(window.location.reload())
+                }
+            })
     }
 
     const handlePageChange = (pageNumber) => {
