@@ -365,7 +365,7 @@ function Statistics({ value, detail, id }) {
             })
 
         axiosInstance
-            .get(`/api/getScoreDistrubtion/${id}`)
+            .get(`/api/getScoreDistribution/${id}`)
             .then((res) => res.data)
             .then((data) => setScoreDistribution(data))
             .catch((error) => {

@@ -315,9 +315,9 @@ app.get("/api/getAnimeGenres/:id", async (req, res) => {
     res.send(genres)
 })
 
-app.get("/api/getScoreDistrubtion/:id", async (req, res) => {
+app.get("/api/getScoreDistribution/:id", async (req, res) => {
     const id = req.params.id
-    const score_distribution = await db.getScoreDistrubtion(id)
+    const score_distribution = await db.getScoreDistribution(id)
     res.send(score_distribution)
 })
 
