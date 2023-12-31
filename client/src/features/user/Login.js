@@ -34,7 +34,7 @@ function Login() {
 
                 if (response.status === 200) {
                     // Assuming the API returns success message or token
-                    localStorage.setItem("token", data.token || "DummyTokenHere")
+                    localStorage.setItem("token", data.token)
                     localStorage.setItem("user_id", JSON.stringify(data.user_id))
                     //console.log(localStorage.getItem('token'));
                     setLoading(false)

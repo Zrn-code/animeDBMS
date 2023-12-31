@@ -8,6 +8,8 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, ArcEle
 import { Bar } from "react-chartjs-2"
 import axiosInstance from "../../app/axios"
 import { Link } from "react-router-dom"
+import { openModal } from "../../features/common/modalSlice"
+import { MODAL_BODY_TYPES } from "../../utils/globalConstantUtil"
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 ChartJS.register(ArcElement, Tooltip, Legend, Tooltip, Filler, Legend)
@@ -363,7 +365,7 @@ function Statistics({ value, detail, id }) {
             })
 
         axiosInstance
-            .get(`/api/getScoreDistrubtion/${id}`)
+            .get(`/api/getScoreDistribution/${id}`)
             .then((res) => res.data)
             .then((data) => setScoreDistribution(data))
             .catch((error) => {
@@ -413,6 +415,97 @@ function Statistics({ value, detail, id }) {
     )
 }
 
+const WatchListButtons = ({ id, name, img, state }) => {
+    const dispatch = useDispatch()
+    const token = localStorage.getItem("token")
+    const watchStatusName = ["Unknown", "Watching", "Completed", "On Hold", "Dropped", "Unknown", "Plan to Watch"]
+
+    const openAddWatchListModal = () => {
+        if (!token) {
+            dispatch(
+                openModal({
+                    title: "You need to login",
+                    bodyType: MODAL_BODY_TYPES.REQUIRE_LOGIN,
+                })
+            )
+        } else {
+            dispatch(
+                openModal({
+                    title: "Update Watch Status",
+                    bodyType: MODAL_BODY_TYPES.WATCHLIST_ADD_NEW,
+                    extraObject: { id: id, name: name, img: img, state: state },
+                })
+            )
+        }
+    }
+
+    return (
+        <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4" onClick={openAddWatchListModal}>
+            <div className="text-left font-bold">watch status</div>
+            <div className="text-right ml-2">{state ? state : "N/A"}</div>
+        </div>
+    )
+}
+
+const RatingButtons = ({ id, name, img, score }) => {
+    const dispatch = useDispatch()
+    const token = localStorage.getItem("token")
+    const openAddRatingModal = () => {
+        if (!token) {
+            dispatch(
+                openModal({
+                    title: "You need to login",
+                    bodyType: MODAL_BODY_TYPES.REQUIRE_LOGIN,
+                })
+            )
+        } else {
+            dispatch(
+                openModal({
+                    title: "Update Rating Score",
+                    bodyType: MODAL_BODY_TYPES.RATING_ADD_NEW,
+                    extraObject: { id: id, name: name, img: img, score: score },
+                })
+            )
+        }
+    }
+
+    return (
+        <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4" onClick={openAddRatingModal}>
+            <div className="text-left font-bold ">your score</div>
+            <div className="text-right  ml-2">{score ? score : "N/A"} ⭐ </div>
+        </div>
+    )
+}
+
+const ReviewButtons = ({ id, name, img, review }) => {
+    const dispatch = useDispatch()
+    const token = localStorage.getItem("token")
+    const openAddReviewModal = () => {
+        if (!token) {
+            dispatch(
+                openModal({
+                    title: "You need to login",
+                    bodyType: MODAL_BODY_TYPES.REQUIRE_LOGIN,
+                })
+            )
+        } else {
+            dispatch(
+                openModal({
+                    title: "Update Review",
+                    bodyType: MODAL_BODY_TYPES.REVIEW_ADD_NEW,
+                    extraObject: { id: id, name: name, img: img, review: review },
+                })
+            )
+        }
+    }
+
+    return (
+        <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4" onClick={openAddReviewModal}>
+            <div className="text-left font-bold ">your review</div>
+        </div>
+    )
+}
+
 function InternalPage() {
     const dispatch = useDispatch()
     useEffect(() => {
@@ -422,7 +515,11 @@ function InternalPage() {
     const [currentPage, setCurrentPage] = useState("overview")
     const [detail, setDetail] = useState(null)
     const [value, setValue] = useState(null)
+    const [rating, setRating] = useState(null)
+    const [state, setState] = useState(null)
+    const [review, setReview] = useState(null)
     const { id } = useParams()
+    const [token, setToken] = useState(localStorage.getItem("token"))
 
     useEffect(() => {
         axiosInstance
@@ -433,9 +530,75 @@ function InternalPage() {
             .get(`/api/getAnime/${id}`)
             .then((res) => res.data)
             .then((data) => setValue(data[0]))
+        axiosInstance
+            .get(`api/getRating/${id}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token,
+                },
+            })
+            .then((res) => res.data)
+            .then((data) => setRating(data["score"]))
+            .catch((error) => {
+                if (error.response.data === "Token expired" || error.response.data === "Token is invalid") {
+                    localStorage
+                        .removeItem("token")
+                        .then(() => {
+                            setToken(null)
+                            setRating(null)
+                        })
+                        .then(() => {
+                            window.location.reload()
+                        })
+                }
+            })
+        axiosInstance
+            .get(`api/getWatchList/${id}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token,
+                },
+            })
+            .then((res) => res.data)
+            .then((data) => setState(data["status"]))
+            .catch((error) => {
+                if (error.response.data === "Token expired" || error.response.data === "Token is invalid") {
+                    localStorage
+                        .removeItem("token")
+                        .then(() => {
+                            setToken(null)
+                            setState(null)
+                        })
+                        .then(() => {
+                            window.location.reload()
+                        })
+                }
+            })
+        axiosInstance
+            .get(`api/getReview/${id}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token,
+                },
+            })
+            .then((res) => res.data)
+            .then((data) => setReview(data["review"]))
+            .catch((error) => {
+                if (error.response.data === "Token expired" || error.response.data === "Token is invalid") {
+                    localStorage
+                        .removeItem("token")
+                        .then(() => {
+                            setToken(null)
+                            setReview(null)
+                        })
+                        .then(() => {
+                            window.location.reload()
+                        })
+                }
+            })
     }, [])
 
-    if (detail === null || value === null) {
+    if (!detail || !value) {
         return (
             <div className="flex justify-center items-center h-screen">
                 <div className="flex justify-center items-center border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600"></div>
@@ -450,19 +613,9 @@ function InternalPage() {
                 <div className="min-w-max">
                     {/* Your existing buttons */}
                     <img className="max-h-90 rounded-xl" src={value["Image_URL"]} alt="img" />
-                    <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4">
-                        <div className="text-left font-bold">watch status</div>
-                        <div className="text-right ml-2">Unknown</div>
-                    </div>
-                    <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4">
-                        <div className="text-left font-bold ">your score</div>
-                        <div className="text-right  ml-2">N/A ⭐</div>
-                    </div>
-
-                    <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4">
-                        <div className="text-left font-bold ">your review</div>
-                        <div className="text-right ml-2">N/A</div>
-                    </div>
+                    <WatchListButtons id={value["id"]} img={value["Image_URL"]} score={state} name={value["Name"]} />
+                    <RatingButtons id={value["id"]} img={value["Image_URL"]} score={rating} name={value["Name"]} />
+                    <ReviewButtons id={value["id"]} img={value["Image_URL"]} score={review} name={value["Name"]} />
 
                     <div className="flex bg-base-100 rounded-xl overflow-hidden">
                         <button
