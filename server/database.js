@@ -16,12 +16,20 @@ export async function getAnimesCnt() {
     return result[0]
 }
 
-export async function getWatchStatusCnt() {
+export async function getWatchStatusCnt(id) {
+    if (id) {
+        const result = await pool.query("SELECT count(*) as cnt FROM users_status WHERE user_id = ?", [id])
+        return result[0]
+    }
     const result = await pool.query("SELECT count(*) as cnt FROM users_status")
     return result[0]
 }
 
-export async function getRatingCnt() {
+export async function getRatingCnt(id) {
+    if (id) {
+        const result = await pool.query("SELECT count(*) as cnt FROM users_score WHERE user_id = ?", [id])
+        return result[0]
+    }
     const result = await pool.query("SELECT count(*) as cnt FROM users_score")
     return result[0]
 }
@@ -31,8 +39,12 @@ export async function getUserCnt() {
     return result[0]
 }
 
-export async function getReviewCnt() {
-    const result = await pool.query("SELECT count(*) as cnt FROM review")
+export async function getReviewCnt(id) {
+    if (id) {
+        const result = await pool.query("SELECT count(*) as cnt FROM users_review WHERE user_id = ?", [id])
+        return result[0]
+    }
+    const result = await pool.query("SELECT count(*) as cnt FROM users_review")
     return result[0]
 }
 
@@ -409,7 +421,7 @@ export async function getRating(id) {
         "select users_score.anime_id, name, Image_URL ,rating from users_score, anime_dataset where user_id = ? and users_score.anime_id = anime_dataset.anime_id",
         [id]
     )
-    console.log(result[0])
+    //console.log(result[0])
     return result[0]
 }
 

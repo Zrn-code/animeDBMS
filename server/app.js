@@ -19,12 +19,8 @@ app.use((err, req, res, next) => {
 
 app.post("/api/login", async (req, res) => {
     const { email, password } = req.body
-
-    console.log(email)
     try {
         const user = await db.findUserByEmail(email)
-        //console.log(email);
-        //console.log(user);
         if (!user) {
             return res.status(401).json({ message: "The email is not found." })
         }
@@ -182,7 +178,6 @@ app.get("/api/getReview/:id", async (req, res) => {
 })
 
 app.get("/api/getProfile", async (req, res) => {
-    console.log(req.headers.authorization)
     const token = req.headers.authorization
     if (!token) return res.status(401).send("Token not found")
 
@@ -201,7 +196,6 @@ app.get("/api/getProfile", async (req, res) => {
 })
 
 app.get("/api/getEmail", async (req, res) => {
-    console.log(req.headers.authorization)
     const token = req.headers.authorization
     if (!token) return res.status(401).send("Token not found")
 
@@ -215,7 +209,6 @@ app.get("/api/getEmail", async (req, res) => {
         }
         const id = authData.id
         const email = await db.getEmail(id)
-        console.log(email)
         res.send(email)
     })
 })
@@ -226,13 +219,45 @@ app.get("/api/getAnimesCnt", async (req, res) => {
 })
 
 app.get("/api/getWatchStatusCnt", async (req, res) => {
-    const watch_status_cnt = await db.getWatchStatusCnt()
-    res.send(watch_status_cnt)
+    const token = req.headers.authorization
+    if (!token) {
+        const watch_status_cnt = await db.getWatchStatusCnt()
+        res.send(watch_status_cnt)
+    } else {
+        jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+            if (err) {
+                if (err.name === "TokenExpiredError") {
+                    return res.status(401).send("Token expired")
+                } else {
+                    return res.status(401).send("Token is invalid")
+                }
+            }
+            const id = authData.id
+            const watch_status_cnt = await db.getWatchStatusCnt(id)
+            res.send(watch_status_cnt)
+        })
+    }
 })
 
 app.get("/api/getRatingCnt", async (req, res) => {
-    const rating_cnt = await db.getRatingCnt()
-    res.send(rating_cnt)
+    const token = req.headers.authorization
+    if (!token) {
+        const rating_cnt = await db.getRatingCnt()
+        res.send(rating_cnt)
+    } else {
+        jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+            if (err) {
+                if (err.name === "TokenExpiredError") {
+                    return res.status(401).send("Token expired")
+                } else {
+                    return res.status(401).send("Token is invalid")
+                }
+            }
+            const id = authData.id
+            const rating_cnt = await db.getRatingCnt(id)
+            res.send(rating_cnt)
+        })
+    }
 })
 
 app.get("/api/getUserCnt", async (req, res) => {
@@ -241,8 +266,21 @@ app.get("/api/getUserCnt", async (req, res) => {
 })
 
 app.get("/api/getReviewCnt", async (req, res) => {
-    const review_cnt = await db.getReviewCnt()
-    res.send(review_cnt)
+    const token = req.headers.authorization
+    if (!token) {
+        const review_cnt = await db.getReviewCnt()
+        res.send(review_cnt)
+    } else {
+        jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+            if (err) {
+                if (err.name === "TokenExpiredError") return res.status(401).send("Token expired")
+                else return res.status(401).send("Token is invalid")
+            }
+            const id = authData.id
+            const review_cnt = await db.getReviewCnt(id)
+            res.send(review_cnt)
+        })
+    }
 })
 
 app.get("/api/getAnimes", async (req, res) => {
@@ -340,7 +378,6 @@ app.get("/api/getWeightScore/:id", async (req, res) => {
 })
 
 app.get("/api/getTopAnime/:type/:st/:ed", async (req, res) => {
-    console.log(req.headers.authorization)
     const token = req.headers.authorization
     if (!token) {
         const id = 0
@@ -369,7 +406,6 @@ app.get("/api/getTopAnime/:type/:st/:ed", async (req, res) => {
 })
 
 app.get("/api/getAnimesByGenre/:genre/:type/:st/:ed", async (req, res) => {
-    console.log(req.headers.authorization)
     const token = req.headers.authorization
     if (!token) {
         const id = 0
@@ -400,7 +436,6 @@ app.get("/api/getAnimesByGenre/:genre/:type/:st/:ed", async (req, res) => {
 })
 
 app.get("/api/getAnimesByLetter/:letter/:type/:st/:ed", async (req, res) => {
-    console.log(req.headers.authorization)
     const token = req.headers.authorization
     if (!token) {
         const id = 0
@@ -431,7 +466,6 @@ app.get("/api/getAnimesByLetter/:letter/:type/:st/:ed", async (req, res) => {
 })
 
 app.get("/api/getRecommend", async (req, res) => {
-    console.log(req.headers.authorization)
     const token = req.headers.authorization
     if (!token) return res.status(401).send("Token not found")
 
@@ -450,7 +484,6 @@ app.get("/api/getRecommend", async (req, res) => {
 })
 
 app.get("/api/getTopAnimeByGender/:gender/:st/:ed", async (req, res) => {
-    console.log(req.headers.authorization)
     const token = req.headers.authorization
     if (!token) {
         const id = 0
@@ -479,7 +512,6 @@ app.get("/api/getTopAnimeByGender/:gender/:st/:ed", async (req, res) => {
 })
 
 app.get("/api/getTopAnimeByYear/:year/:st/:ed", async (req, res) => {
-    console.log(req.headers.authorization)
     const token = req.headers.authorization
     if (!token) {
         const id = 0
@@ -508,7 +540,6 @@ app.get("/api/getTopAnimeByYear/:year/:st/:ed", async (req, res) => {
 })
 
 app.get("/api/searchAnime/:keyword/:st/:ed", async (req, res) => {
-    console.log(req.headers.authorization)
     const token = req.headers.authorization
     if (!token) {
         const id = 0
