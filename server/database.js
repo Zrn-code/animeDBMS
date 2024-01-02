@@ -425,6 +425,14 @@ export async function getRating(id) {
     return result[0]
 }
 
+export async function addRating(user_id, anime_id, score) {
+    await pool.query("INSERT INTO users_score VALUES (?, ?, ?)", [user_id, anime_id, score])
+}
+
+export async function updateRating(user_id, anime_id, score) {
+    await pool.query("UPDATE users_score SET rating = ? where user_id = ? and anime_id = ? ", [score, user_id, anime_id])
+}
+
 export async function getRatingWithId(user_id, anime_id) {
     const result = await pool.query("select rating from users_score where user_id = ? and users_score.anime_id = ?", [user_id, anime_id])
     return result[0]
@@ -457,4 +465,25 @@ export async function getReview(id) {
 export async function getReviewWithId(user_id, anime_id) {
     const result = await pool.query("select review from users_review where user_id = ? and users_review.anime_id = ?", [user_id, anime_id])
     return result[0]
+}
+
+export async function checkIfUserreviewExist(user_id, anime_id) {
+    const result = await pool.query("select COUNT(*) as cnt from users_review where user_id = ? and anime_id = ?", [user_id, anime_id])
+    return result[0][0].cnt
+}
+
+export async function addReview(user_id, anime_id, review) {
+    await pool.query("INSERT INTO users_review VALUES(?,?,?)", [anime_id, user_id, review])
+}
+
+export async function updateReview(user_id, anime_id, review) {
+    await pool.query("update users_review set review = ? where user_id = ? and anime_id = ?", [review, user_id, anime_id])
+}
+
+export async function updateProfile(user_id, gender, birthday) {
+    await pool.query("update users_details set Gender = ?, Birthday = STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s') where Mal_ID = ?", [
+        gender,
+        birthday,
+        user_id,
+    ])
 }
