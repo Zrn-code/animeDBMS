@@ -24,11 +24,6 @@ const iconClasses = `h-6 w-6`
 const submenuIconClasses = `h-5 w-5`
 
 const routes = [
-    /*{
-        path: "/app/homepage",
-        icon: <Squares2X2Icon className={iconClasses} />,
-        name: "Home Page",
-    },*/
     {
         path: "/app/top",
         icon: <DocumentDuplicateIcon className={iconClasses} />,
@@ -40,9 +35,14 @@ const routes = [
         name: "Search Anime",
     },
     {
-        path: "/app/discover",
-        icon: <ViewfinderCircleIcon className={iconClasses} />,
-        name: "Discover",
+        path: "/app/top-year",
+        icon: <DocumentDuplicateIcon className={iconClasses} />,
+        name: "Year Animes",
+    },
+    {
+        path: "/app/top-gender",
+        icon: <DocumentDuplicateIcon className={iconClasses} />,
+        name: "Gender Popular",
     },
     /*
   {
@@ -71,16 +71,25 @@ const routes = [
     name: 'Calendar', // name that appear in Sidebar
   },
   */
+
     {
-        path: "/app/profile", // url
-        icon: <UserIcon className={iconClasses} />, // icon component
-        name: "Profile", // name that appear in Sidebar
+        path: "",
+        icon: <UserIcon className={`${iconClasses} inline`} />,
+        name: "About User",
+        submenu: [
+            {
+                path: "/app/profile", // url
+                icon: <UserIcon className={iconClasses} />, // icon component
+                name: "Profile", // name that appear in Sidebar
+            },
+            {
+                path: "/app/settings-profile",
+                icon: <Cog6ToothIcon className={iconClasses} />,
+                name: "Settings",
+            },
+        ],
     },
-    {
-        path: "/app/settings-profile",
-        icon: <Cog6ToothIcon className={iconClasses} />,
-        name: "Settings",
-    },
+
     /*
   {
     path: '', //no url needed as this has submenu
@@ -104,28 +113,7 @@ const routes = [
       },
     ]
   },
-  {
-    path: '', //no url needed as this has submenu
-    icon: <DocumentTextIcon className={`${iconClasses} inline` }/>, // icon component
-    name: 'Documentation', // name that appear in Sidebar
-    submenu : [
-      {
-        path: '/app/getting-started', // url
-        icon: <DocumentTextIcon className={submenuIconClasses}/>, // icon component
-        name: 'Getting Started', // name that appear in Sidebar
-      },
-      {
-        path: '/app/features',
-        icon: <TableCellsIcon className={submenuIconClasses}/>, 
-        name: 'Features',
-      },
-      {
-        path: '/app/components',
-        icon: <CodeBracketSquareIcon className={submenuIconClasses}/>, 
-        name: 'Components',
-      }
-    ]
-  },*/
+  */
 ]
 
 export default routes
