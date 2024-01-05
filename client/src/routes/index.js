@@ -25,6 +25,7 @@ const DiscoverPage = lazy(() => import("../pages/protected/Discover"))
 const LetterSearch = lazy(() => import("../pages/protected/LetterSearch"))
 const ProfilePage = lazy(() => import("../pages/protected/ProfilePage"))
 const TextSearch = lazy(() => import("../pages/protected/TextSearch"))
+const TopYearAnime = lazy(() => import("../pages/protected/TopYearAnime"))
 
 const routes = [
     {
@@ -122,6 +123,10 @@ const routes = [
     {
         path: "/profile",
         component: ProfilePage,
+    },
+    {
+        path: "/top-year",
+        component: TopYearAnime,
     },
 ]
 
