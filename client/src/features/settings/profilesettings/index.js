@@ -53,8 +53,13 @@ function ProfileSettings() {
     }
 
     const updateProfile = async () => {
+        const updateProfile = {
+            gender: profile["Gender"],
+            birthday: profile["Birthday"],
+        }
+        console.log(updateProfile)
         try {
-            await axiosInstance.post("/api/updateProfile", profile, {
+            await axiosInstance.post("/api/updateProfile", updateProfile, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `${token}`,

@@ -35,7 +35,7 @@ app.post("/api/login", async (req, res) => {
             id: user.user_id,
             email: user.user_email,
         }
-        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "2h" })
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" })
         return res.status(200).json({ message: "login success", token: token })
     } catch (error) {
         console.error(error)
@@ -60,7 +60,7 @@ app.post("/api/register", async (req, res) => {
 
         await db.insertNewUser(payload.id, name, password, email)
 
-        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "2h" })
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "5h" })
         return res.status(200).json({ message: "login success", token: token })
     }
 })
@@ -685,10 +685,10 @@ app.post("/api/updateProfile", async (req, res) => {
 
         let year = parseInt(birthday.substring(0, 5))
         if (!(gender == "Female" || gender == "Male") || !(year >= 1000 && year <= 9999)) {
-            return res.status(401).send("wrong format")
+            return res.status(401).send("Wrong format")
         } else {
             await db.updateProfile(user_id, gender, birthday)
-            return res.status(200).send("Update Review Successfully")
+            return res.status(200).send("Update Successfully")
         }
     })
 })

@@ -110,7 +110,7 @@ function Header() {
                                 </li>
                                 <div className="divider mt-0 mb-0"></div>
                                 <li>
-                                    <a onClick={logoutUser}>Logout</a>
+                                    <div onClick={logoutUser}>Logout</div>
                                 </li>
                             </ul>
                         </div>

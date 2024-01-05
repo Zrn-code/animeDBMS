@@ -14,6 +14,7 @@ import { Bar } from "react-chartjs-2"
 import { Pie } from "react-chartjs-2"
 import { openModal } from "../../features/common/modalSlice"
 import { MODAL_BODY_TYPES } from "../../utils/globalConstantUtil"
+
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 ChartJS.register(ArcElement, Tooltip, Legend, Tooltip, Filler, Legend)
 
@@ -390,6 +391,172 @@ function ReviewPage({ token }) {
     )
 }
 
+const RecommendList = ({ genre_id, token }) => {
+    const [animes, setAnimes] = useState([])
+    const [currentPage, setCurrentPage] = useState(0)
+    const itemsPerPage = 2
+    const [sortedBy, setSortedBy] = useState("Score")
+    const getAnimes = async () => {
+        try {
+            const response = await axiosInstance.get(`/api/getAnimesByGenre/${genre_id}/${sortedBy}/1/10`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                },
+            })
+            const animeData = response.data
+            console.log(animeData)
+            setAnimes(animeData)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    useEffect(() => {
+        getAnimes()
+    }, [genre_id, sortedBy])
+
+    const nextPage = () => {
+        if (currentPage < Math.ceil(animes.length / itemsPerPage) - 1) {
+            setCurrentPage((prevPage) => prevPage + 1)
+        }
+    }
+
+    const prevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage((prevPage) => prevPage - 1)
+        }
+    }
+
+    const switchSortBy = () => {
+        if (sortedBy === "Score") {
+            setSortedBy("Members")
+        } else {
+            setSortedBy("Score")
+        }
+    }
+
+    const displayedAnimes = animes.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
+
+    return (
+        <>
+            {displayedAnimes.length > 0 && (
+                <div className="mt-5 w-full">
+                    <div className="grid grid-cols-2">
+                        {displayedAnimes.map((anime, index) => (
+                            <div key={index} className="mx-2">
+                                <div className="bg-base-100 rounded-xl h-80">
+                                    <Link to={`../details/${anime.anime_id}`} className="flex flex-col items-center">
+                                        <img src={anime.Image_URL} alt={anime.Name} className="my-5 rounded-xl h-48"></img>
+                                        <div className="text-xl font-bold text-overflow text-center">
+                                            {anime.Name} ({anime.type})
+                                        </div>
+                                        <div className="flex flex-col justify-center items-center">
+                                            <div className="text-xl font-bold mx-2">
+                                                ⭐{anime.score} 🧑‍💻{anime.members_cnt}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="flex justify-between mt-5">
+                        <button className="btn" onClick={switchSortBy}>
+                            {sortedBy}
+                        </button>
+                        <div className="flex">
+                            <button className="btn" onClick={prevPage} disabled={currentPage === 0}>
+                                prev
+                            </button>
+                            <button
+                                className="btn"
+                                onClick={nextPage}
+                                disabled={currentPage === Math.ceil(animes.length / itemsPerPage) - 1}
+                            >
+                                next
+                            </button>
+                        </div>
+                        <button className="btn btn-primary">
+                            <Link to={`../genre/${genre_id}`}>More</Link>
+                        </button>
+                    </div>
+                </div>
+            )}
+        </>
+    )
+}
+
+const AnalysisPage = ({ token }) => {
+    const dispatch = useDispatch()
+    const [recommend, setRecommend] = useState([])
+    const [genre_id, setGenre_id] = useState(0)
+
+    const getRecommend = async () => {
+        try {
+            const response = await axiosInstance.get("/api/getRecommend", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                },
+            })
+            const recommendData = response.data
+            setRecommend(recommendData)
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                const errorMessage = error.response.data
+                if (errorMessage === "Token expired") {
+                    console.log("Token expired. Logging out...")
+                    localStorage.removeItem("token")
+                    dispatch(showNotification({ message: "Token expired. Logging out...", status: 0 }))
+                    //window.location.href = "/app/welcome"
+                } else {
+                    console.log("Other 401 error:", errorMessage)
+                }
+            } else {
+                console.error("Error:", error)
+            }
+        }
+    }
+    useEffect(() => {
+        getRecommend()
+    }, [])
+
+    return (
+        <div className="w-full ">
+            <div className="bg-base-100 rounded-xl my-5 text-xl p-5 font-bold">Guess You Like</div>
+            <div className="flex flex-wrap">
+                {recommend &&
+                    recommend.map((recommend, index) => {
+                        return (
+                            <div key={index} className="grow mx-2">
+                                <button
+                                    className="bg-base-100 text-center px-6 py-2 rounded-xl font-bold"
+                                    onClick={() => setGenre_id(recommend.Genre_id)}
+                                >
+                                    {recommend.Genre_name}
+                                </button>
+                            </div>
+                        )
+                    })}
+            </div>
+            {genre_id ? (
+                <RecommendList genre_id={genre_id} token={token} />
+            ) : (
+                <div class="flex mt-5 bg-base-100 rounded-xl items-center justify-center h-72">
+                    <div class="flex items-center justify-center">
+                        <p class="text-center leading-8">
+                            This feature is based on all the anime shows where you have given a rating of over eight points. It calculates
+                            the total number of categories among them and selects the top five favorite categories.
+                        </p>
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
+
 function InternalPage() {
     const dispatch = useDispatch()
     const [profile, setProfile] = useState([])
@@ -576,6 +743,14 @@ function InternalPage() {
                         </div>
                         <div className="flex bg-base-100 shadow rounded-xl overflow-hidden mt-5">
                             <button
+                                onClick={() => setCurrentPage("analysis")}
+                                className={`flex-1 p-2 font-bold ${currentPage === "analysis" ? "bg-primary text-slate-50" : ""}`}
+                            >
+                                Recommendation
+                            </button>
+                        </div>
+                        <div className="flex bg-base-100 shadow rounded-xl overflow-hidden mt-5">
+                            <button
                                 onClick={() => setCurrentPage("rating")}
                                 className={`flex-1 p-2 font-bold ${currentPage === "rating" ? "bg-primary text-slate-50" : ""}`}
                             >
@@ -599,6 +774,7 @@ function InternalPage() {
                         {currentPage === "rating" ? <RatingPage token={token} /> : ""}
                         {currentPage === "watchList" ? <WatchListPage token={token} /> : ""}
                         {currentPage === "review" ? <ReviewPage token={token} /> : ""}
+                        {currentPage === "analysis" ? <AnalysisPage token={token} /> : ""}
                         {currentPage === "overview" ? (
                             <div className="flex">
                                 <div className="w-1/2">

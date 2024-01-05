@@ -300,7 +300,7 @@ export async function getAnimesByLetter(id, letter, type, st, ed) {
 
 export async function getRecommend(id) {
     const result = await pool.query(
-        "SELECT Genre_name FROM anime_genres JOIN genres on anime_genres.Genre_id = genres.Genre_id WHERE anime_id in (SELECT anime_id FROM users_score WHERE user_id = ? AND rating >= 8)GROUP BY anime_genres.Genre_id ORDER BY COUNT(*) DESC LIMIT 5",
+        "SELECT Genre_name, anime_genres.Genre_id FROM anime_genres JOIN genres on anime_genres.Genre_id = genres.Genre_id WHERE anime_id in (SELECT anime_id FROM users_score WHERE user_id = ? AND rating >= 8)GROUP BY anime_genres.Genre_id ORDER BY COUNT(*) DESC LIMIT 5",
         [id]
     )
     return result[0]
