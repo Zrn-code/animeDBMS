@@ -528,3 +528,28 @@ export async function updateProfile(user_id, gender, birthday) {
         user_id,
     ])
 }
+
+export async function getWatchListDistribution(id) {
+    const result = await pool.query(
+        "SELECT status_id as watch_status_id,COUNT(*) as cnt FROM (SELECT user_id,status_id FROM users_status where user_id = ?)A GROUP BY user_id,status_id ORDER BY status_id",
+        [id]
+    )
+    return result[0]
+}
+
+export async function getRatingDistribution(id) {
+    const result = await pool.query(
+        "SELECT rating as score,COUNT(*) as cnt FROM (SELECT user_id,rating FROM users_score where user_id = ?)A GROUP BY user_id,rating ORDER BY rating",
+        [id]
+    )
+    return result[0]
+}
+
+export async function updatePassword(id, new_password) {
+    await pool.query("UPDATE users_account SET user_password = ? WHERE user_id = ? ", [new_password, id])
+}
+
+export async function getPassword(id) {
+    const result = await pool.query("SELECT user_password FROM users_account WHERE user_id = ?", [id])
+    return result[0][0].user_password
+}
