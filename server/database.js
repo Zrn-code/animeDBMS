@@ -416,10 +416,10 @@ export async function insertNewUser(id, name, password, email) {
     await pool.query("INSERT INTO users_details VALUES (?, ?, ?, ?)", [id, name, null, null])
 }
 
-export async function getRating(id) {
+export async function getRating(user_id) {
     const result = await pool.query(
         "select users_score.anime_id, name, Image_URL ,rating from users_score, anime_dataset where user_id = ? and users_score.anime_id = anime_dataset.anime_id",
-        [id]
+        [user_id]
     )
     //console.log(result[0])
     return result[0]
@@ -479,7 +479,7 @@ export async function getRatingWithId(user_id, anime_id) {
     return result[0]
 }
 
-export async function getWatchList(id) {
+export async function getWatchList(user_id) {
     const result = await pool.query(
         "select users_status.anime_id, name, Image_URL , status_name as status from users_status, anime_dataset, status where user_id = ? and users_status.anime_id = anime_dataset.anime_id and status.status_id = users_status.status_id",
         [id]
@@ -495,10 +495,10 @@ export async function getWatchListWithId(user_id, anime_id) {
     return result[0]
 }
 
-export async function getReview(id) {
+export async function getReview(user_id) {
     const result = await pool.query(
         "select users_review.anime_id, name, Image_URL ,review from users_review, anime_dataset where user_id = ? and users_review.anime_id = anime_dataset.anime_id",
-        [id]
+        [user_id]
     )
     return result[0]
 }
@@ -527,4 +527,29 @@ export async function updateProfile(user_id, gender, birthday) {
         birthday,
         user_id,
     ])
+}
+
+export async function getWatchListDistribution(id) {
+    const result = await pool.query(
+        "SELECT status_id as watch_status_id,COUNT(*) as cnt FROM (SELECT user_id,status_id FROM users_status where user_id = ?)A GROUP BY user_id,status_id ORDER BY status_id",
+        [id]
+    )
+    return result[0]
+}
+
+export async function getRatingDistribution(id) {
+    const result = await pool.query(
+        "SELECT rating as score,COUNT(*) as cnt FROM (SELECT user_id,rating FROM users_score where user_id = ?)A GROUP BY user_id,rating ORDER BY rating",
+        [id]
+    )
+    return result[0]
+}
+
+export async function updatePassword(id, new_password) {
+    await pool.query("UPDATE users_account SET user_password = ? WHERE user_id = ? ", [new_password, id])
+}
+
+export async function getPassword(id) {
+    const result = await pool.query("SELECT user_password FROM users_account WHERE user_id = ?", [id])
+    return result[0][0].user_password
 }
