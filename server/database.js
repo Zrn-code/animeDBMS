@@ -416,10 +416,10 @@ export async function insertNewUser(id, name, password, email) {
     await pool.query("INSERT INTO users_details VALUES (?, ?, ?, ?)", [id, name, null, null])
 }
 
-export async function getRating(id) {
+export async function getRating(user_id) {
     const result = await pool.query(
         "select users_score.anime_id, name, Image_URL ,rating from users_score, anime_dataset where user_id = ? and users_score.anime_id = anime_dataset.anime_id",
-        [id]
+        [user_id]
     )
     //console.log(result[0])
     return result[0]
@@ -479,10 +479,10 @@ export async function getRatingWithId(user_id, anime_id) {
     return result[0]
 }
 
-export async function getWatchList(id) {
+export async function getWatchList(user_id) {
     const result = await pool.query(
         "select users_status.anime_id, name, Image_URL , status_name from users_status, anime_dataset, status where user_id = ? and users_status.anime_id = anime_dataset.anime_id and status.status_id = users_status.status_id",
-        [id]
+        [user_id]
     )
     return result[0]
 }
@@ -495,10 +495,10 @@ export async function getWatchListWithId(user_id, anime_id) {
     return result[0]
 }
 
-export async function getReview(id) {
+export async function getReview(user_id) {
     const result = await pool.query(
         "select users_review.anime_id, name, Image_URL ,review from users_review, anime_dataset where user_id = ? and users_review.anime_id = anime_dataset.anime_id",
-        [id]
+        [user_id]
     )
     return result[0]
 }
