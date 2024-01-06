@@ -810,3 +810,67 @@ app.post("/api/updateProfile", async (req, res) => {
         }
     })
 })
+
+app.get("/api/getWatchListDistribution", async (req, res) => {
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const id = authData.id
+        const WatchList_distribution = await db.getWatchListDistribution(id)
+        res.send(WatchList_distribution)
+    })
+})
+
+app.get("/api/getRatingDistribution", async (req, res) => {
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const id = authData.id
+        const rating_distribution = await db.getRatingDistribution(id)
+        res.send(rating_distribution)
+    })
+})
+
+app.put("/api/updatePassword", async (req, res) => {
+    const { old_password, new_password } = req.body
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const id = authData.id
+        const OldPassword = await db.getPassword(id)
+        if (OldPassword == old_password) {
+            if (new_password.length >= 6 && new_password.length <= 20) {
+                await db.updatePassword(id, new_password)
+                return res.status(200).send("Update Password Successfully")
+            } else {
+                return res.status(401).send("Wrong format")
+            }
+        } else {
+            return res.status(401).send("Old password not correct")
+        }
+    })
+})
