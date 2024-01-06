@@ -40,7 +40,7 @@ const routes = [
         name: "Year Animes",
     },
     {
-        path: "/app/top-gender",
+        path: "/app/gender-popular",
         icon: <DocumentDuplicateIcon className={iconClasses} />,
         name: "Gender Popular",
     },

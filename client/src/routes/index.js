@@ -26,6 +26,7 @@ const LetterSearch = lazy(() => import("../pages/protected/LetterSearch"))
 const ProfilePage = lazy(() => import("../pages/protected/ProfilePage"))
 const TextSearch = lazy(() => import("../pages/protected/TextSearch"))
 const TopYearAnime = lazy(() => import("../pages/protected/TopYearAnime"))
+const GenderPopular = lazy(() => import("../pages/protected/GenderPopular"))
 
 const routes = [
     {
@@ -127,6 +128,10 @@ const routes = [
     {
         path: "/top-year",
         component: TopYearAnime,
+    },
+    {
+        path: "/gender-popular",
+        component: GenderPopular,
     },
 ]
 
