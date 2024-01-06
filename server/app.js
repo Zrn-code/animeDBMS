@@ -67,6 +67,7 @@ app.post("/api/register", async (req, res) => {
 
 app.get("/api/getRating", async (req, res) => {
     const token = req.headers.authorization
+    const { anime_id } = req.body
     if (!token) return res.status(401).send("Token not found")
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
@@ -77,9 +78,14 @@ app.get("/api/getRating", async (req, res) => {
                 return res.status(401).send("Token is invalid")
             }
         }
-        const id = authData.id
-        const inf = await db.getRating(id)
-        res.send(inf)
+        const user_id = authData.id
+        if (!anime_id || anime_id === undefined) {
+            const inf = await db.getRating(user_id)
+            res.send(inf)
+        } else {
+            const inf = await db.getRatingWithId(user_id, anime_id)
+            res.send(inf)
+        }
     })
 })
 
@@ -105,6 +111,7 @@ app.get("/api/getRating/:id", async (req, res) => {
 
 app.get("/api/getWatchList", async (req, res) => {
     const token = req.headers.authorization
+    const { anime_id } = req.body
     if (!token) return res.status(401).send("Token not found")
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
@@ -115,9 +122,14 @@ app.get("/api/getWatchList", async (req, res) => {
                 return res.status(401).send("Token is invalid")
             }
         }
-        const id = authData.id
-        const inf = await db.getWatchList(id)
-        res.send(inf)
+        const user_id = 1
+        if (!anime_id || anime_id === undefined) {
+            const inf = await db.getWatchList(user_id)
+            res.send(inf)
+        } else {
+            const inf = await db.getWatchListWithId(user_id, anime_id)
+            res.send(inf)
+        }
     })
 })
 
@@ -142,6 +154,7 @@ app.get("/api/getWatchList/:id", async (req, res) => {
 
 app.get("/api/getReview", async (req, res) => {
     const token = req.headers.authorization
+    const { anime_id } = req.body
     if (!token) return res.status(401).send("Token not found")
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
@@ -152,9 +165,14 @@ app.get("/api/getReview", async (req, res) => {
                 return res.status(401).send("Token is invalid")
             }
         }
-        const id = authData.id
-        const inf = await db.getReview(id)
-        res.send(inf)
+        const user_id = authData.id
+        if (!anime_id || anime_id === undefined) {
+            const inf = await db.getReview(user_id)
+            res.send(inf)
+        } else {
+            const inf = await db.getReviewWithId(user_id, anime_id)
+            res.send(inf)
+        }
     })
 })
 
@@ -269,7 +287,7 @@ app.put("/api/updateStatus", async (req, res) => {
     })
 })
 
-app.delete("/api/removeReview", async (req, res) => {
+app.delete("/api/deleteReview", async (req, res) => {
     const { anime_id } = req.body
     const token = req.headers.authorization
     if (!token) return res.status(401).send("Token not found")
@@ -293,7 +311,7 @@ app.delete("/api/removeReview", async (req, res) => {
     })
 })
 
-app.delete("/api/removeRating", async (req, res) => {
+app.delete("/api/deleteRating", async (req, res) => {
     const { anime_id } = req.body
     const token = req.headers.authorization
     if (!token) return res.status(401).send("Token not found")
@@ -317,7 +335,7 @@ app.delete("/api/removeRating", async (req, res) => {
     })
 })
 
-app.delete("/api/removeWatchStatus", async (req, res) => {
+app.delete("/api/deleteWatchStatus", async (req, res) => {
     const { anime_id } = req.body
     const token = req.headers.authorization
     if (!token) return res.status(401).send("Token not found")
