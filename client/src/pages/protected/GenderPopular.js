@@ -219,7 +219,11 @@ function InternalPage() {
     return (
         <>
             <TitleCard
-                title="Top Anime Series"
+                title={
+                    <div className="tooltip tooltip-right" data-tip="Order By: member, weighted_score, name">
+                        {params + " Popular"}
+                    </div>
+                }
                 topMargin="mt-2"
                 TopSideButtons={
                     <>
@@ -244,7 +248,7 @@ function InternalPage() {
                                     <th>Rank</th>
                                     <th>Title</th>
                                     <th>Score</th>
-                                    <th>Your Review</th>
+                                    <th>Your Score</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -259,16 +263,19 @@ function InternalPage() {
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <div className="flex w-72">
+                                                    <div className="flex">
                                                         <Link to={"../details/" + l.anime_id} className="flex">
                                                             <img className="flex h-24" src={l["Image_URL"]} alt="img" />
                                                         </Link>
-                                                        <div className="flex mx-5 flex-col">
+                                                        <div className="flex mx-5 flex-col ">
                                                             <Link
                                                                 to={"../details/" + l.anime_id}
                                                                 className="flex text-ellipsis overflow-hidden"
                                                             >
-                                                                <div className="font-bold text-ellipsis overflow-hidden text-lg hover:underline">
+                                                                <div
+                                                                    className="font-bold text-lg hover:underline"
+                                                                    style={{ whiteSpace: "normal" }}
+                                                                >
                                                                     {l.Name}
                                                                 </div>
                                                             </Link>
@@ -276,7 +283,8 @@ function InternalPage() {
                                                                 {l.type} ( {l.Premiered !== -1 ? l.Premiered : "n/a"} )
                                                             </div>
                                                             <div className="mt-2 font-extralight text-sm">
-                                                                {l.members_cnt ? l.members_cnt : 0} Members
+                                                                {params === "Male" ? l["Male_cnt"] : l["Female_cnt"]}
+                                                                {" " + params + " "} Members
                                                             </div>
                                                         </div>
                                                     </div>

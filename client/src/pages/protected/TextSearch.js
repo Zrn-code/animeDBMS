@@ -60,8 +60,6 @@ const RatingButtons = ({ id, name, img, state }) => {
 }
 
 const DetailCard = ({ detail }) => {
-    const dispatch = useDispatch()
-
     if (!detail) {
         return <div>Loading...</div>
     }
@@ -69,7 +67,9 @@ const DetailCard = ({ detail }) => {
         <div className="rounded-lg bg-base-100 shadow-md flex flex-col h-96">
             <div className="p-6 flex-grow">
                 <Link to={"../details/" + detail["anime_id"]} className="flex items-center justify-between">
-                    <h2 className="text-lg font-bold">{detail["Name"]}</h2>
+                    <h2 className="text-lg font-bold">
+                        {detail["Name"]} ( {detail["Premiered"]} )
+                    </h2>
                 </Link>
                 <hr className="my-4" />
                 <div className="flex items-stretch">
@@ -84,6 +84,9 @@ const DetailCard = ({ detail }) => {
                 </div>
             </div>
             <div className="flex justify-end mb-4 mr-4">
+                <div className="outline outline-1 rounded mx-2 px-2 py-1">{detail["type"]}</div>
+                <div className="outline outline-1 rounded mx-2 px-2 py-1">⭐{detail["score"]}</div>
+                <div className="outline outline-1 rounded mx-2 px-2 py-1">🧑‍💻{detail["members_cnt"]}</div>
                 <RatingButtons id={detail["Anime_id"]} name={detail["Name"]} img={detail["Image_URL"]} state={detail["Watch_Status"]} />
                 <WatchListButtons id={detail["Anime_id"]} name={detail["Name"]} img={detail["Image_URL"]} state={detail["Watch_Status"]} />
             </div>

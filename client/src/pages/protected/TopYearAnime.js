@@ -222,7 +222,11 @@ function InternalPage() {
                 </div>
             </div>
             <TitleCard
-                title="Top Anime Series"
+                title={
+                    <div className="tooltip tooltip-right" data-tip="Order By: weight_score,mean_score, members,anime_id">
+                        Top Animes in {year}
+                    </div>
+                }
                 topMargin="mt-2"
                 TopSideButtons={
                     <button className=" outline outline-1 text-base rounded-lg font-bold py-1 px-2 mx-2" onClick={handleDisplayChange}>
@@ -242,7 +246,7 @@ function InternalPage() {
                                     <th>Rank</th>
                                     <th>Title</th>
                                     <th>Score</th>
-                                    <th>Your Review</th>
+                                    <th>Your Score</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -257,16 +261,19 @@ function InternalPage() {
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <div className="flex w-72">
+                                                    <div className="flex">
                                                         <Link to={"../details/" + l.anime_id} className="flex">
                                                             <img className="flex h-24" src={l["Image_URL"]} alt="img" />
                                                         </Link>
-                                                        <div className="flex mx-5 flex-col">
+                                                        <div className="flex mx-5 flex-col ">
                                                             <Link
                                                                 to={"../details/" + l.anime_id}
                                                                 className="flex text-ellipsis overflow-hidden"
                                                             >
-                                                                <div className="font-bold text-ellipsis overflow-hidden text-lg hover:underline">
+                                                                <div
+                                                                    className="font-bold text-lg hover:underline"
+                                                                    style={{ whiteSpace: "normal" }}
+                                                                >
                                                                     {l.Name}
                                                                 </div>
                                                             </Link>
