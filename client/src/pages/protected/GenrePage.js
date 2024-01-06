@@ -147,6 +147,7 @@ function InternalPage() {
     const [token, setToken] = useState(localStorage.getItem("token"))
     const itemsPerPage = 48
     const [params, setParams] = useState("Score")
+    const [display, setDisplay] = useState("Default")
 
     useEffect(() => {
         dispatch(setPageTitle({ title: "Search Anime" }))
@@ -154,8 +155,9 @@ function InternalPage() {
     }, [])
 
     useEffect(() => {
+        setLoading(true)
         fetchData()
-    }, [currentPage, params])
+    }, [currentPage, params, display])
 
     useEffect(() => {
         axiosInstance
@@ -166,11 +168,11 @@ function InternalPage() {
 
     useEffect(() => {
         axiosInstance
-            .get(`/api/getGenresCnt/${genre_id}`)
+            .get(`/api/getGenresCnt/${genre_id}`, display)
             .then((res) => res.data)
             .then((data) => setGenre_cnt(data[0]["cnt"]))
         setTotalPages(Math.ceil(genre_cnt / itemsPerPage))
-    }, [values])
+    }, [values, display])
 
     const fetchData = async () => {
         const startItem = (currentPage - 1) * itemsPerPage + 1
@@ -216,6 +218,16 @@ function InternalPage() {
         return <div>Loading...</div>
     }
 
+    const handleDisplayChange = () => {
+        if (display === "Default") {
+            setDisplay("Seen")
+        } else if (display === "Seen") {
+            setDisplay("NotSeen")
+        } else {
+            setDisplay("Default")
+        }
+    }
+
     return (
         <>
             <div className="flex p-2 mb-2 justify-between items-center">
@@ -223,6 +235,9 @@ function InternalPage() {
                     {genreName} Anime ({genre_cnt})
                 </div>
                 <div className="flex items-center">
+                    <button className=" outline outline-1  rounded-lg font-bold py-1 px-2 mx-2" onClick={handleDisplayChange}>
+                        {display}
+                    </button>
                     <TopSideButtons applyFilter={applyFilter} applySearch={applySearch} />
                     <button className="mx-2" onClick={() => setCompact(!compact)}>
                         {compact ? <ListBulletIcon className="h-6 w-6" /> : <Squares2X2Icon className="h-6 w-6" />}

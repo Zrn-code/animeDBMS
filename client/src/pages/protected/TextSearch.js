@@ -99,6 +99,7 @@ function InternalPage() {
     const [compact, setCompact] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
+    const [display, setDisplay] = useState("Default")
     const [loading, setLoading] = useState(true)
     const [searchText, setSearchText] = useState(text)
     const [token, setToken] = useState(localStorage.getItem("token"))
@@ -111,13 +112,13 @@ function InternalPage() {
     useEffect(() => {
         setLoading(true)
         fetchData()
-    }, [currentPage])
+    }, [currentPage, display])
 
     const fetchData = () => {
         const startItem = (currentPage - 1) * itemsPerPage + 1
         const endItem = currentPage * itemsPerPage
         axiosInstance
-            .get(`/api/searchAnime/${text}/${startItem}/${endItem}`, {
+            .get(`/api/searchAnime/${text}/${startItem}/${endItem}`, display, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: token,
@@ -135,7 +136,7 @@ function InternalPage() {
 
     const getCount = () => {
         axiosInstance
-            .get("/api/getAnimesCnt/search/" + text)
+            .get("/api/getAnimesCnt/search/" + text, display)
             .then((res) => res.data)
             .then((data) => {
                 setResultCnt(data[0]["cnt"])
@@ -158,6 +159,15 @@ function InternalPage() {
             </div>
         )
 
+    const handleDisplayChange = () => {
+        if (display === "Default") {
+            setDisplay("Seen")
+        } else if (display === "Seen") {
+            setDisplay("NotSeen")
+        } else {
+            setDisplay("Default")
+        }
+    }
     return (
         <>
             <form
@@ -170,7 +180,7 @@ function InternalPage() {
                     <div className="input-group w-full">
                         <input
                             type="text"
-                            placeholder="Search…"
+                            placeholder="Search Anime"
                             className="input input-bordered w-full"
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
@@ -199,6 +209,9 @@ function InternalPage() {
                 <span className="font-bold">
                     {text} {resultCnt} in total
                 </span>
+                <button className=" outline outline-1  rounded-lg font-bold py-1 px-2 mx-2" onClick={handleDisplayChange}>
+                    {display}
+                </button>
             </div>
 
             <div className="divider" />

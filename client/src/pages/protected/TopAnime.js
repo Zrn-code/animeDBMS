@@ -152,6 +152,7 @@ function InternalPage() {
     const [inputPage, setInputPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const [loading, setLoading] = useState(true)
+    const [display, setDisplay] = useState("Default")
     const [token, setToken] = useState(localStorage.getItem("token"))
     const itemsPerPage = 50
 
@@ -160,7 +161,7 @@ function InternalPage() {
         const endItem = currentPage * itemsPerPage
 
         axiosInstance
-            .get("/api/getTopAnime/" + params + "/" + startItem + "/" + endItem, {
+            .get("/api/getTopAnime/" + params + "/" + startItem + "/" + endItem, display, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: token,
@@ -187,7 +188,7 @@ function InternalPage() {
     useEffect(() => {
         setLoading(true)
         fetchData()
-    }, [currentPage, params])
+    }, [currentPage, params, display])
 
     const removeFilter = () => {
         setParams("Default")
@@ -198,12 +199,28 @@ function InternalPage() {
         setParams(paramsString)
     }
 
+    const handleDisplayChange = () => {
+        if (display === "Default") {
+            setDisplay("Seen")
+        } else if (display === "Seen") {
+            setDisplay("NotSeen")
+        } else {
+            setDisplay("Default")
+        }
+    }
     return (
         <>
             <TitleCard
                 title="Top Anime Series"
                 topMargin="mt-2"
-                TopSideButtons={<TopSideButtons applyFilter={applyFilter} removeFilter={removeFilter} />}
+                TopSideButtons={
+                    <>
+                        <button className="outline outline-1 text-base  rounded-lg font-bold py-1 px-2 mx-2" onClick={handleDisplayChange}>
+                            {display}
+                        </button>
+                        <TopSideButtons applyFilter={applyFilter} removeFilter={removeFilter} />
+                    </>
+                }
             >
                 {loading ? (
                     <div className="flex justify-center items-center h-full">

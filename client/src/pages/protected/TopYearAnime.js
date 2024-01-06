@@ -147,7 +147,6 @@ function InternalPage() {
     }, [])
 
     const [values, setValues] = useState([])
-    const [params, setParams] = useState("Default")
     const [currentPage, setCurrentPage] = useState(1)
     const [inputPage, setInputPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
@@ -155,13 +154,14 @@ function InternalPage() {
     const [loading, setLoading] = useState(true)
     const [token, setToken] = useState(localStorage.getItem("token"))
     const itemsPerPage = 50
+    const [display, setDisplay] = useState("Default")
 
     const fetchData = () => {
         const startItem = (currentPage - 1) * itemsPerPage + 1
         const endItem = currentPage * itemsPerPage
 
         axiosInstance
-            .get("/api/getTopAnimeByYear/" + year + "/" + startItem + "/" + endItem, {
+            .get("/api/getTopAnimeByYear/" + year + "/" + startItem + "/" + endItem, display, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: token,
@@ -189,24 +189,47 @@ function InternalPage() {
     useEffect(() => {
         setLoading(true)
         fetchData()
-    }, [currentPage, year])
+    }, [currentPage, year, display])
 
     const handleYearChange = (event) => {
         const selectedYear = parseInt(event.target.value)
         setYear(selectedYear)
     }
 
+    const handleDisplayChange = () => {
+        if (display === "Default") {
+            setDisplay("Seen")
+        } else if (display === "Seen") {
+            setDisplay("NotSeen")
+        } else {
+            setDisplay("Default")
+        }
+    }
+
     return (
         <>
             <div className="bg-base-100 rounded-xl py-4 px-5 mb-5">
-                <div className="w-full flex justify-between text-xs px-2">
-                    {[...Array(5)].map((_, index) => (
-                        <span key={index}>{2000 + index * 5}</span>
+                <div className="w-full flex justify-between text-xs ">
+                    {[...Array(14)].map((_, index) => (
+                        <span key={index}>{1960 + index * 5}</span>
                     ))}
                 </div>
-                <input type="range" min={2000} max={2020} value={year} className="range mt-2" step={1} onChange={handleYearChange} />
+                <input type="range" min={1960} max={2025} value={year} className="range mt-2" step={1} onChange={handleYearChange} />
+                <div className="w-full flex justify-between text-xs pl-2">
+                    {[...Array(14)].map((_, index) => (
+                        <span key={index}>|</span>
+                    ))}
+                </div>
             </div>
-            <TitleCard title="Top Anime Series" topMargin="mt-2">
+            <TitleCard
+                title="Top Anime Series"
+                topMargin="mt-2"
+                TopSideButtons={
+                    <button className=" outline outline-1  rounded-lg font-bold py-1 px-2 mx-2" onClick={handleDisplayChange}>
+                        {display}
+                    </button>
+                }
+            >
                 {loading ? (
                     <div className="flex justify-center items-center h-full">
                         <div className="border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600" />

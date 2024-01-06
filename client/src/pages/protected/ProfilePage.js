@@ -396,9 +396,10 @@ const RecommendList = ({ genre_id, token }) => {
     const [currentPage, setCurrentPage] = useState(0)
     const itemsPerPage = 2
     const [sortedBy, setSortedBy] = useState("Score")
+    const display = "NotSeen"
     const getAnimes = async () => {
         try {
-            const response = await axiosInstance.get(`/api/getAnimesByGenre/${genre_id}/${sortedBy}/1/10`, {
+            const response = await axiosInstance.get(`/api/getAnimesByGenre/${genre_id}/${sortedBy}/1/10`, display, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `${token}`,

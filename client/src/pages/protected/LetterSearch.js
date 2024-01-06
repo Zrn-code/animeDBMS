@@ -132,6 +132,7 @@ function InternalPage() {
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
     const [loading, setLoading] = useState(true)
+    const [display, setDisplay] = useState("Default")
     const itemsPerPage = 48
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
     useEffect(() => {
@@ -151,7 +152,7 @@ function InternalPage() {
         const startItem = (currentPage - 1) * itemsPerPage + 1
         const endItem = currentPage * itemsPerPage
         axiosInstance
-            .get(`/api/getAnimesByLetter/${letter}/${params}/${startItem}/${endItem}`, {
+            .get(`/api/getAnimesByLetter/${letter}/${params}/${startItem}/${endItem}`, display, {
                 headers: {
                     Authorization: localStorage.getItem("token") ? localStorage.getItem("token") : null,
                     "Content-Type": "application/json",
@@ -166,7 +167,15 @@ function InternalPage() {
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber)
     }
-
+    const handleDisplayChange = () => {
+        if (display === "Default") {
+            setDisplay("Seen")
+        } else if (display === "Seen") {
+            setDisplay("NotSeen")
+        } else {
+            setDisplay("Default")
+        }
+    }
     if (loading)
         return (
             <div className="flex justify-center items-center h-full">
@@ -191,6 +200,9 @@ function InternalPage() {
             <div className="flex p-2 mt-5 justify-between items-center">
                 <div className="font-bold text-2xl">Search Result: {letter}</div>
                 <div className="flex items-center">
+                    <button className=" outline outline-1  rounded-lg font-bold py-1 px-2 mx-2" onClick={handleDisplayChange}>
+                        {display}
+                    </button>
                     <TopSideButtons applyFilter={applyFilter} />
                     <button className="mx-2" onClick={() => setCompact(!compact)}>
                         {compact ? <ListBulletIcon className="h-6 w-6" /> : <Squares2X2Icon className="h-6 w-6" />}
