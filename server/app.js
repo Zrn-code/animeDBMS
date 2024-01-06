@@ -200,7 +200,7 @@ app.post("/api/addRating", async (req, res) => {
     })
 })
 
-app.post("/api/updateRating", async (req, res) => {
+app.put("/api/updateRating", async (req, res) => {
     const { anime_id, score } = req.body
     const token = req.headers.authorization
     if (!token) return res.status(401).send("Token not found")
@@ -219,6 +219,124 @@ app.post("/api/updateRating", async (req, res) => {
             return res.status(200).send("Update Rating Successfully")
         } else {
             return res.status(401).send("wrong format")
+        }
+    })
+})
+
+app.post("/api/addStatus", async (req, res) => {
+    const { anime_id, status } = req.body
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+        if (status == 1 || status == 2 || status == 3 || status == 4 || status == 6) {
+            await db.addStatus(user_id, anime_id, status)
+            return res.status(200).send("Add Status Successfully")
+        } else {
+            return res.status(401).send("wrong format")
+        }
+    })
+})
+
+app.put("/api/updateStatus", async (req, res) => {
+    const { anime_id, status } = req.body
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+        if (status == 1 || status == 2 || status == 3 || status == 4 || status == 6) {
+            await db.updateStatus(user_id, anime_id, status)
+            return res.status(200).send("Update Status Successfully")
+        } else {
+            return res.status(401).send("wrong format")
+        }
+    })
+})
+
+app.delete("/api/removeReview", async (req, res) => {
+    const { anime_id } = req.body
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+        const ifreviewExist = await db.checkreview(user_id, anime_id)
+        if (ifreviewExist > 0) {
+            await db.removeReview(user_id, anime_id)
+            return res.status(200).send("Deleted Successfully")
+        } else {
+            return res.status(401).send("review not found")
+        }
+    })
+})
+
+app.delete("/api/removeRating", async (req, res) => {
+    const { anime_id } = req.body
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+        const ifratingExist = await db.checkrating(user_id, anime_id)
+        if (ifratingExist > 0) {
+            await db.removeRating(user_id, anime_id)
+            return res.status(200).send("Deleted Successfully")
+        } else {
+            return res.status(401).send("rating not found")
+        }
+    })
+})
+
+app.delete("/api/removeWatchStatus", async (req, res) => {
+    const { anime_id } = req.body
+    const token = req.headers.authorization
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+        const ifwatchStatusExist = await db.checkwatchStatus(user_id, anime_id)
+        if (ifwatchStatusExist > 0) {
+            await db.removeWatchStatus(user_id, anime_id)
+            return res.status(200).send("Deleted Successfully")
+        } else {
+            return res.status(401).send("status not found")
         }
     })
 })
