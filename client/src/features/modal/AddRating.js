@@ -6,7 +6,7 @@ const INITIAL_RATING = {
     id: "",
     name: "",
     img: "",
-    score: 10,
+    score: "",
 }
 
 const ratingOptions = [
@@ -29,9 +29,7 @@ function AddRatingModalBody({ closeModal, extraObject }) {
 
     const saveWatchList = () => {
         setLoading(true)
-        // Call API to save watch list
-        // If success, dispatch notification
-        // If fail, show error message
+
         dispatch(showNotification({ message: "Rating", status: 1 }))
         closeModal()
     }
@@ -47,7 +45,7 @@ function AddRatingModalBody({ closeModal, extraObject }) {
                         <select
                             className="select w-full max-w-xs select-bordered"
                             value={Rating["score"]}
-                            onChange={(e) => setRating({ ...Rating, state: e.target.value })}
+                            onChange={(e) => setRating({ ...Rating, score: e.target.value })}
                         >
                             {ratingOptions.map((state) => {
                                 return (

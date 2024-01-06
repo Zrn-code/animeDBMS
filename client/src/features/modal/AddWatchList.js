@@ -3,6 +3,8 @@ import { useDispatch } from "react-redux"
 import { showNotification } from "../common/headerSlice"
 import InputText from "../../components/Input/InputText"
 import ErrorText from "../../components/Typography/ErrorText"
+import axios from "axios"
+import axiosInstance from "../../app/axios"
 
 const INITIAL_WATCH_STATE = {
     id: "",
@@ -27,9 +29,8 @@ function AddWatchListModalBody({ closeModal, extraObject }) {
 
     const saveWatchList = () => {
         setLoading(true)
-        // Call API to save watch list
-        // If success, dispatch notification
-        // If fail, show error message
+        const token = localStorage.getItem("token")
+
         dispatch(showNotification({ message: "Watch List Saved", status: 1 }))
         closeModal()
     }

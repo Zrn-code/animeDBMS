@@ -537,8 +537,9 @@ function InternalPage() {
                     Authorization: token,
                 },
             })
-            .then((res) => res.data)
-            .then((data) => setRating(data["score"]))
+            .then((res) => res.data[0])
+            .then((data) => setRating(data["rating"]))
+
             .catch((error) => {
                 if (error.response.data === "Token expired" || error.response.data === "Token is invalid") {
                     localStorage
@@ -559,7 +560,7 @@ function InternalPage() {
                     Authorization: token,
                 },
             })
-            .then((res) => res.data)
+            .then((res) => res.data[0])
             .then((data) => setState(data["status"]))
             .catch((error) => {
                 if (error.response.data === "Token expired" || error.response.data === "Token is invalid") {
@@ -613,9 +614,9 @@ function InternalPage() {
                 <div className="min-w-max">
                     {/* Your existing buttons */}
                     <img className="max-h-90 rounded-xl" src={value["Image_URL"]} alt="img" />
-                    <WatchListButtons id={value["id"]} img={value["Image_URL"]} score={state} name={value["Name"]} />
+                    <WatchListButtons id={value["id"]} img={value["Image_URL"]} state={state} name={value["Name"]} />
                     <RatingButtons id={value["id"]} img={value["Image_URL"]} score={rating} name={value["Name"]} />
-                    <ReviewButtons id={value["id"]} img={value["Image_URL"]} score={review} name={value["Name"]} />
+                    <ReviewButtons id={value["id"]} img={value["Image_URL"]} review={review} name={value["Name"]} />
 
                     <div className="flex bg-base-100 rounded-xl overflow-hidden">
                         <button
