@@ -433,6 +433,47 @@ export async function updateRating(user_id, anime_id, score) {
     await pool.query("UPDATE users_score SET rating = ? where user_id = ? and anime_id = ? ", [score, user_id, anime_id])
 }
 
+export async function addStatus(user_id, anime_id, status) {
+    await pool.query("INSERT INTO users_status VALUES (?, ?, ?)", [user_id, anime_id, status])
+}
+
+export async function updateStatus(user_id, anime_id, status) {
+    await pool.query("UPDATE users_status SET status_id = ? where user_id = ? and anime_id = ? ", [status, user_id, anime_id])
+}
+
+export async function checkreview(user_id, anime_id) {
+    const result = await pool.query("select COUNT(review) as cnt from users_review WHERE user_id = ? and anime_id = ?", [user_id, anime_id])
+
+    return result[0][0].cnt
+}
+
+export async function checkrating(user_id, anime_id) {
+    const result = await pool.query("select COUNT(rating) as cnt from users_score WHERE user_id = ? and anime_id = ?", [user_id, anime_id])
+
+    return result[0][0].cnt
+}
+
+export async function checkwatchStatus(user_id, anime_id) {
+    const result = await pool.query("select COUNT(status_id) as cnt from users_status WHERE user_id = ? and anime_id = ?", [
+        user_id,
+        anime_id,
+    ])
+
+    return result[0][0].cnt
+}
+
+export async function removeReview(user_id, anime_id) {
+    await pool.query("DELETE FROM users_review WHERE user_id = ? AND anime_id = ?", [user_id, anime_id])
+}
+
+export async function removeRating(user_id, anime_id) {
+    await pool.query("DELETE FROM users_score WHERE user_id = ? AND anime_id = ?", [user_id, anime_id])
+}
+
+export async function removeWatchStatus(user_id, anime_id) {
+    await pool.query("DELETE FROM users_status WHERE user_id = ? AND anime_id = ?", [user_id, anime_id])
+}
+
 export async function getRatingWithId(user_id, anime_id) {
     const result = await pool.query("select rating from users_score where user_id = ? and users_score.anime_id = ?", [user_id, anime_id])
     return result[0]
