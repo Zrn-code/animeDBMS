@@ -482,7 +482,7 @@ export async function getRatingWithId(user_id, anime_id) {
 export async function getWatchList(user_id) {
     const result = await pool.query(
         "select users_status.anime_id, name, Image_URL , status_name as status from users_status, anime_dataset, status where user_id = ? and users_status.anime_id = anime_dataset.anime_id and status.status_id = users_status.status_id",
-        [id]
+        [user_id]
     )
     return result[0]
 }

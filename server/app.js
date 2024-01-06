@@ -122,7 +122,7 @@ app.get("/api/getWatchList", async (req, res) => {
                 return res.status(401).send("Token is invalid")
             }
         }
-        const user_id = 1
+        const user_id = authData.id
         if (!anime_id || anime_id === undefined) {
             const inf = await db.getWatchList(user_id)
             res.send(inf)
