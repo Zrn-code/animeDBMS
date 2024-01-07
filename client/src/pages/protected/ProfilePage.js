@@ -18,7 +18,14 @@ import { MODAL_BODY_TYPES } from "../../utils/globalConstantUtil"
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 ChartJS.register(ArcElement, Tooltip, Legend, Tooltip, Filler, Legend)
 
-function BarChart() {
+function BarChart({ dataset }) {
+    let cntArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    dataset.forEach((item) => {
+        if (item.score <= 0) return
+        const index = item.score - 1
+        cntArray[index] = item.cnt
+    })
+
     const options = {
         responsive: true,
         plugins: {
@@ -28,16 +35,14 @@ function BarChart() {
         },
     }
 
-    const labels = ["1", "2", "3", "4", "5"]
+    const labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 
     const data = {
         labels,
         datasets: [
             {
                 label: "Users",
-                data: labels.map(() => {
-                    return Math.random() * 1000 + 500
-                }),
+                data: cntArray,
                 backgroundColor: "grey",
             },
         ],
@@ -50,7 +55,15 @@ function BarChart() {
     )
 }
 
-function PieChart({ cnt }) {
+function PieChart({ dataset, cnt }) {
+    //console.log(dataset)
+    let cntArray = [0, 0, 0, 0, 0]
+    dataset.forEach((item) => {
+        if (item.watch_status_id <= 0) return
+        const index = item.watch_status_id === 6 ? 4 : item.watch_status_id - 1
+        cntArray[index] = item.cnt
+    })
+
     const options = {
         responsive: true,
         plugins: {
@@ -60,6 +73,7 @@ function PieChart({ cnt }) {
         },
     }
 
+    //console.log(dataset)
     const labels = ["Watching", "Completed", "On Hold", "Dropped", "Plan to Watch"]
 
     const data = {
@@ -67,7 +81,7 @@ function PieChart({ cnt }) {
         datasets: [
             {
                 label: "users",
-                data: [122, 219, 30, 51, 82],
+                data: cntArray,
                 backgroundColor: [
                     "rgba(255, 99, 255, 0.8)",
                     "rgba(54, 162, 235, 0.8)",
@@ -86,12 +100,15 @@ function PieChart({ cnt }) {
             },
         ],
     }
-
-    return (
-        <TitleCard title={`Watch Status (${cnt})`}>
-            <Pie options={options} data={data} />
-        </TitleCard>
-    )
+    if (dataset.length > 0) {
+        return (
+            <TitleCard title={`Watch Status (${cnt})`}>
+                <Pie options={options} data={data} />
+            </TitleCard>
+        )
+    } else {
+        return <TitleCard title={`Watch Status (${cnt})`}></TitleCard>
+    }
 }
 
 function RatingPage({ token }) {
@@ -533,7 +550,7 @@ const AnalysisPage = ({ token }) => {
                         return (
                             <div key={index} className="grow mx-2">
                                 <button
-                                    className="bg-base-100 text-center px-6 py-2 rounded-xl font-bold"
+                                    className="bg-base-100 text-center px-3 py-2 rounded-xl font-bold"
                                     onClick={() => setGenre_id(recommend.Genre_id)}
                                 >
                                     {recommend.Genre_name}
@@ -567,7 +584,8 @@ function InternalPage() {
     const [reviewCnt, setReviewCnt] = useState(0)
     const [watchListCnt, setWatchListCnt] = useState(0)
     const [currentPage, setCurrentPage] = useState("overview")
-
+    const [watchDistribution, setWatchDistribution] = useState([])
+    const [ratingDistribution, setRatingDistribution] = useState([])
     if (!token) {
         dispatch(
             openModal({
@@ -655,6 +673,39 @@ function InternalPage() {
             }
         }
     }
+
+    const getRatingDistribution = async () => {
+        try {
+            const response = await axiosInstance.get("/api/getRatingDistribution", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                },
+            })
+            const ratingDistributionData = response.data
+            console.log(ratingDistributionData)
+            setRatingDistribution(ratingDistributionData)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const getWatchDistribution = async () => {
+        try {
+            const response = await axiosInstance.get("/api/getWatchListDistribution", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                },
+            })
+            const watchDistributionData = response.data
+            console.log(watchDistributionData)
+            setWatchDistribution(watchDistributionData)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     const getReviewCnt = async () => {
         try {
             const response = await axiosInstance.get("/api/getReviewCnt", {
@@ -709,7 +760,9 @@ function InternalPage() {
         getEmail()
         getRatingCnt()
         getReviewCnt()
+        getWatchDistribution()
         getWatchListCnt()
+        getRatingDistribution()
     }, [])
 
     useEffect(() => {
@@ -779,10 +832,10 @@ function InternalPage() {
                         {currentPage === "overview" ? (
                             <div className="flex">
                                 <div className="w-1/2">
-                                    <PieChart cnt={watchListCnt} />
+                                    <PieChart cnt={watchListCnt} dataset={watchDistribution} />
                                 </div>
                                 <div className="w-1/2 pl-5">
-                                    <BarChart />
+                                    <BarChart dataset={ratingDistribution} />
                                     <div className="shadow rounded-xl bg-base-100 mt-5">
                                         <div className="p-5">Total ratings: {ratingCnt}</div>
                                     </div>
