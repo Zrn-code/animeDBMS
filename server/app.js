@@ -209,11 +209,14 @@ app.post("/api/addRating", async (req, res) => {
             }
         }
         const user_id = authData.id
-        if (Number.isInteger(score) && score >= 0 && score <= 10) {
-            await db.addRating(user_id, anime_id, score)
+
+        const parsedScore = parseInt(score)
+
+        if (!isNaN(parsedScore) && parsedScore >= 0 && parsedScore <= 10) {
+            await db.addRating(user_id, anime_id, parsedScore)
             return res.status(200).send("Add Rating Successfully")
         } else {
-            return res.status(401).send("wrong format")
+            return res.status(401).send("Wrong format")
         }
     })
 })
@@ -232,11 +235,14 @@ app.put("/api/updateRating", async (req, res) => {
             }
         }
         const user_id = authData.id
-        if (Number.isInteger(score) && score >= 0 && score <= 10) {
-            await db.updateRating(user_id, anime_id, score)
+
+        const parsedScore = parseInt(score)
+
+        if (!isNaN(parsedScore) && parsedScore >= 0 && parsedScore <= 10) {
+            await db.updateRating(user_id, anime_id, parsedScore)
             return res.status(200).send("Update Rating Successfully")
         } else {
-            return res.status(401).send("wrong format")
+            return res.status(401).send("Wrong format")
         }
     })
 })

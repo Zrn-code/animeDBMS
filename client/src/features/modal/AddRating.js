@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import { showNotification } from "../common/headerSlice"
+import { showNotification, setRefetch } from "../common/headerSlice"
+import axiosInstance from "../../app/axios"
 
 const INITIAL_RATING = {
     id: "",
@@ -26,11 +27,64 @@ function AddRatingModalBody({ closeModal, extraObject }) {
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
     const [Rating, setRating] = useState(extraObject || INITIAL_RATING)
-
+    const token = localStorage.getItem("token")
     const saveWatchList = () => {
-        setLoading(true)
+        if (Rating["score"] === "") {
+            console.log("no rating selected")
+            return
+        }
+        const requestBody = {
+            anime_id: Rating["id"],
+            score: Rating["score"],
+        }
+        console.log(requestBody)
+        axiosInstance
+            .get(`/api/getRating/${Rating["id"]}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                },
+            })
+            .then((res) => res.data)
+            .then((data) => {
+                if (data.length > 0) {
+                    axiosInstance
+                        .put("/api/updateRating", requestBody, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `${token}`,
+                            },
+                        })
+                        .then((response) => {
+                            console.log(response)
+                            dispatch(setRefetch(true))
+                            dispatch(showNotification({ message: "Watch List Saved", status: 1 }))
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                        })
+                } else {
+                    axiosInstance
+                        .post("/api/addRating", requestBody, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `${token}`,
+                            },
+                        })
+                        .then((response) => {
+                            console.log(response)
+                            dispatch(setRefetch(true))
+                            dispatch(showNotification({ message: "Watch List Saved", status: 1 }))
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                        })
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
 
-        dispatch(showNotification({ message: "Rating", status: 1 }))
         closeModal()
     }
 

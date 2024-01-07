@@ -434,7 +434,7 @@ export async function updateRating(user_id, anime_id, score) {
 }
 
 export async function addStatus(user_id, anime_id, status) {
-    await pool.query("INSERT INTO users_status VALUES (?, ?, ?)", [user_id, anime_id, status])
+    await pool.query("INSERT INTO users_status VALUES (?, ?, ?)", [user_id, status, anime_id])
 }
 
 export async function updateStatus(user_id, anime_id, status) {

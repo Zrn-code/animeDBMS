@@ -1,9 +1,6 @@
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import { showNotification } from "../common/headerSlice"
-import InputText from "../../components/Input/InputText"
-import ErrorText from "../../components/Typography/ErrorText"
-import axios from "axios"
+import { setRefetch, showNotification } from "../common/headerSlice"
 import axiosInstance from "../../app/axios"
 
 const INITIAL_WATCH_STATE = {
@@ -23,15 +20,66 @@ const stateOptions = [
 
 function AddWatchListModalBody({ closeModal, extraObject }) {
     const dispatch = useDispatch()
-    const [loading, setLoading] = useState(false)
-    const [errorMessage, setErrorMessage] = useState("")
     const [watchList, setWatchList] = useState(extraObject || INITIAL_WATCH_STATE)
-
+    const token = localStorage.getItem("token")
     const saveWatchList = () => {
-        setLoading(true)
-        const token = localStorage.getItem("token")
+        if (!watchList["state"]) {
+            console.log("no state selected")
+            return
+        }
+        const selectedState = stateOptions.find((option) => option.value === watchList["state"])
+        const requestBody = {
+            anime_id: watchList["id"],
+            status: selectedState["id"],
+        }
 
-        dispatch(showNotification({ message: "Watch List Saved", status: 1 }))
+        axiosInstance
+            .get(`/api/getWatchList/${watchList["id"]}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                },
+            })
+            .then((res) => res.data)
+            .then((data) => {
+                if (data.length > 0) {
+                    axiosInstance
+                        .put("/api/updateStatus", requestBody, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `${token}`,
+                            },
+                        })
+                        .then((response) => {
+                            console.log(response)
+                            dispatch(setRefetch(true))
+                            dispatch(showNotification({ message: "Watch List Saved", status: 1 }))
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                        })
+                } else {
+                    axiosInstance
+                        .post("/api/addStatus", requestBody, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `${token}`,
+                            },
+                        })
+                        .then((response) => {
+                            console.log(response)
+                            dispatch(setRefetch(true))
+                            dispatch(showNotification({ message: "Watch List Saved", status: 1 }))
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                        })
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+
         closeModal()
     }
 

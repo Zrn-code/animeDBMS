@@ -1,19 +1,24 @@
 import { useEffect, useState } from "react"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { setPageTitle } from "../../features/common/headerSlice"
 import { Link, useParams } from "react-router-dom"
-import Squares2X2Icon from "@heroicons/react/24/outline/Squares2X2Icon"
-import ListBulletIcon from "@heroicons/react/24/outline/ListBulletIcon"
 import axiosInstance from "../../app/axios"
 import { openModal } from "../../features/common/modalSlice"
 import { MODAL_BODY_TYPES } from "../../utils/globalConstantUtil"
+import { setRefetch } from "../../features/common/headerSlice"
 
 const WatchListButtons = ({ id, name, img, state }) => {
     const dispatch = useDispatch()
     const token = localStorage.getItem("token")
+
     const openAddWatchListModal = () => {
         if (!token) {
-            dispatch(openModal({ title: "You need to login", bodyType: MODAL_BODY_TYPES.REQUIRE_LOGIN }))
+            dispatch(
+                openModal({
+                    title: "You need to login",
+                    bodyType: MODAL_BODY_TYPES.REQUIRE_LOGIN,
+                })
+            )
         } else {
             dispatch(
                 openModal({
@@ -28,34 +33,40 @@ const WatchListButtons = ({ id, name, img, state }) => {
     return (
         <div className="inline-block ">
             <button className="btn btn-sm normal-case btn-primary" onClick={() => openAddWatchListModal()}>
-                Add to WatchList
+                {state ? state : "Add to Watch List"}
             </button>
         </div>
     )
 }
 
-const RatingButtons = ({ id, name, img, state }) => {
+const RatingButtons = ({ id, name, img, score }) => {
     const dispatch = useDispatch()
     const token = localStorage.getItem("token")
     const openAddRatingModal = () => {
         if (!token) {
-            dispatch(openModal({ title: "You need to login", bodyType: MODAL_BODY_TYPES.REQUIRE_LOGIN }))
+            dispatch(
+                openModal({
+                    title: "You need to login",
+                    bodyType: MODAL_BODY_TYPES.REQUIRE_LOGIN,
+                })
+            )
         } else {
             dispatch(
                 openModal({
-                    title: "Update Rating",
+                    title: "Update Rating Score",
                     bodyType: MODAL_BODY_TYPES.RATING_ADD_NEW,
-                    extraObject: { id: id, name: name, img: img, state: state },
+                    extraObject: { id: id, name: name, img: img, score: score },
                 })
             )
         }
     }
+
     return (
-        <div className="inline-block ">
-            <button className="btn btn-sm normal-case" onClick={() => openAddRatingModal()}>
-                Add Rating
-            </button>
-        </div>
+        <button className="cursor-pointer outline outline-1 px-2 mx-2 rounded" onClick={openAddRatingModal}>
+            <div className="flex items-center">
+                ⭐ <div className="mr-2 font-bold underline">{score ? score : "N/A"}</div>
+            </div>
+        </button>
     )
 }
 
@@ -75,7 +86,7 @@ const DetailCard = ({ detail }) => {
                 <div className="flex items-stretch">
                     <div className="w-2/5 max-w-2/5">
                         <Link to={"../details/" + detail["anime_id"]} className="flex items-center justify-between h-48">
-                            <img src={detail["Image_URL"]} alt="圖片描述" className="w-full h-full object-cover rounded-lg" />
+                            <img src={detail["Image_URL"]} alt={detail["anime_id"]} className="w-full h-full object-cover rounded-lg" />
                         </Link>
                     </div>
                     <div className="w-3/5 px-4 overflow-y-auto max-h-48 ">
@@ -87,8 +98,8 @@ const DetailCard = ({ detail }) => {
                 <div className="outline outline-1 rounded mx-2 px-2 py-1">{detail["type"]}</div>
                 <div className="outline outline-1 rounded mx-2 px-2 py-1">⭐{detail["score"]}</div>
                 <div className="outline outline-1 rounded mx-2 px-2 py-1">🧑‍💻{detail["members_cnt"]}</div>
-                <RatingButtons id={detail["Anime_id"]} name={detail["Name"]} img={detail["Image_URL"]} state={detail["Watch_Status"]} />
-                <WatchListButtons id={detail["Anime_id"]} name={detail["Name"]} img={detail["Image_URL"]} state={detail["Watch_Status"]} />
+                <RatingButtons id={detail["anime_id"]} name={detail["Name"]} img={detail["Image_URL"]} score={detail["user_score"]} />
+                <WatchListButtons id={detail["anime_id"]} name={detail["Name"]} img={detail["Image_URL"]} state={detail["user_status"]} />
             </div>
         </div>
     )
@@ -107,10 +118,19 @@ function InternalPage() {
     const [searchText, setSearchText] = useState(text)
     const [token, setToken] = useState(localStorage.getItem("token"))
     const itemsPerPage = 48
+    const refetch = useSelector((state) => state.header.refetch)
+
     useEffect(() => {
         dispatch(setPageTitle({ title: "Text Search" }))
         getCount()
     }, [])
+
+    useEffect(() => {
+        if (refetch) {
+            fetchData()
+            dispatch(setRefetch(false))
+        }
+    }, [refetch])
 
     useEffect(() => {
         setLoading(true)

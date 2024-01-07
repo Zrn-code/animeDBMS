@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { setPageTitle } from "../../features/common/headerSlice"
 import { useParams } from "react-router-dom"
 import TitleCard from "../../components/Cards/TitleCard"
@@ -10,7 +10,7 @@ import axiosInstance from "../../app/axios"
 import { Link } from "react-router-dom"
 import { openModal } from "../../features/common/modalSlice"
 import { MODAL_BODY_TYPES } from "../../utils/globalConstantUtil"
-
+import { setRefetch, showNotification } from "../../features/common/headerSlice"
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 ChartJS.register(ArcElement, Tooltip, Legend, Tooltip, Filler, Legend)
 
@@ -418,7 +418,6 @@ function Statistics({ value, detail, id }) {
 const WatchListButtons = ({ id, name, img, state }) => {
     const dispatch = useDispatch()
     const token = localStorage.getItem("token")
-    const watchStatusName = ["Unknown", "Watching", "Completed", "On Hold", "Dropped", "Unknown", "Plan to Watch"]
 
     const openAddWatchListModal = () => {
         if (!token) {
@@ -511,6 +510,7 @@ function InternalPage() {
     useEffect(() => {
         dispatch(setPageTitle({ title: "Details Page" }))
     }, [])
+    const watchListUpdated = useSelector((state) => state.header.refetch)
 
     const [currentPage, setCurrentPage] = useState("overview")
     const [detail, setDetail] = useState(null)
@@ -522,6 +522,17 @@ function InternalPage() {
     const [token, setToken] = useState(localStorage.getItem("token"))
 
     useEffect(() => {
+        fetchData()
+    }, [])
+
+    useEffect(() => {
+        if (watchListUpdated) {
+            fetchData()
+            dispatch(setRefetch(false))
+        }
+    }, [watchListUpdated])
+
+    const fetchData = () => {
         axiosInstance
             .get(`/api/getAnimeDetails/${id}`)
             .then((res) => res.data)
@@ -537,9 +548,8 @@ function InternalPage() {
                     Authorization: token,
                 },
             })
-            .then((res) => res.data[0])
-            .then((data) => setRating(data["rating"]))
-
+            .then((res) => res.data)
+            .then((data) => setRating(data.length ? data[0]["rating"] : null))
             .catch((error) => {
                 if (error.response.data === "Token expired" || error.response.data === "Token is invalid") {
                     localStorage
@@ -560,8 +570,8 @@ function InternalPage() {
                     Authorization: token,
                 },
             })
-            .then((res) => res.data[0])
-            .then((data) => setState(data["status"]))
+            .then((res) => res.data)
+            .then((data) => setState(data.length ? data[0]["status"] : null))
             .catch((error) => {
                 if (error.response.data === "Token expired" || error.response.data === "Token is invalid") {
                     localStorage
@@ -583,7 +593,7 @@ function InternalPage() {
                 },
             })
             .then((res) => res.data)
-            .then((data) => setReview(data["review"]))
+            .then((data) => setReview(data.length ? data[0]["review"] : null))
             .catch((error) => {
                 if (error.response.data === "Token expired" || error.response.data === "Token is invalid") {
                     localStorage
@@ -597,7 +607,7 @@ function InternalPage() {
                         })
                 }
             })
-    }, [])
+    }
 
     if (!detail || !value) {
         return (
@@ -614,9 +624,9 @@ function InternalPage() {
                 <div className="min-w-max">
                     {/* Your existing buttons */}
                     <img className="max-h-90 rounded-xl" src={value["Image_URL"]} alt="img" />
-                    <WatchListButtons id={value["id"]} img={value["Image_URL"]} state={state} name={value["Name"]} />
-                    <RatingButtons id={value["id"]} img={value["Image_URL"]} score={rating} name={value["Name"]} />
-                    <ReviewButtons id={value["id"]} img={value["Image_URL"]} review={review} name={value["Name"]} />
+                    <WatchListButtons id={value["anime_id"]} img={value["Image_URL"]} state={state} name={value["Name"]} />
+                    <RatingButtons id={value["anime_id"]} img={value["Image_URL"]} score={rating} name={value["Name"]} />
+                    <ReviewButtons id={value["anime_id"]} img={value["Image_URL"]} review={review} name={value["Name"]} />
 
                     <div className="flex bg-base-100 rounded-xl overflow-hidden">
                         <button

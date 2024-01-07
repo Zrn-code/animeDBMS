@@ -7,6 +7,7 @@ export const headerSlice = createSlice({
         noOfNotifications: 15, // no of unread notifications
         newNotificationMessage: "", // message of notification to be shown
         newNotificationStatus: 1, // to check the notification type -  success/ error/ info
+        refetch: false,
     },
     reducers: {
         setPageTitle: (state, action) => {
@@ -21,9 +22,12 @@ export const headerSlice = createSlice({
             state.newNotificationMessage = action.payload.message
             state.newNotificationStatus = action.payload.status
         },
+        setRefetch: (state, action) => {
+            state.refetch = action.payload
+        },
     },
 })
 
-export const { setPageTitle, removeNotificationMessage, showNotification } = headerSlice.actions
+export const { setPageTitle, removeNotificationMessage, showNotification, setRefetch } = headerSlice.actions
 
 export default headerSlice.reducer

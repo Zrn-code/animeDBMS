@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { setPageTitle } from "../../features/common/headerSlice"
 import TitleCard from "../../components/Cards/TitleCard"
 import { Link } from "react-router-dom"
 import { openModal } from "../../features/common/modalSlice"
 import { MODAL_BODY_TYPES } from "../../utils/globalConstantUtil"
 import axiosInstance from "../../app/axios"
+import { setRefetch } from "../../features/common/headerSlice"
 
 const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
     const [selectedFilters, setSelectedFilters] = useState([])
@@ -142,9 +143,18 @@ const RatingButtons = ({ id, name, img, score }) => {
 
 function InternalPage() {
     const dispatch = useDispatch()
+    const refetch = useSelector((state) => state.header.refetch)
+
     useEffect(() => {
         dispatch(setPageTitle({ title: "Top Anime Series" }))
     }, [])
+
+    useEffect(() => {
+        if (refetch) {
+            fetchData()
+            dispatch(setRefetch(false))
+        }
+    }, [refetch])
 
     const [values, setValues] = useState([])
     const [params, setParams] = useState("Default")
