@@ -294,8 +294,8 @@ app.put("/api/updateStatus", async (req, res) => {
 })
 
 app.delete("/api/deleteReview", async (req, res) => {
-    const { anime_id } = req.body
     const token = req.headers.authorization
+    const anime_id = req.headers.anime_id
     if (!token) return res.status(401).send("Token not found")
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
@@ -318,8 +318,8 @@ app.delete("/api/deleteReview", async (req, res) => {
 })
 
 app.delete("/api/deleteRating", async (req, res) => {
-    const { anime_id } = req.body
     const token = req.headers.authorization
+    const anime_id = req.headers.anime_id
     if (!token) return res.status(401).send("Token not found")
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
@@ -342,8 +342,8 @@ app.delete("/api/deleteRating", async (req, res) => {
 })
 
 app.delete("/api/deleteWatchStatus", async (req, res) => {
-    const { anime_id } = req.body
     const token = req.headers.authorization
+    const anime_id = req.headers.anime_id
     if (!token) return res.status(401).send("Token not found")
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {

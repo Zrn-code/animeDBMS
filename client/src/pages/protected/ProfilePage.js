@@ -125,17 +125,16 @@ function RatingPage({ token }) {
 
     const deleteRating = (anime_id) => async () => {
         try {
-            const response = await axiosInstance.delete(
-                `/api/removeRating`,
-                { anime_id: anime_id },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `${token}`,
-                    },
-                }
-            )
+            //console.log(anime_id)
+            const response = await axiosInstance.delete(`/api/deleteRating`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                    anime_id: anime_id,
+                },
+            })
             dispatch(showNotification({ message: response.data.message, status: 1 }))
+            getRating()
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 const errorMessage = error.response.data
@@ -143,7 +142,6 @@ function RatingPage({ token }) {
                     console.log("Token expired. Logging out...")
                     localStorage.removeItem("token")
                     dispatch(showNotification({ message: "Token expired. Logging out...", status: 0 }))
-                    //window.location.href = "/app/welcome"
                 } else {
                     console.log("Other 401 error:", errorMessage)
                 }
@@ -182,7 +180,7 @@ function RatingPage({ token }) {
         }
     }
     return (
-        <TitleCard title="Rating" className="overflow-x-auto w-full">
+        <TitleCard title="Rating List" className="overflow-x-auto w-full">
             <table className="table w-full">
                 <thead>
                     <tr>
@@ -195,13 +193,16 @@ function RatingPage({ token }) {
                     {Rating &&
                         Rating.slice(startIndexRating, endIndexRating).map((rating, index) => {
                             return (
-                                <tr>
+                                <tr key={index}>
                                     <td>
-                                        <img src={rating.Image_URL} alt={rating.title}></img>
+                                        <img className="h-16 " src={rating.Image_URL} alt={rating.name}></img>
                                     </td>
-                                    <td>{rating.title}</td>
+                                    <td>{rating.name}</td>
                                     <td>
-                                        {rating.score} <TrashIcon className="w-8" onClick={deleteRating(rating.anime_id)} />{" "}
+                                        <div className="flex">
+                                            {rating.rating}
+                                            <TrashIcon className="w-4" onClick={deleteRating(rating.anime_id)} />{" "}
+                                        </div>
                                     </td>
                                 </tr>
                             )
@@ -373,7 +374,7 @@ function ReviewPage({ token }) {
                     {Review &&
                         Review.slice(startIndexReview, endIndexReview).map((review, index) => {
                             return (
-                                <tr>
+                                <tr key={index}>
                                     <td>
                                         <img src={review.Image_URL} alt={review.title}></img>
                                     </td>
@@ -423,7 +424,7 @@ const RecommendList = ({ genre_id, token }) => {
                 },
             })
             const animeData = response.data
-            console.log(animeData)
+            //console.log(animeData)
             setAnimes(animeData)
         } catch (err) {
             console.log(err)
@@ -562,9 +563,9 @@ const AnalysisPage = ({ token }) => {
             {genre_id ? (
                 <RecommendList genre_id={genre_id} token={token} />
             ) : (
-                <div class="flex mt-5 bg-base-100 rounded-xl items-center justify-center h-72">
-                    <div class="flex items-center justify-center">
-                        <p class="text-center leading-8">
+                <div className="flex mt-5 bg-base-100 rounded-xl items-center justify-center h-72">
+                    <div className="flex items-center justify-center">
+                        <p className="text-center leading-8">
                             This feature is based on all the anime shows where you have given a rating of over eight points. It calculates
                             the total number of categories among them and selects the top five favorite categories.
                         </p>
@@ -683,7 +684,7 @@ function InternalPage() {
                 },
             })
             const ratingDistributionData = response.data
-            console.log(ratingDistributionData)
+            //console.log(ratingDistributionData)
             setRatingDistribution(ratingDistributionData)
         } catch (error) {
             console.log(error)
@@ -699,7 +700,7 @@ function InternalPage() {
                 },
             })
             const watchDistributionData = response.data
-            console.log(watchDistributionData)
+            //console.log(watchDistributionData)
             setWatchDistribution(watchDistributionData)
         } catch (error) {
             console.log(error)
