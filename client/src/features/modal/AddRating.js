@@ -37,7 +37,6 @@ function AddRatingModalBody({ closeModal, extraObject }) {
             anime_id: Rating["id"],
             score: Rating["score"],
         }
-        console.log(requestBody)
         axiosInstance
             .get(`/api/getRating/${Rating["id"]}`, {
                 headers: {

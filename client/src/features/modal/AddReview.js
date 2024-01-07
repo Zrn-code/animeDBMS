@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import { showNotification } from "../common/headerSlice"
+import { showNotification, setRefetch } from "../common/headerSlice"
 import axiosInstance from "../../app/axios"
 
 const INITIAL_REVIEW = {
@@ -14,13 +14,57 @@ function AddReviewModalBody({ closeModal, extraObject }) {
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
     const [Review, setReview] = useState(extraObject || INITIAL_REVIEW)
-
+    const token = localStorage.getItem("token")
     const saveWatchList = () => {
         setLoading(true)
-        // Call API to save watch list
-        // If success, dispatch notification
-        // If fail, show error message
-        dispatch(showNotification({ message: "Review", status: 1 }))
+        const requestBody = {
+            anime_id: Review["id"],
+            review: Review["review"],
+        }
+        axiosInstance
+            .get(`/api/getReview/${Review["id"]}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                },
+            })
+            .then((res) => res.data)
+            .then((data) => {
+                if (data.length > 0) {
+                    axiosInstance
+                        .put("/api/updateReview", requestBody, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `${token}`,
+                            },
+                        })
+                        .then((response) => {
+                            console.log(response)
+                            dispatch(showNotification({ message: "Review Updated", status: 1 }))
+                            dispatch(setRefetch(true))
+                            setLoading(false)
+                            closeModal()
+                        })
+                } else {
+                    axiosInstance
+                        .post("/api/addReview", requestBody, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `${token}`,
+                            },
+                        })
+                        .then((response) => {
+                            console.log(response)
+                            dispatch(showNotification({ message: "Review Added", status: 1 }))
+                            dispatch(setRefetch(true))
+                            setLoading(false)
+                            closeModal()
+                        })
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
 
         closeModal()
     }

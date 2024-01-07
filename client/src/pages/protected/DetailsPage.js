@@ -501,6 +501,7 @@ const ReviewButtons = ({ id, name, img, review }) => {
     return (
         <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4" onClick={openAddReviewModal}>
             <div className="text-left font-bold ">your review</div>
+            <div className="text-right ml-2 font-bold">{review ? "show" : "N/A"}</div>
         </div>
     )
 }
