@@ -57,7 +57,7 @@ function ProfileSettings() {
             gender: profile["Gender"],
             birthday: profile["Birthday"],
         }
-        console.log(updateProfile)
+        //console.log(updateProfile)
         try {
             await axiosInstance.post("/api/updateProfile", updateProfile, {
                 headers: {
@@ -81,6 +81,58 @@ function ProfileSettings() {
                 console.error("Error:", error)
             }
             dispatch(showNotification({ message: "Error updating profile", status: 0 }))
+        }
+    }
+    const [passwordData, setPasswordData] = useState({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+    })
+
+    const handlePasswordChange = (event) => {
+        const { name, value } = event.target
+        setPasswordData({ ...passwordData, [name]: value })
+    }
+
+    const changePassword = async () => {
+        const { oldPassword, newPassword, confirmPassword } = passwordData
+
+        if (newPassword !== confirmPassword) {
+            dispatch(showNotification({ message: "New passwords do not match", status: 0 }))
+            return
+        }
+
+        try {
+            await axiosInstance.put(
+                "/api/updatePassword",
+                {
+                    old_password: oldPassword,
+                    new_password: newPassword,
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `${token}`,
+                    },
+                }
+            )
+
+            dispatch(showNotification({ message: "Password changed successfully", status: 1 }))
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                const errorMessage = error.response.data
+                if (errorMessage === "Token expired") {
+                    console.log("Token expired. Logging out...")
+                    localStorage.removeItem("token")
+                    dispatch(showNotification({ message: "Token expired. Logging out...", status: 0 }))
+                    //window.location.href = "/app/welcome"
+                } else {
+                    console.log("Other 401 error:", errorMessage)
+                }
+            } else {
+                console.error("Error:", error)
+            }
+            dispatch(showNotification({ message: "Error changing password", status: 0 }))
         }
     }
 
@@ -127,24 +179,47 @@ function ProfileSettings() {
                                 <label className="label">
                                     <span>Old Password</span>
                                 </label>
-                                <input type="password" placeholder="Old Password" className="input input-bordered" />
+                                <input
+                                    type="password"
+                                    name="oldPassword"
+                                    value={passwordData.oldPassword}
+                                    onChange={handlePasswordChange}
+                                    placeholder="Old Password"
+                                    className="input input-bordered"
+                                />
                             </div>
                             <div className="form-control">
                                 <label className="label">
                                     <span>New Password</span>
                                 </label>
-                                <input type="password" placeholder="New Password" className="input input-bordered" />
+                                <input
+                                    type="password"
+                                    name="newPassword"
+                                    value={passwordData.newPassword}
+                                    onChange={handlePasswordChange}
+                                    placeholder="New Password"
+                                    className="input input-bordered"
+                                />
                             </div>
                             <div className="form-control">
                                 <label className="label">
                                     <span>Check Password</span>
                                 </label>
-                                <input type="password" placeholder="Double" className="input input-bordered" />
+                                <input
+                                    type="password"
+                                    name="confirmPassword"
+                                    value={passwordData.confirmPassword}
+                                    onChange={handlePasswordChange}
+                                    placeholder="Double Check"
+                                    className="input input-bordered"
+                                />
                             </div>
                         </div>
 
                         <div className="mt-5">
-                            <button className="btn btn-primary float-right">Change</button>
+                            <button className="btn btn-primary float-right" onClick={changePassword}>
+                                Change
+                            </button>
                         </div>
                     </TitleCard>
                     <TitleCard title="Delete Account" topMargin="mt-5">
