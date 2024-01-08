@@ -16,7 +16,7 @@ ChartJS.register(ArcElement, Tooltip, Legend, Tooltip, Filler, Legend)
 
 function BarChart(dataset) {
     dataset = dataset["dataset"]
-    //console.log(dataset)
+    let cntArray = Array(10).fill(0)
     const options = {
         responsive: true,
         plugins: {
@@ -25,6 +25,12 @@ function BarChart(dataset) {
             },
         },
     }
+    dataset.forEach((item) => {
+        if (item.score <= 0) return
+        const index = item.score - 1
+        cntArray[index] = item.cnt
+    })
+
     //console.log(dataset)
     const labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 
@@ -33,7 +39,7 @@ function BarChart(dataset) {
         datasets: [
             {
                 label: "Users",
-                data: dataset.map((item) => item["cnt"]),
+                data: cntArray,
                 backgroundColor: "grey",
             },
         ],
