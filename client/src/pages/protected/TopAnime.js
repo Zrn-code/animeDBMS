@@ -171,7 +171,7 @@ function InternalPage() {
         const endItem = currentPage * itemsPerPage
 
         axiosInstance
-            .get("/api/getTopAnime/" + params + "/" + startItem + "/" + endItem, display, {
+            .get("/api/getTopAnime/" + params + "/" + startItem + "/" + endItem, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: token,

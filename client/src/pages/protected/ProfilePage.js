@@ -427,10 +427,11 @@ const RecommendList = ({ genre_id, token }) => {
     const display = "NotSeen"
     const getAnimes = async () => {
         try {
-            const response = await axiosInstance.get(`/api/getAnimesByGenre/${genre_id}/${sortedBy}/1/10`, display, {
+            const response = await axiosInstance.get(`/api/getAnimesByGenre/${genre_id}/${sortedBy}/1/10`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `${token}`,
+                    display: display,
                 },
             })
             const animeData = response.data
@@ -491,11 +492,11 @@ const RecommendList = ({ genre_id, token }) => {
                         ))}
                     </div>
 
-                    <div className="flex justify-between mt-5">
+                    <div className="flex justify-between mt-5 ">
                         <button className="btn" onClick={switchSortBy}>
                             {sortedBy}
                         </button>
-                        <div className="flex">
+                        <div className="flex btn-group">
                             <button className="btn" onClick={prevPage} disabled={currentPage === 0}>
                                 prev
                             </button>
@@ -554,7 +555,7 @@ const AnalysisPage = ({ token }) => {
 
     return (
         <div className="w-full ">
-            <div className="bg-base-100 rounded-xl my-5 text-xl p-5 font-bold">Guess You Like</div>
+            <div className="bg-base-100 rounded-xl my-5 text-xl p-5 font-bold">Guess What You Like</div>
             <div className="flex flex-wrap">
                 {recommend &&
                     recommend.map((recommend, index) => {
