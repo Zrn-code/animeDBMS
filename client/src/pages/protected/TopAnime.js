@@ -175,6 +175,7 @@ function InternalPage() {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: token,
+                    display: display,
                 },
             })
             .then((res) => {

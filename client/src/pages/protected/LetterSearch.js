@@ -173,6 +173,7 @@ function InternalPage() {
                 headers: {
                     Authorization: localStorage.getItem("token") ? localStorage.getItem("token") : null,
                     "Content-Type": "application/json",
+                    display: display,
                 },
             })
             .then((res) => res.data)

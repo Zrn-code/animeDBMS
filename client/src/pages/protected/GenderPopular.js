@@ -98,10 +98,11 @@ function InternalPage() {
         const endItem = currentPage * itemsPerPage
 
         axiosInstance
-            .get("/api/getTopAnimeByGender/" + params + "/" + startItem + "/" + endItem, display, {
+            .get("/api/getTopAnimeByGender/" + params + "/" + startItem + "/" + endItem, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: token,
+                    display: display,
                 },
             })
             .then((res) => {

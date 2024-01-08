@@ -141,10 +141,11 @@ function InternalPage() {
         const startItem = (currentPage - 1) * itemsPerPage + 1
         const endItem = currentPage * itemsPerPage
         axiosInstance
-            .get(`/api/searchAnime/${text}/${startItem}/${endItem}`, display, {
+            .get(`/api/searchAnime/${text}/${startItem}/${endItem}`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: token,
+                    display: display,
                 },
             })
             .then((res) => res.data)

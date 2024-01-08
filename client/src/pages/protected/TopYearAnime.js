@@ -96,10 +96,11 @@ function InternalPage() {
         const endItem = currentPage * itemsPerPage
         if (query === "equivalent") {
             axiosInstance
-                .get("/api/getTopAnimeByYear/" + year + "-" + year + "/" + startItem + "/" + endItem, display, {
+                .get("/api/getTopAnimeByYear/" + year + "-" + year + "/" + startItem + "/" + endItem, {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: token,
+                        display: display,
                     },
                 })
                 .then((res) => {
@@ -116,10 +117,11 @@ function InternalPage() {
                 })
         } else {
             axiosInstance
-                .get("/api/getTopAnimeByYear/" + yearStart + "-" + yearEnd + "/" + startItem + "/" + endItem, display, {
+                .get("/api/getTopAnimeByYear/" + yearStart + "-" + yearEnd + "/" + startItem + "/" + endItem, {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: token,
+                        display: display,
                     },
                 })
                 .then((res) => {
