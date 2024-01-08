@@ -113,6 +113,7 @@ function PieChart({ dataset, cnt }) {
 
 function RatingPage({ token }) {
     const dispatch = useDispatch()
+    const [Loading, setLoading] = useState(true)
     const [Rating, setRating] = useState([])
     const [RatingPage, setRatingPage] = useState(1)
     const [totalRatingPages, setTotalRatingPages] = useState(1)
@@ -163,6 +164,7 @@ function RatingPage({ token }) {
             setRating(ratingData)
             setRatingPage(1)
             setTotalRatingPages(Math.ceil(ratingData.length / itemsPerPage))
+            setLoading(false)
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 const errorMessage = error.response.data
@@ -179,66 +181,81 @@ function RatingPage({ token }) {
             }
         }
     }
+    if (Loading)
+        return (
+            <div className="flex justify-center items-center h-full">
+                <div className="border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600" />
+            </div>
+        )
     return (
         <TitleCard title="Rating List" className="overflow-x-auto w-full">
-            <table className="table w-full">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Anime</th>
-                        <th>Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {Rating &&
-                        Rating.slice(startIndexRating, endIndexRating).map((rating, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>
-                                        <Link to={"../details/" + rating.anime_id}>
-                                            <img className="h-16 " src={rating.Image_URL} alt={rating.name}></img>
-                                        </Link>
-                                    </td>
-                                    <td>
-                                        <Link
-                                            to={"../details/" + rating.anime_id}
-                                            style={{ whiteSpace: "normal" }}
-                                            className="text-wrap text-xl"
-                                        >
-                                            {rating.name}
-                                        </Link>
-                                    </td>
-                                    <td>
-                                        <div className="flex font-bold">
-                                            ⭐{rating.rating}
-                                            <TrashIcon className="ml-2 w-4 cursor-pointer" onClick={deleteRating(rating.anime_id)} />{" "}
-                                        </div>
-                                    </td>
-                                </tr>
-                            )
-                        })}
-                </tbody>
-            </table>
-            <div className="flex justify-center btn-group">
-                <button
-                    className="btn"
-                    onClick={() => {
-                        if (RatingPage > 1) setRatingPage(RatingPage - 1)
-                    }}
-                    disabled={RatingPage === 1}
-                >
-                    prev
-                </button>
-                <button
-                    className="btn"
-                    onClick={() => {
-                        if (RatingPage < totalRatingPages) setRatingPage(RatingPage + 1)
-                    }}
-                    disabled={RatingPage === totalRatingPages}
-                >
-                    next
-                </button>
-            </div>
+            {Rating.length > 0 ? (
+                <>
+                    <table className="table w-full">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Anime</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {Rating &&
+                                Rating.slice(startIndexRating, endIndexRating).map((rating, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td>
+                                                <Link to={"../details/" + rating.anime_id}>
+                                                    <img className="h-16 " src={rating.Image_URL} alt={rating.name}></img>
+                                                </Link>
+                                            </td>
+                                            <td>
+                                                <Link
+                                                    to={"../details/" + rating.anime_id}
+                                                    style={{ whiteSpace: "normal" }}
+                                                    className="text-wrap text-lg font-bold"
+                                                >
+                                                    {rating.name}
+                                                </Link>
+                                            </td>
+                                            <td>
+                                                <div className="flex font-bold">
+                                                    ⭐{rating.rating}
+                                                    <TrashIcon
+                                                        className="ml-2 w-4 cursor-pointer"
+                                                        onClick={deleteRating(rating.anime_id)}
+                                                    />{" "}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                        </tbody>
+                    </table>
+                    <div className="flex justify-center btn-group">
+                        <button
+                            className="btn"
+                            onClick={() => {
+                                if (RatingPage > 1) setRatingPage(RatingPage - 1)
+                            }}
+                            disabled={RatingPage === 1}
+                        >
+                            prev
+                        </button>
+                        <button
+                            className="btn"
+                            onClick={() => {
+                                if (RatingPage < totalRatingPages) setRatingPage(RatingPage + 1)
+                            }}
+                            disabled={RatingPage === totalRatingPages}
+                        >
+                            next
+                        </button>
+                    </div>
+                </>
+            ) : (
+                <div className="flex justify-center">no rating found</div>
+            )}
         </TitleCard>
     )
 }
@@ -246,11 +263,12 @@ function RatingPage({ token }) {
 function WatchListPage({ token }) {
     const dispatch = useDispatch()
     const [WatchList, setWatchList] = useState([])
+    const [Loading, setLoading] = useState(true)
     const [WatchListPage, setWatchListPage] = useState(1)
     const [totalWatchListPages, setTotalWatchListPages] = useState(1)
-    const startIndexWatchList = (WatchListPage - 1) * 10
-    const endIndexWatchList = WatchListPage * 10
-    const itemsPerPage = 10
+    const startIndexWatchList = (WatchListPage - 1) * 5
+    const endIndexWatchList = WatchListPage * 5
+    const itemsPerPage = 5
     const getWatchList = async () => {
         try {
             const response = await axiosInstance.get("/api/getWatchList", {
@@ -261,6 +279,7 @@ function WatchListPage({ token }) {
             })
             const watchListData = response.data
             setWatchList(watchListData)
+            setLoading(false)
             setWatchListPage(1)
             setTotalWatchListPages(Math.ceil(watchListData.length / itemsPerPage))
         } catch (error) {
@@ -279,54 +298,116 @@ function WatchListPage({ token }) {
             }
         }
     }
+
+    const deleteWatchList = (anime_id) => async () => {
+        try {
+            //console.log(anime_id)
+            const response = await axiosInstance.delete(`/api/deleteWatchStatus`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                    anime_id: anime_id,
+                },
+            })
+            dispatch(showNotification({ message: response.data.message, status: 1 }))
+            getWatchList()
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                const errorMessage = error.response.data
+                if (errorMessage === "Token expired") {
+                    console.log("Token expired. Logging out...")
+                    localStorage.removeItem("token")
+                    dispatch(showNotification({ message: "Token expired. Logging out...", status: 0 }))
+                    //window.location.href = "/app/welcome"
+                } else {
+                    console.log("Other 401 error:", errorMessage)
+                }
+            } else {
+                console.error("Error:", error)
+            }
+        }
+    }
+
     useEffect(() => {
         getWatchList()
     }, [])
-    return (
-        <TitleCard title="Watch List">
-            <table className="table w-full">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Anime</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {WatchList &&
-                        WatchList.slice(startIndexWatchList, endIndexWatchList).map((watchlist, index) => {
-                            return (
-                                <tr>
-                                    <td>
-                                        <img src={watchlist.Image_URL} alt={watchlist.title}></img>
-                                    </td>
-                                    <td>{watchlist.title}</td>
-                                    <td>{watchlist.status}</td>
-                                </tr>
-                            )
-                        })}
-                </tbody>
-            </table>
-            <div className="flex justify-center btn-group">
-                <button
-                    className="btn"
-                    onClick={() => {
-                        if (WatchListPage > 1) setWatchListPage(WatchListPage - 1)
-                    }}
-                    disabled={WatchListPage === 1}
-                >
-                    prev
-                </button>
-                <button
-                    className="btn"
-                    onClick={() => {
-                        if (WatchListPage < totalWatchListPages) setWatchListPage(WatchListPage + 1)
-                    }}
-                    disabled={WatchListPage === totalWatchListPages}
-                >
-                    next
-                </button>
+
+    if (Loading)
+        return (
+            <div className="flex justify-center items-center h-full">
+                <div className="border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600" />
             </div>
+        )
+
+    return (
+        <TitleCard title="WatchList" className="overflow-x-auto w-full">
+            {WatchList.length > 0 ? (
+                <>
+                    <table className="table w-full">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Anime</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {WatchList &&
+                                WatchList.slice(startIndexWatchList, endIndexWatchList).map((rating, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td>
+                                                <Link to={"../details/" + rating.anime_id}>
+                                                    <img className="h-16 " src={rating.Image_URL} alt={rating.name}></img>
+                                                </Link>
+                                            </td>
+                                            <td>
+                                                <Link
+                                                    to={"../details/" + rating.anime_id}
+                                                    style={{ whiteSpace: "normal" }}
+                                                    className="text-wrap text-lg font-bold"
+                                                >
+                                                    {rating.name}
+                                                </Link>
+                                            </td>
+                                            <td>
+                                                <div className="flex font-bold">
+                                                    {rating.status}
+                                                    <TrashIcon
+                                                        className="ml-2 w-4 cursor-pointer"
+                                                        onClick={deleteWatchList(rating.anime_id)}
+                                                    />{" "}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                        </tbody>
+                    </table>
+                    <div className="flex justify-center btn-group">
+                        <button
+                            className="btn"
+                            onClick={() => {
+                                if (WatchListPage > 1) setWatchListPage(WatchListPage - 1)
+                            }}
+                            disabled={WatchListPage === 1}
+                        >
+                            prev
+                        </button>
+                        <button
+                            className="btn"
+                            onClick={() => {
+                                if (WatchListPage < totalWatchListPages) setWatchListPage(WatchListPage + 1)
+                            }}
+                            disabled={WatchListPage === totalWatchListPages}
+                        >
+                            next
+                        </button>
+                    </div>
+                </>
+            ) : (
+                <div className="flex justify-center">no watch list found</div>
+            )}
         </TitleCard>
     )
 }
@@ -334,11 +415,12 @@ function WatchListPage({ token }) {
 function ReviewPage({ token }) {
     const dispatch = useDispatch()
     const [Review, setReview] = useState([])
+    const [Loading, setLoading] = useState(true)
     const [ReviewPage, setReviewPage] = useState(1)
     const [totalReviewPages, setTotalReviewPages] = useState(1)
-    const startIndexReview = (ReviewPage - 1) * 10
-    const endIndexReview = ReviewPage * 10
-    const itemsPerPage = 10
+    const startIndexReview = (ReviewPage - 1) * 5
+    const endIndexReview = ReviewPage * 5
+    const itemsPerPage = 5
     const getReview = async () => {
         try {
             const response = await axiosInstance.get("/api/getReview", {
@@ -351,6 +433,7 @@ function ReviewPage({ token }) {
             setReview(reviewData)
             setReviewPage(1)
             setTotalReviewPages(Math.ceil(reviewData.length / itemsPerPage))
+            setLoading(false)
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 const errorMessage = error.response.data
@@ -370,51 +453,110 @@ function ReviewPage({ token }) {
     useEffect(() => {
         getReview()
     }, [])
-    return (
-        <TitleCard title="Review">
-            <table className="table w-full">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Anime</th>
-                        <th>review</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {Review &&
-                        Review.slice(startIndexReview, endIndexReview).map((review, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>
-                                        <img src={review.Image_URL} alt={review.title}></img>
-                                    </td>
-                                    <td>{review.title}</td>
-                                    <td>{review.review}</td>
-                                </tr>
-                            )
-                        })}
-                </tbody>
-            </table>
-            <div className="flex justify-center btn-group">
-                <button
-                    className="btn"
-                    onClick={() => {
-                        if (ReviewPage > 1) setReviewPage(ReviewPage - 1)
-                    }}
-                    disabled={ReviewPage === 1}
-                >
-                    prev
-                </button>
-                <button
-                    className="btn"
-                    onClick={() => {
-                        if (ReviewPage < totalReviewPages) setReviewPage(ReviewPage + 1)
-                    }}
-                    disabled={ReviewPage === totalReviewPages}
-                >
-                    next
-                </button>
+
+    const deleteReview = (anime_id) => async () => {
+        try {
+            //console.log(anime_id)
+            const response = await axiosInstance.delete(`/api/deleteReview`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                    anime_id: anime_id,
+                },
+            })
+            dispatch(showNotification({ message: response.data.message, status: 1 }))
+            getReview()
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                const errorMessage = error.response.data
+                if (errorMessage === "Token expired") {
+                    console.log("Token expired. Logging out...")
+                    localStorage.removeItem("token")
+                    dispatch(showNotification({ message: "Token expired. Logging out...", status: 0 }))
+                    //window.location.href = "/app/welcome"
+                } else {
+                    console.log("Other 401 error:", errorMessage)
+                }
+            } else {
+                console.error("Error:", error)
+            }
+        }
+    }
+    if (Loading)
+        return (
+            <div className="flex justify-center items-center h-full">
+                <div className="border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600" />
             </div>
+        )
+    return (
+        <TitleCard title="Review" className="overflow-x-auto w-full">
+            {Review.length > 0 ? (
+                <>
+                    <table className="table w-full">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Anime</th>
+                                <th>Review</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {Review &&
+                                Review.slice(startIndexReview, endIndexReview).map((rating, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td>
+                                                <Link to={"../details/" + rating.anime_id}>
+                                                    <img className="h-16 " src={rating.Image_URL} alt={rating.name}></img>
+                                                </Link>
+                                            </td>
+                                            <td>
+                                                <Link
+                                                    to={"../details/" + rating.anime_id}
+                                                    style={{ whiteSpace: "normal" }}
+                                                    className="text-wrap text-lg font-bold"
+                                                >
+                                                    {rating.name}
+                                                </Link>
+                                            </td>
+                                            <td>
+                                                <div className="flex font-bold">
+                                                    {rating.review}
+                                                    <TrashIcon
+                                                        className="ml-2 w-4 cursor-pointer"
+                                                        onClick={deleteReview(rating.anime_id)}
+                                                    />{" "}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                        </tbody>
+                    </table>
+                    <div className="flex justify-center btn-group">
+                        <button
+                            className="btn"
+                            onClick={() => {
+                                if (ReviewPage > 1) setReviewPage(ReviewPage - 1)
+                            }}
+                            disabled={ReviewPage === 1}
+                        >
+                            prev
+                        </button>
+                        <button
+                            className="btn"
+                            onClick={() => {
+                                if (ReviewPage < totalReviewPages) setReviewPage(ReviewPage + 1)
+                            }}
+                            disabled={ReviewPage === totalReviewPages}
+                        >
+                            next
+                        </button>
+                    </div>
+                </>
+            ) : (
+                <div className="flex justify-center">no review found</div>
+            )}
         </TitleCard>
     )
 }
@@ -794,10 +936,22 @@ function InternalPage() {
                                 </Link>
                             }
                         >
-                            <div className="mb-2">Username : {profile.Username}</div>
-                            <div className="mb-2">Email : {email.user_email}</div>
-                            <div className="mb-2">Birthday : {profile.Birthday}</div>
-                            <div className="">Gender : {profile.Gender}</div>
+                            <div className="flex font-bold mb-2 justify-between">
+                                <div>Username :</div>
+                                <div>{profile.Username}</div>
+                            </div>
+                            <div className="flex font-bold mb-2 justify-between">
+                                <div>Email :</div>
+                                <div>{email.user_email}</div>
+                            </div>{" "}
+                            <div className="flex font-bold mb-2 justify-between">
+                                <div>Birthday :</div>
+                                <div>{profile.Birthday}</div>
+                            </div>
+                            <div className="flex font-bold  justify-between">
+                                <div>Gender :</div>
+                                <div>{profile.Gender}</div>
+                            </div>
                         </TitleCard>
                         <div className="flex bg-base-100 shadow rounded-xl overflow-hidden mt-5">
                             <button
@@ -849,10 +1003,10 @@ function InternalPage() {
                                 <div className="w-1/2 pl-5">
                                     <BarChart dataset={ratingDistribution} />
                                     <div className="shadow rounded-xl bg-base-100 mt-5">
-                                        <div className="p-5">Total ratings: {ratingCnt}</div>
+                                        <div className="p-5 font-bold">Total ratings: {ratingCnt}</div>
                                     </div>
                                     <div className="shadow rounded-xl bg-base-100 mt-5">
-                                        <div className="p-5">Total reviews: {reviewCnt}</div>
+                                        <div className="p-5 font-bold">Total reviews: {reviewCnt}</div>
                                     </div>
                                 </div>
                             </div>

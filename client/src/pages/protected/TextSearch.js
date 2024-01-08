@@ -122,7 +122,6 @@ function InternalPage() {
 
     useEffect(() => {
         dispatch(setPageTitle({ title: "Text Search" }))
-        getCount()
     }, [])
 
     useEffect(() => {
@@ -134,6 +133,7 @@ function InternalPage() {
 
     useEffect(() => {
         setLoading(true)
+        getCount()
         fetchData()
     }, [currentPage, display])
 
@@ -160,7 +160,13 @@ function InternalPage() {
 
     const getCount = () => {
         axiosInstance
-            .get("/api/getAnimesCnt/search/" + text, display)
+            .get("/api/getAnimesCnt/search/" + text, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token,
+                    display: display,
+                },
+            })
             .then((res) => res.data)
             .then((data) => {
                 setResultCnt(data[0]["cnt"])
@@ -228,12 +234,14 @@ function InternalPage() {
                     </div>
                 </div>
             </form>
-            <div className="m-5 text-xl">
-                Search Result for{" "}
-                <span className="font-bold">
-                    {text} {resultCnt} in total
+            <div className="m-5 text-xl flex items-center justify-between">
+                <span>
+                    Search Result for{" "}
+                    <span className="font-bold">
+                        {text} {resultCnt} in total
+                    </span>
                 </span>
-                <button className=" outline outline-1  rounded-lg font-bold py-1 px-2 mx-2" onClick={handleDisplayChange}>
+                <button className="outline outline-1 rounded-lg font-bold py-1 px-2" onClick={handleDisplayChange}>
                     {display}
                 </button>
             </div>
