@@ -116,9 +116,9 @@ function RatingPage({ token }) {
     const [Rating, setRating] = useState([])
     const [RatingPage, setRatingPage] = useState(1)
     const [totalRatingPages, setTotalRatingPages] = useState(1)
-    const startIndexRating = (RatingPage - 1) * 20
-    const endIndexRating = RatingPage * 20
-    const itemsPerPage = 20
+    const startIndexRating = (RatingPage - 1) * 5
+    const endIndexRating = RatingPage * 5
+    const itemsPerPage = 5
     useEffect(() => {
         getRating()
     }, [])
@@ -195,13 +195,23 @@ function RatingPage({ token }) {
                             return (
                                 <tr key={index}>
                                     <td>
-                                        <img className="h-16 " src={rating.Image_URL} alt={rating.name}></img>
+                                        <Link to={"../details/" + rating.anime_id}>
+                                            <img className="h-16 " src={rating.Image_URL} alt={rating.name}></img>
+                                        </Link>
                                     </td>
-                                    <td>{rating.name}</td>
                                     <td>
-                                        <div className="flex">
-                                            {rating.rating}
-                                            <TrashIcon className="w-4" onClick={deleteRating(rating.anime_id)} />{" "}
+                                        <Link
+                                            to={"../details/" + rating.anime_id}
+                                            style={{ whiteSpace: "normal" }}
+                                            className="text-wrap text-xl"
+                                        >
+                                            {rating.name}
+                                        </Link>
+                                    </td>
+                                    <td>
+                                        <div className="flex font-bold">
+                                            ⭐{rating.rating}
+                                            <TrashIcon className="ml-2 w-4 cursor-pointer" onClick={deleteRating(rating.anime_id)} />{" "}
                                         </div>
                                     </td>
                                 </tr>

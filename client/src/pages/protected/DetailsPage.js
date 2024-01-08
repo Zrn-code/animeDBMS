@@ -314,7 +314,7 @@ function Details({ value, detail, id }) {
             </div>
             {review.length > 0 ? (
                 <>
-                    <div className="w-full h-56 overflow-y-auto mt-5 bg-base-100 rounded-xl p-5 shadow">
+                    <div className="w-full h-80 overflow-y-auto mt-5 bg-base-100 rounded-xl p-5 shadow">
                         <div className="flex">
                             <div className="font-bold text-xl">{review[reviewPage - 1]["username"]}</div>
                             <div className="flex-grow"></div>
@@ -391,23 +391,23 @@ function Statistics({ value, detail, id }) {
                 </div>
             </div>
             <div className="flex">
-                <div className="mx-2">
+                <div className="mx-4 flex-1">
                     {ScoreDistribution.length ? (
                         <BarChart dataset={ScoreDistribution} />
                     ) : (
-                        <div className="rounded p-5 mt-5 bg-base-100 text-center font-bold"> No data found</div>
+                        <div className="rounded p-5 mt-5 bg-base-100 text-center font-bold">No data found</div>
                     )}
-                    <div className="flex mt-5 bg-base-100 rounded-xl p-4 justify-between items-center ">
+                    <div className="flex mt-5 bg-base-100 rounded-xl p-4 justify-between items-center">
                         <div className="text-left">Mean Score : {meanScore}</div>
                         <div className="divider divider-horizontal"></div>
                         <div className="text-right ml-2">Scored By : {ScoredBy}</div>
                     </div>
                 </div>
-                <div className="mx-2">
+                <div className="mx-4 flex-1">
                     {WatchStatus.length ? (
                         <PieChart dataset={WatchStatus} />
                     ) : (
-                        <div className="rounded p-5 mt-5 bg-base-100 text-center font-bold"> No data found</div>
+                        <div className="rounded p-5 mt-5 bg-base-100 text-center font-bold">No data found</div>
                     )}
                 </div>
             </div>

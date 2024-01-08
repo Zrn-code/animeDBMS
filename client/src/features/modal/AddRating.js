@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { showNotification, setRefetch } from "../common/headerSlice"
 import axiosInstance from "../../app/axios"
@@ -7,7 +7,7 @@ const INITIAL_RATING = {
     id: "",
     name: "",
     img: "",
-    score: "",
+    score: 10,
 }
 
 const ratingOptions = [
@@ -25,14 +25,13 @@ const ratingOptions = [
 
 function AddRatingModalBody({ closeModal, extraObject }) {
     const dispatch = useDispatch()
-    const [loading, setLoading] = useState(false)
     const [Rating, setRating] = useState(extraObject || INITIAL_RATING)
+
     const token = localStorage.getItem("token")
+    if (!Rating["score"]) {
+        setRating({ ...Rating, score: 10 })
+    }
     const saveWatchList = () => {
-        if (Rating["score"] === "") {
-            console.log("no rating selected")
-            return
-        }
         const requestBody = {
             anime_id: Rating["id"],
             score: Rating["score"],
@@ -57,7 +56,7 @@ function AddRatingModalBody({ closeModal, extraObject }) {
                         .then((response) => {
                             console.log(response)
                             dispatch(setRefetch(true))
-                            dispatch(showNotification({ message: "Watch List Saved", status: 1 }))
+                            dispatch(showNotification({ message: "Rating Updated Sussessfully", status: 1 }))
                         })
                         .catch((error) => {
                             console.log(error)
@@ -73,7 +72,7 @@ function AddRatingModalBody({ closeModal, extraObject }) {
                         .then((response) => {
                             console.log(response)
                             dispatch(setRefetch(true))
-                            dispatch(showNotification({ message: "Watch List Saved", status: 1 }))
+                            dispatch(showNotification({ message: "Rating Created Sussessfully.", status: 1 }))
                         })
                         .catch((error) => {
                             console.log(error)

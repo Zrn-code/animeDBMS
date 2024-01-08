@@ -82,6 +82,9 @@ function InternalPage() {
     const [inputPage, setInputPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const [year, setYear] = useState(2000)
+    const [yearStart, setYearStart] = useState(1960)
+    const [yearEnd, setYearEnd] = useState(2025)
+    const [query, setQuery] = useState("equivalent")
     const [loading, setLoading] = useState(true)
     const [token, setToken] = useState(localStorage.getItem("token"))
     const itemsPerPage = 50
@@ -91,26 +94,47 @@ function InternalPage() {
     const fetchData = () => {
         const startItem = (currentPage - 1) * itemsPerPage + 1
         const endItem = currentPage * itemsPerPage
-
-        axiosInstance
-            .get("/api/getTopAnimeByYear/" + year + "/" + startItem + "/" + endItem, display, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: token,
-                },
-            })
-            .then((res) => {
-                setValues(res.data)
-                setLoading(false)
-            })
-            .catch((err) => {
-                if (err.response.data === "Token expired" || err.response.data === "Token is invalid") {
-                    localStorage
-                        .removeItem("token")
-                        .then(setToken(localStorage.getItem("token")))
-                        .then(window.location.reload())
-                }
-            })
+        if (query === "equivalent") {
+            axiosInstance
+                .get("/api/getTopAnimeByYear/" + year + "-" + year + "/" + startItem + "/" + endItem, display, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: token,
+                    },
+                })
+                .then((res) => {
+                    setValues(res.data)
+                    setLoading(false)
+                })
+                .catch((err) => {
+                    if (err.response.data === "Token expired" || err.response.data === "Token is invalid") {
+                        localStorage
+                            .removeItem("token")
+                            .then(setToken(localStorage.getItem("token")))
+                            .then(window.location.reload())
+                    }
+                })
+        } else {
+            axiosInstance
+                .get("/api/getTopAnimeByYear/" + yearStart + "-" + yearEnd + "/" + startItem + "/" + endItem, display, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: token,
+                    },
+                })
+                .then((res) => {
+                    setValues(res.data)
+                    setLoading(false)
+                })
+                .catch((err) => {
+                    if (err.response.data === "Token expired" || err.response.data === "Token is invalid") {
+                        localStorage
+                            .removeItem("token")
+                            .then(setToken(localStorage.getItem("token")))
+                            .then(window.location.reload())
+                    }
+                })
+        }
     }
 
     const handlePageChange = (pageNumber) => {
@@ -120,7 +144,7 @@ function InternalPage() {
     useEffect(() => {
         setLoading(true)
         fetchData()
-    }, [currentPage, year, display])
+    }, [currentPage, year, display, yearStart, yearEnd, query])
 
     useEffect(() => {
         if (refetch) {
@@ -134,6 +158,16 @@ function InternalPage() {
         setYear(selectedYear)
     }
 
+    const handleYearStartChange = (event) => {
+        const selectedYear = parseInt(event.target.value)
+        setYearStart(selectedYear)
+    }
+
+    const handleYearEndChange = (event) => {
+        const selectedYear = parseInt(event.target.value)
+        setYearEnd(selectedYear)
+    }
+
     const handleDisplayChange = () => {
         if (display === "Default") {
             setDisplay("Seen")
@@ -143,33 +177,96 @@ function InternalPage() {
             setDisplay("Default")
         }
     }
-
+    const handleQueryChange = () => {
+        if (query === "equivalent") {
+            setQuery("range")
+        }
+        if (query === "range") {
+            setQuery("equivalent")
+        }
+    }
     return (
         <>
-            <div className="bg-base-100 rounded-xl py-4 px-5 mb-5">
-                <div className="w-full flex justify-between text-xs ">
-                    {[...Array(14)].map((_, index) => (
-                        <span key={index}>{1960 + index * 5}</span>
-                    ))}
+            {query === "equivalent" ? (
+                <div className="bg-base-100 rounded-xl py-4 px-5 mb-5">
+                    <div className="w-full flex justify-between text-xs ">
+                        {[...Array(14)].map((_, index) => (
+                            <span key={index}>{1960 + index * 5}</span>
+                        ))}
+                    </div>
+                    <input type="range" min={1960} max={2025} value={year} className="range mt-2" step={1} onChange={handleYearChange} />
+                    <div className="w-full flex justify-between text-xs pl-2">
+                        {[...Array(14)].map((_, index) => (
+                            <span key={index}>|</span>
+                        ))}
+                    </div>
                 </div>
-                <input type="range" min={1960} max={2025} value={year} className="range mt-2" step={1} onChange={handleYearChange} />
-                <div className="w-full flex justify-between text-xs pl-2">
-                    {[...Array(14)].map((_, index) => (
-                        <span key={index}>|</span>
-                    ))}
+            ) : (
+                <div className="flex justify-between">
+                    <div className="flex-1 bg-base-100 rounded-xl py-4 px-5 mx-2 mb-5">
+                        <div className="w-full flex justify-between text-xs ">
+                            {[...Array(14)].map((_, index) => (
+                                <span key={index}>{1960 + index * 5}</span>
+                            ))}
+                        </div>
+                        <input
+                            type="range"
+                            min={1960}
+                            max={2025}
+                            value={yearStart}
+                            className="range mt-2"
+                            step={1}
+                            onChange={handleYearStartChange}
+                        />
+                        <div className="w-full flex justify-between text-xs pl-2">
+                            {[...Array(14)].map((_, index) => (
+                                <span key={index}>|</span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex-1 bg-base-100 rounded-xl py-4 px-5 mb-5">
+                        <div className="w-full flex justify-between text-xs ">
+                            {[...Array(14)].map((_, index) => (
+                                <span key={index}>{1960 + index * 5}</span>
+                            ))}
+                        </div>
+                        <input
+                            type="range"
+                            min={1960}
+                            max={2025}
+                            value={yearEnd}
+                            className="range mt-2"
+                            step={1}
+                            onChange={handleYearEndChange}
+                        />
+                        <div className="w-full flex justify-between text-xs pl-2">
+                            {[...Array(14)].map((_, index) => (
+                                <span key={index}>|</span>
+                            ))}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
             <TitleCard
                 title={
                     <div className="tooltip tooltip-right" data-tip="Order By: weight_score,mean_score, members,anime_id">
-                        Top Animes in {year}
+                        {query === "equivalent"
+                            ? `Top Animes in ${year}`
+                            : yearStart > yearEnd
+                            ? `Top anime from ${yearEnd} to ${yearStart}`
+                            : `Top anime from ${yearStart} to ${yearEnd}`}
                     </div>
                 }
                 topMargin="mt-2"
                 TopSideButtons={
-                    <button className=" outline outline-1 text-base rounded-lg font-bold py-1 px-2 mx-2" onClick={handleDisplayChange}>
-                        {display}
-                    </button>
+                    <div>
+                        <button className=" outline outline-1 text-base rounded-lg font-bold py-1 px-2 mx-2" onClick={handleQueryChange}>
+                            {query}
+                        </button>
+                        <button className=" outline outline-1 text-base rounded-lg font-bold py-1 px-2 mx-2" onClick={handleDisplayChange}>
+                            {display}
+                        </button>
+                    </div>
                 }
             >
                 {loading ? (
