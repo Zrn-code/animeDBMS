@@ -601,7 +601,8 @@ app.get("/api/getAnimesByGenre/:genre/:type/:st/:ed", async (req, res) => {
         const type = req.params.type
         const st = req.params.st
         const ed = req.params.ed
-        const Anime = await db.getAnimesByGenre(id, genre, type, st, ed)
+        const display = 0
+        const Anime = await db.getAnimesByGenre(id, genre, type, st, ed, display)
         res.send(Anime)
     } else {
         jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
@@ -612,12 +613,13 @@ app.get("/api/getAnimesByGenre/:genre/:type/:st/:ed", async (req, res) => {
                     return res.status(401).send("Token is invalid")
                 }
             }
+            const { display } = req.body
             const id = authData.id
             const genre = req.params.genre
             const type = req.params.type
             const st = req.params.st
             const ed = req.params.ed
-            const Anime = await db.getAnimesByGenre(id, genre, type, st, ed)
+            const Anime = await db.getAnimesByGenre(id, genre, type, st, ed, display)
             res.send(Anime)
         })
     }
@@ -631,7 +633,8 @@ app.get("/api/getAnimesByLetter/:letter/:type/:st/:ed", async (req, res) => {
         const type = req.params.type
         const st = req.params.st
         const ed = req.params.ed
-        const Anime = await db.getAnimesByLetter(id, letter, type, st, ed)
+        const display = 0
+        const Anime = await db.getAnimesByLetter(id, letter, type, st, ed, display)
         res.send(Anime)
     } else {
         jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
@@ -642,12 +645,13 @@ app.get("/api/getAnimesByLetter/:letter/:type/:st/:ed", async (req, res) => {
                     return res.status(401).send("Token is invalid")
                 }
             }
+            const { display } = req.body
             const id = authData.id
             const letter = req.params.letter
             const type = req.params.type
             const st = req.params.st
             const ed = req.params.ed
-            const Anime = await db.getAnimesByLetter(id, letter, type, st, ed)
+            const Anime = await db.getAnimesByLetter(id, letter, type, st, ed, display)
             res.send(Anime)
         })
     }
@@ -675,10 +679,11 @@ app.get("/api/getTopAnimeByGender/:gender/:st/:ed", async (req, res) => {
     const token = req.headers.authorization
     if (!token) {
         const id = 0
+        const display = 0
         const gender = req.params.gender
         const st = req.params.st
         const ed = req.params.ed
-        const Anime = await db.getTopAnimeByGender(id, gender, st, ed)
+        const Anime = await db.getTopAnimeByGender(id, gender, st, ed, display)
         res.send(Anime)
     } else {
         jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
@@ -689,11 +694,12 @@ app.get("/api/getTopAnimeByGender/:gender/:st/:ed", async (req, res) => {
                     return res.status(401).send("Token is invalid")
                 }
             }
+            const { display } = req.body
             const id = authData.id
             const gender = req.params.gender
             const st = req.params.st
             const ed = req.params.ed
-            const Anime = await db.getTopAnimeByGender(id, gender, st, ed)
+            const Anime = await db.getTopAnimeByGender(id, gender, st, ed, display)
             res.send(Anime)
         })
     }
@@ -703,10 +709,11 @@ app.get("/api/getTopAnimeByYear/:year/:st/:ed", async (req, res) => {
     const token = req.headers.authorization
     if (!token) {
         const id = 0
+        const display = 0
         const year = req.params.year
         const st = req.params.st
         const ed = req.params.ed
-        const Anime = await db.getTopAnimeByYear(id, year, st, ed)
+        const Anime = await db.getTopAnimeByYear(id, year, st, ed, display)
         res.send(Anime)
     } else {
         jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
@@ -717,11 +724,12 @@ app.get("/api/getTopAnimeByYear/:year/:st/:ed", async (req, res) => {
                     return res.status(401).send("Token is invalid")
                 }
             }
+            const { display } = req.body
             const id = authData.id
             const year = req.params.year
             const st = req.params.st
             const ed = req.params.ed
-            const Anime = await db.getTopAnimeByYear(id, year, st, ed)
+            const Anime = await db.getTopAnimeByYear(id, year, st, ed, display)
             res.send(Anime)
         })
     }
@@ -745,21 +753,43 @@ app.get("/api/searchAnime/:keyword/:st/:ed", async (req, res) => {
                     return res.status(401).send("Token is invalid")
                 }
             }
+            const { display } = req.body
             const id = authData.id
             const keyword = req.params.keyword
             const st = req.params.st
             const ed = req.params.ed
-            const Anime = await db.searchAnime(id, keyword, st, ed)
+            const Anime = await db.searchAnime(id, keyword, st, ed, display)
             res.send(Anime)
         })
     }
 })
 
 app.get("/api/getAnimesCnt/:type/:param", async (req, res) => {
-    const type = req.params.type
-    const param = req.params.param
-    const cnt = await db.getAnimesCntWithCondition(type, param)
-    res.send(cnt)
+    const token = req.headers.authorization
+    if (!token) {
+        const display = 0
+        const id = 0
+        const type = req.params.type
+        const param = req.params.param
+        const cnt = await db.getAnimesCntWithCondition(id, type, param, display)
+        res.send(cnt)
+    } else {
+        jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+            if (err) {
+                if (err.name === "TokenExpiredError") {
+                    return res.status(401).send("Token expired")
+                } else {
+                    return res.status(401).send("Token is invalid")
+                }
+            }
+            const { display } = req.body
+            const type = req.params.type
+            const param = req.params.param
+            const id = authData.id
+            const cnt = await db.getAnimesCntWithCondition(id, type, param, display)
+            res.send(cnt)
+        })
+    }
 })
 
 app.post("/api/addReview", async (req, res) => {
