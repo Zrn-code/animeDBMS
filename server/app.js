@@ -572,7 +572,8 @@ app.get("/api/getTopAnime/:type/:st/:ed", async (req, res) => {
         const type = req.params.type
         const st = req.params.st
         const ed = req.params.ed
-        const topAnime = await db.getTopAnime(id, type, st, ed)
+        const display = 0
+        const topAnime = await db.getTopAnime(id, type, st, ed, display)
         res.send(topAnime)
     } else {
         jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
@@ -587,7 +588,8 @@ app.get("/api/getTopAnime/:type/:st/:ed", async (req, res) => {
             const type = req.params.type
             const st = req.params.st
             const ed = req.params.ed
-            const topAnime = await db.getTopAnime(id, type, st, ed)
+            const { display } = req.body
+            const topAnime = await db.getTopAnime(id, type, st, ed, display)
             res.send(topAnime)
         })
     }
