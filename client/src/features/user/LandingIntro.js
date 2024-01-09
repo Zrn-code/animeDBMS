@@ -10,7 +10,7 @@ function LandingIntro() {
                         AnimeDBMS
                     </h1>
 
-                    <div className="text-center mt-12">
+                    <div className="text-center mt-2">
                         <img src="./intro.png" alt="Dashwind Admin Template" className="w-48 inline-block"></img>
                     </div>
 

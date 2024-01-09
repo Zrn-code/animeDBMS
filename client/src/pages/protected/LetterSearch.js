@@ -218,7 +218,7 @@ function InternalPage() {
             <div className="flex p-2 mt-5 justify-between items-center">
                 <div className="font-bold text-2xl">Search Result: {letter}</div>
                 <div className="flex items-center">
-                    <button className=" outline outline-1  rounded-lg font-bold py-1 px-2 mx-2" onClick={handleDisplayChange}>
+                    <button className="btn btn-sm btn-outline ml-2" onClick={handleDisplayChange}>
                         {display}
                     </button>
                     <TopSideButtons applyFilter={applyFilter} />

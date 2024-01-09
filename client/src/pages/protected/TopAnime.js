@@ -37,7 +37,7 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
     }
 
     return (
-        <div className="inline-block float-right">
+        <div>
             {selectedFilters.length > 0 && (
                 <button onClick={removeAppliedFilter} className="btn btn-xs mr-2 btn-active btn-ghost normal-case">
                     {selectedFilters.join(", ")}
@@ -229,12 +229,12 @@ function InternalPage() {
                 }
                 topMargin="mt-2"
                 TopSideButtons={
-                    <>
+                    <div className="flex">
                         <TopSideButtons applyFilter={applyFilter} removeFilter={removeFilter} />
-                        <button className="outline outline-1 text-base  rounded-lg font-bold py-1 px-2 mx-2" onClick={handleDisplayChange}>
+                        <button className="btn btn-sm btn-outline ml-2" onClick={handleDisplayChange}>
                             {display}
                         </button>
-                    </>
+                    </div>
                 }
             >
                 {loading ? (

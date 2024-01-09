@@ -241,7 +241,7 @@ function InternalPage() {
                         {text} {resultCnt} in total
                     </span>
                 </span>
-                <button className="outline outline-1 rounded-lg font-bold py-1 px-2" onClick={handleDisplayChange}>
+                <button className="btn btn-sm btn-outline ml-2" onClick={handleDisplayChange}>
                     {display}
                 </button>
             </div>

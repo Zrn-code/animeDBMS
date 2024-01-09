@@ -245,7 +245,7 @@ function InternalPage() {
                     {genreName} Anime ({genre_cnt})
                 </div>
                 <div className="flex items-center">
-                    <button className=" outline outline-1  rounded-lg font-bold py-1 px-2 mx-2" onClick={handleDisplayChange}>
+                    <button className="btn btn-sm btn-outline ml-2" onClick={handleDisplayChange}>
                         {display}
                     </button>
                     <TopSideButtons applyFilter={applyFilter} applySearch={applySearch} />

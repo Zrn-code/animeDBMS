@@ -165,10 +165,10 @@ function InternalPage() {
                 topMargin="mt-2"
                 TopSideButtons={
                     <>
-                        <button className="outline outline-1 text-base  rounded-lg font-bold py-1 px-2 mx-2" onClick={handleDisplayChange}>
+                        <button className="btn btn-sm btn-outline ml-2" onClick={handleDisplayChange}>
                             {display}
                         </button>
-                        <button className="outline outline-1 text-base  rounded-lg font-bold py-1 px-2 mx-2" onClick={handleGenderChange}>
+                        <button className="btn btn-sm btn-outline ml-2" onClick={handleGenderChange}>
                             {params}
                         </button>
                     </>

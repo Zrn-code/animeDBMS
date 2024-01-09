@@ -10,6 +10,7 @@ function Register() {
         name: "",
         password: "",
         email: "",
+        check_password: "",
     }
 
     const [loading, setLoading] = useState(false)
@@ -28,7 +29,7 @@ function Register() {
         if (registerObj.password.length > 50) return setErrorMessage("Password must be less than 50 characters long")
         if (registerObj.name.length > 50) return setErrorMessage("Name must be less than 50 characters long")
         if (registerObj.email.length > 200) return setErrorMessage("Email must be less than 200 characters long")
-
+        if (registerObj.password !== registerObj.check_password) return setErrorMessage("Passwords do not match")
         setLoading(true)
         try {
             const response = await axiosInstance.post("/api/register", registerObj, {
@@ -43,7 +44,6 @@ function Register() {
             if (response.status === 200) {
                 // Assuming the API returns success message or token
                 localStorage.setItem("token", data.token)
-                localStorage.setItem("user_id", JSON.stringify(data.user_id))
                 //console.log(localStorage.getItem('token'));
                 setLoading(false)
                 window.location.href = "/app/welcome" // Redirect to the home page after successful login
@@ -96,6 +96,14 @@ function Register() {
                                     updateType="password"
                                     containerStyle="mt-4"
                                     labelTitle="Password"
+                                    updateFormValue={updateFormValue}
+                                />
+                                <InputText
+                                    defaultValue={registerObj.check_password}
+                                    type="password"
+                                    updateType="password"
+                                    containerStyle="mt-4"
+                                    labelTitle="Double check password"
                                     updateFormValue={updateFormValue}
                                 />
                             </div>
