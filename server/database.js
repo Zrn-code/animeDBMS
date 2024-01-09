@@ -903,12 +903,43 @@ export async function UpdateGender(user_id, anime_id) {
     }
 }
 
+export async function UpdateGenderWithOldGender(old_gender, anime_id) {
+    //const gender = await pool.query("select Gender from users_details where Mal_ID = ?", [user_id])
+
+    if (old_gender == "Male") {
+        await pool.query(
+            `UPDATE anime_statistic
+            set Male = Male - 1
+            ,Female = Female + 1
+            where anime_id = ?`,
+            [anime_id]
+        )
+    } else if (old_gender == "Female") {
+        await pool.query(
+            `UPDATE anime_statistic
+            set Male = Male + 1
+            ,Female = Female - 1
+            where anime_id = ?`,
+            [anime_id]
+        )
+    }
+}
+
 export async function UpdateMeanScore(score, anime_id) {
     await pool.query(
         `update anime_statistic
         set mean_score = (mean_score*scored_by + ?)/(scored_by+1) 
         WHERE anime_id = ?`,
         [score, anime_id]
+    )
+}
+
+export async function UpdateMeanScoreWithOldScore(old_score, new_score, anime_id) {
+    await pool.query(
+        `update anime_statistic
+        set mean_score = (mean_score*scored_by - ? + ?)/(scored_by) 
+        WHERE anime_id = ?`,
+        [old_score, new_score, anime_id]
     )
 }
 
@@ -932,4 +963,14 @@ export async function getScored_by(anime_id) {
     )
 
     return result[0][0].scored_by
+}
+
+export async function getGender(user_id) {
+    const result = await pool.query(
+        `select Gender
+        from users_details
+        where Mal_ID = ?`,
+        [user_id]
+    )
+    return result[0][0].Gender
 }

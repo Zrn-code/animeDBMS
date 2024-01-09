@@ -221,27 +221,19 @@ app.post("/api/addRating", async (req, res) => {
             // add scored_by
             // update weighted score
             // add male or female
-            if (before == 0) {
-                db.AddMember(anime_id)
+            if (before === 0) {
+                await db.AddMember(anime_id)
             }
-            db.UpdateMeanScore(parsedScore, anime_id)
-            db.AddScored_by(anime_id)
-            db.UpdateGender(user_id, anime_id)
-            db.UpdateWeightScore(anime_id)
+            await db.UpdateMeanScore(parsedScore, anime_id)
+            await db.AddScored_by(anime_id)
+            await db.UpdateGender(user_id, anime_id)
+            await db.UpdateWeightScore(anime_id)
 
             return res.status(200).send("Add Rating Successfully")
         } else {
             return res.status(401).send("Wrong format")
         }
     })
-})
-
-app.get("/test/:id", async (req, res) => {
-    let anime_id = req.params.id
-
-    let sc = await db.getScored_by(anime_id)
-    console.log(sc)
-    res.status(200).send("good")
 })
 
 app.put("/api/updateRating", async (req, res) => {
@@ -262,6 +254,11 @@ app.put("/api/updateRating", async (req, res) => {
         const parsedScore = parseInt(score)
 
         if (!isNaN(parsedScore) && parsedScore >= 0 && parsedScore <= 10) {
+            let before = await db.getRatingWithId(user_id, anime_id)
+            let old_rating = before[0].rating
+
+            await db.UpdateMeanScoreWithOldScore(old_rating, parsedScore, anime_id)
+            await db.UpdateWeightScore(anime_id)
             await db.updateRating(user_id, anime_id, parsedScore)
             return res.status(200).send("Update Rating Successfully")
         } else {
@@ -835,7 +832,7 @@ app.post("/api/addReview", async (req, res) => {
         if ((await db.checkIfUserreviewExist(user_id, anime_id)) > 0) {
             return res.status(401).send("wrong format(the user's review almost exist)")
         }
-
+        if ((await db.CheckIsMember(user_id)) === 0) await db.AddMember(anime_id)
         await db.addReview(user_id, anime_id, review)
         return res.status(200).send("Add Review Successfully")
     })
@@ -884,10 +881,29 @@ app.post("/api/updateProfile", async (req, res) => {
         if (!(gender == "Female" || gender == "Male") || !(year >= 1000 && year <= 9999)) {
             return res.status(401).send("Wrong format")
         } else {
+            const old_gender = await db.getGender(user_id)
+
+            if (old_gender != gender) {
+                const result = await db.getRating(user_id)
+
+                result.forEach(async (element) => {
+                    await db.UpdateGenderWithOldGender(old_gender, element.anime_id)
+                })
+            }
             await db.updateProfile(user_id, gender, birthday)
             return res.status(200).send("Update Successfully")
         }
     })
+})
+
+app.get("/test/:id", (req, res) => {
+    let user_id = req.params.id
+
+    async function f() {
+        console.log(await db.getGender(user_id))
+    }
+    f()
+    return res.status(200).send("good")
 })
 
 app.get("/api/getWatchListDistribution", async (req, res) => {
