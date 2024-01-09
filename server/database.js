@@ -875,3 +875,61 @@ export async function getPassword(id) {
     const result = await pool.query("SELECT user_password FROM users_account WHERE user_id = ?", [id])
     return result[0][0].user_password
 }
+
+export async function CheckIsMember(user_id) {
+    const result = await pool.query(
+        "select COUNT(*) as cnt from users_review, users_score, users_status where users_review.user_id = users_score.user_id and users_review.user_id = users_status.user_id and users_score.user_id = users_status.user_id and users_review.user_id = ?",
+        [user_id]
+    )
+    console.log(result[0][0].cnt)
+    return result[0][0].cnt
+}
+
+export async function AddMember(anime_id) {
+    await pool.query("update anime_statistic set members = members+1 where anime_id = ?", [anime_id])
+}
+
+export async function AddScored_by(anime_id) {
+    await pool.query("update anime_statistic set scored_by = scored_by+1 where anime_id = ?", [anime_id])
+}
+
+export async function UpdateGender(user_id, anime_id) {
+    const gender = await pool.query("select Gender from users_details where Mal_ID = ?", [user_id])
+
+    if (gender == "Male") {
+        await pool.query("UPDATE anime_statistic set Male = Male + 1 where anime_id = ?", [anime_id])
+    } else if (gender == "Female") {
+        await pool.query("UPDATE anime_statistic set Female = Female + 1 where anime_id = ?", [anime_id])
+    }
+}
+
+export async function UpdateMeanScore(score, anime_id) {
+    await pool.query(
+        `update anime_statistic
+        set mean_score = (mean_score*scored_by + ?)/(scored_by+1) 
+        WHERE anime_id = ?`,
+        [score, anime_id]
+    )
+}
+
+export async function UpdateWeightScore(anime_id) {
+    if (getScored_by(anime_id) >= 1000) {
+        await pool.query(
+            `update anime_statistic
+            set weight_score = (1000 * 7.5831 /( 1000 + scored_by ) +  scored_by*mean_score / (1000+ scored_by))
+            where anime_id = ?`,
+            [anime_id]
+        )
+    }
+}
+
+export async function getScored_by(anime_id) {
+    const result = await pool.query(
+        `SELECT scored_by
+        from anime_statistic
+        where anime_id = ?`,
+        [anime_id]
+    )
+
+    return result[0][0].scored_by
+}

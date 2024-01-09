@@ -213,12 +213,35 @@ app.post("/api/addRating", async (req, res) => {
         const parsedScore = parseInt(score)
 
         if (!isNaN(parsedScore) && parsedScore >= 0 && parsedScore <= 10) {
+            let before = await db.CheckIsMember(user_id)
             await db.addRating(user_id, anime_id, parsedScore)
+
+            // add member (anime_statistic)
+            // update mean_score
+            // add scored_by
+            // update weighted score
+            // add male or female
+            if (before == 0) {
+                db.AddMember(anime_id)
+            }
+            db.UpdateMeanScore(parsedScore, anime_id)
+            db.AddScored_by(anime_id)
+            db.UpdateGender(user_id, anime_id)
+            db.UpdateWeightScore(anime_id)
+
             return res.status(200).send("Add Rating Successfully")
         } else {
             return res.status(401).send("Wrong format")
         }
     })
+})
+
+app.get("/test/:id", async (req, res) => {
+    let anime_id = req.params.id
+
+    let sc = await db.getScored_by(anime_id)
+    console.log(sc)
+    res.status(200).send("good")
 })
 
 app.put("/api/updateRating", async (req, res) => {
