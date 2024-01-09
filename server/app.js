@@ -410,6 +410,45 @@ app.delete("/api/deleteWatchStatus", async (req, res) => {
     })
 })
 
+app.get("/api/deleteAccount", async (req, res) => {
+    const token = req.headers.authorization
+    const { password } = req.body
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const record = await db.getPassword(user_id)
+
+        if (record != password) {
+            return res.status(401).send("Password not correct")
+        } else {
+            const user_id = authData.id
+
+            let result = await db.getRating(user_id)
+            /*
+            anime statistic 中的
+            (如果有rate過) => mean_score 改 scored_by 減一 members 減一 weight_score 改 
+            Male or Female 改 
+            */
+            result.forEach(async (element) => {
+                let rated = await db.getRatingWithId(user_id, element.anime_id)
+                await db.UpdateMeanScoreDropScore(rated[0].rating, element.anime_id)
+                await db.DecreaseScored_by(element.anime_id)
+                await db.ReduceMember(element.anime_id)
+                await db.UpdateWeightScore(element.anime_id)
+                await db.UpdateGenderMinus(user_id, element.anime_id)
+            })
+            return res.status(200).send("Deleted Successfully")
+        }
+    })
+})
+
 app.get("/api/getProfile", async (req, res) => {
     const token = req.headers.authorization
     if (!token) return res.status(401).send("Token not found")
@@ -424,7 +463,7 @@ app.get("/api/getProfile", async (req, res) => {
         }
         const id = authData.id
         const profile = await db.getProfile(id)
-        res.send(profile)
+        res.status(200).send(profile)
     })
 })
 
@@ -928,16 +967,6 @@ app.post("/api/updateProfile", async (req, res) => {
             return res.status(200).send("Update Successfully")
         }
     })
-})
-
-app.get("/test/:id", (req, res) => {
-    let anime_id = req.params.id
-
-    async function f() {
-        console.log(await db.getGender(1))
-    }
-    f()
-    return res.status(200).send("good")
 })
 
 app.get("/api/getWatchListDistribution", async (req, res) => {

@@ -1000,3 +1000,48 @@ export async function getGender(user_id) {
     )
     return result[0][0].Gender
 }
+
+export async function RemoveUser(user_id) {
+    /*
+    delete user account 中的 account 
+    delete user details 中的 
+    delete user review
+    delete user score
+    delete user status
+    */
+
+    await pool.query(
+        `DELETE 
+    from users_status
+    where user_id = ?`,
+        [user_id]
+    )
+
+    await pool.query(
+        `DELETE
+    from users_score
+    WHERE user_id = ?`,
+        [user_id]
+    )
+
+    await pool.query(
+        `DELETE
+    from users_review
+    WHERE user_id = ?`,
+        [user_id]
+    )
+
+    await pool.query(
+        `DELETE
+        from users_details
+        WHERE Mal_ID = ?`,
+        [user_id]
+    )
+
+    await pool.query(
+        `DELETE
+        from users_account
+        WHERE user_id = ?`,
+        [user_id]
+    )
+}
