@@ -410,7 +410,7 @@ app.delete("/api/deleteWatchStatus", async (req, res) => {
     })
 })
 
-app.get("/api/deleteAccount", async (req, res) => {
+app.delete("/api/deleteAccount", async (req, res) => {
     const token = req.headers.authorization
     const { password } = req.body
     if (!token) return res.status(401).send("Token not found")
@@ -423,13 +423,12 @@ app.get("/api/deleteAccount", async (req, res) => {
                 return res.status(401).send("Token is invalid")
             }
         }
+        const user_id = authData.id
         const record = await db.getPassword(user_id)
 
         if (record != password) {
             return res.status(401).send("Password not correct")
         } else {
-            const user_id = authData.id
-
             let result = await db.getRating(user_id)
             /*
             anime statistic 中的
@@ -444,6 +443,8 @@ app.get("/api/deleteAccount", async (req, res) => {
                 await db.UpdateWeightScore(element.anime_id)
                 await db.UpdateGenderMinus(user_id, element.anime_id)
             })
+
+            await db.RemoveUser(user_id)
             return res.status(200).send("Deleted Successfully")
         }
     })
