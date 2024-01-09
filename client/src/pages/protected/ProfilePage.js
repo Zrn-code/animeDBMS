@@ -1,6 +1,6 @@
-import { useEffect } from "react"
-import { useDispatch } from "react-redux"
-import { setPageTitle } from "../../features/common/headerSlice"
+import { useDebugValue, useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { setPageTitle, setRefetch } from "../../features/common/headerSlice"
 import axiosInstance from "../../app/axios"
 import { useState } from "react"
 import moment from "moment"
@@ -52,6 +52,37 @@ function BarChart({ dataset }) {
         <TitleCard title={"Score Stats"}>
             <Bar options={options} data={data} />
         </TitleCard>
+    )
+}
+
+const RatingButtons = ({ id, name, img, score }) => {
+    const dispatch = useDispatch()
+    const token = localStorage.getItem("token")
+    const openAddRatingModal = () => {
+        if (!token) {
+            dispatch(
+                openModal({
+                    title: "You need to login",
+                    bodyType: MODAL_BODY_TYPES.REQUIRE_LOGIN,
+                })
+            )
+        } else {
+            dispatch(
+                openModal({
+                    title: "Update Rating Score",
+                    bodyType: MODAL_BODY_TYPES.RATING_ADD_NEW,
+                    extraObject: { id: id, name: name, img: img, score: score },
+                })
+            )
+        }
+    }
+
+    return (
+        <div className="inline-block cursor-pointer" onClick={openAddRatingModal}>
+            <div className="flex items-center">
+                ⭐ <div className="mr-2 font-bold">{score ? score : "N/A"}</div>
+            </div>
+        </div>
     )
 }
 
@@ -110,6 +141,37 @@ function PieChart({ dataset, cnt }) {
         return <TitleCard title={`Watch Status (${cnt})`}></TitleCard>
     }
 }
+const WatchListButtons = ({ id, name, img, state }) => {
+    const dispatch = useDispatch()
+    const token = localStorage.getItem("token")
+
+    const openAddWatchListModal = () => {
+        if (!token) {
+            dispatch(
+                openModal({
+                    title: "You need to login",
+                    bodyType: MODAL_BODY_TYPES.REQUIRE_LOGIN,
+                })
+            )
+        } else {
+            dispatch(
+                openModal({
+                    title: "Update Watch Status",
+                    bodyType: MODAL_BODY_TYPES.WATCHLIST_ADD_NEW,
+                    extraObject: { id: id, name: name, img: img, state: state },
+                })
+            )
+        }
+    }
+
+    return (
+        <div className="inline-block ">
+            <button className="btn btn-sm normal-case btn-primary" onClick={() => openAddWatchListModal()}>
+                {state ? state : "Add to Watch List"}
+            </button>
+        </div>
+    )
+}
 
 function RatingPage({ token }) {
     const dispatch = useDispatch()
@@ -120,9 +182,17 @@ function RatingPage({ token }) {
     const startIndexRating = (RatingPage - 1) * 5
     const endIndexRating = RatingPage * 5
     const itemsPerPage = 5
+    const refetch = useSelector((state) => state.header.refetch)
     useEffect(() => {
         getRating()
     }, [])
+
+    useEffect(() => {
+        if (refetch) {
+            getRating()
+            dispatch(setRefetch(false))
+        }
+    }, [refetch])
 
     const deleteRating = (anime_id) => async () => {
         try {
@@ -181,6 +251,7 @@ function RatingPage({ token }) {
             }
         }
     }
+
     if (Loading)
         return (
             <div className="flex justify-center items-center h-full">
@@ -220,7 +291,12 @@ function RatingPage({ token }) {
                                             </td>
                                             <td>
                                                 <div className="flex font-bold">
-                                                    ⭐{rating.rating}
+                                                    <RatingButtons
+                                                        id={rating.anime_id}
+                                                        name={rating.name}
+                                                        img={rating.Image_URL}
+                                                        score={rating.rating}
+                                                    />
                                                     <TrashIcon
                                                         className="ml-2 w-4 cursor-pointer"
                                                         onClick={deleteRating(rating.anime_id)}
@@ -269,6 +345,7 @@ function WatchListPage({ token }) {
     const startIndexWatchList = (WatchListPage - 1) * 5
     const endIndexWatchList = WatchListPage * 5
     const itemsPerPage = 5
+    const refetch = useSelector((state) => state.header.refetch)
     const getWatchList = async () => {
         try {
             const response = await axiosInstance.get("/api/getWatchList", {
@@ -331,6 +408,12 @@ function WatchListPage({ token }) {
     useEffect(() => {
         getWatchList()
     }, [])
+    useEffect(() => {
+        if (refetch) {
+            getWatchList()
+            dispatch(setRefetch(false))
+        }
+    }, [refetch])
 
     if (Loading)
         return (
@@ -371,10 +454,15 @@ function WatchListPage({ token }) {
                                                 </Link>
                                             </td>
                                             <td>
-                                                <div className="flex font-bold">
-                                                    {rating.status}
+                                                <div className="flex font-bold  justify-end">
+                                                    <WatchListButtons
+                                                        id={rating.anime_id}
+                                                        name={rating.name}
+                                                        img={rating.Image_URL}
+                                                        state={rating.status}
+                                                    />
                                                     <TrashIcon
-                                                        className="ml-2 w-4 cursor-pointer"
+                                                        className="ml-2 w-4 cursor-pointer float-right"
                                                         onClick={deleteWatchList(rating.anime_id)}
                                                     />{" "}
                                                 </div>
@@ -412,6 +500,34 @@ function WatchListPage({ token }) {
     )
 }
 
+const ReviewButtons = ({ id, name, img, review }) => {
+    const dispatch = useDispatch()
+    const token = localStorage.getItem("token")
+    const openAddReviewModal = () => {
+        if (!token) {
+            dispatch(
+                openModal({
+                    title: "You need to login",
+                    bodyType: MODAL_BODY_TYPES.REQUIRE_LOGIN,
+                })
+            )
+        } else {
+            dispatch(
+                openModal({
+                    title: "Update Review",
+                    bodyType: MODAL_BODY_TYPES.REVIEW_ADD_NEW,
+                    extraObject: { id: id, name: name, img: img, review: review },
+                })
+            )
+        }
+    }
+
+    return (
+        <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4" onClick={openAddReviewModal}>
+            <button className="text-right ml-2 font-bold ">{review ? "show" : "N/A"}</button>
+        </div>
+    )
+}
 function ReviewPage({ token }) {
     const dispatch = useDispatch()
     const [Review, setReview] = useState([])
@@ -421,6 +537,7 @@ function ReviewPage({ token }) {
     const startIndexReview = (ReviewPage - 1) * 5
     const endIndexReview = ReviewPage * 5
     const itemsPerPage = 5
+    const refetch = useSelector((state) => state.header.refetch)
     const getReview = async () => {
         try {
             const response = await axiosInstance.get("/api/getReview", {
@@ -453,6 +570,13 @@ function ReviewPage({ token }) {
     useEffect(() => {
         getReview()
     }, [])
+
+    useEffect(() => {
+        if (refetch) {
+            getReview()
+            dispatch(setRefetch(false))
+        }
+    }, [refetch])
 
     const deleteReview = (anime_id) => async () => {
         try {
@@ -520,8 +644,13 @@ function ReviewPage({ token }) {
                                                 </Link>
                                             </td>
                                             <td>
-                                                <div className="flex font-bold">
-                                                    {rating.review}
+                                                <div className="flex font-bold float-right">
+                                                    <ReviewButtons
+                                                        id={rating.anime_id}
+                                                        name={rating.name}
+                                                        img={rating.Image_URL}
+                                                        review={rating.review}
+                                                    />
                                                     <TrashIcon
                                                         className="ml-2 w-4 cursor-pointer"
                                                         onClick={deleteReview(rating.anime_id)}
@@ -1003,10 +1132,16 @@ function InternalPage() {
                                 <div className="w-1/2 pl-5">
                                     <BarChart dataset={ratingDistribution} />
                                     <div className="shadow rounded-xl bg-base-100 mt-5">
-                                        <div className="p-5 font-bold">Total ratings: {ratingCnt}</div>
+                                        <div className="flex p-5 font-bold justify-between">
+                                            <div className="">Total ratings:</div>
+                                            <div className="mr-2">{ratingCnt}</div>
+                                        </div>
                                     </div>
                                     <div className="shadow rounded-xl bg-base-100 mt-5">
-                                        <div className="p-5 font-bold">Total reviews: {reviewCnt}</div>
+                                        <div className="flex p-5 font-bold justify-between">
+                                            <div className="">Total Reviews:</div>
+                                            <div className="mr-2">{reviewCnt}</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

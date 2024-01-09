@@ -152,7 +152,7 @@ function InternalPage() {
     const refetch = useSelector((state) => state.header.refetch)
 
     useEffect(() => {
-        dispatch(setPageTitle({ title: "Search Anime" }))
+        dispatch(setPageTitle({ title: "Genre Search" }))
         setToken(localStorage.getItem("token"))
     }, [])
 

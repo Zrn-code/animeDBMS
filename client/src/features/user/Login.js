@@ -21,6 +21,8 @@ function Login() {
 
         if (loginObj.email.trim() === "") return setErrorMessage("Email Id is required! (use any value)")
         if (loginObj.password.trim() === "") return setErrorMessage("Password is required! (use any value)")
+        if (!loginObj.email.includes("@")) return setErrorMessage("Email Id is invalid! (use any value)")
+        if (loginObj.password.length < 6) return setErrorMessage("Password is invalid! (use any value)")
         else {
             setLoading(true)
             try {
@@ -35,7 +37,6 @@ function Login() {
                 if (response.status === 200) {
                     // Assuming the API returns success message or token
                     localStorage.setItem("token", data.token)
-                    localStorage.setItem("user_id", JSON.stringify(data.user_id))
                     //console.log(localStorage.getItem('token'));
                     setLoading(false)
                     window.location.href = "/app/welcome" // Redirect to the home page after successful login

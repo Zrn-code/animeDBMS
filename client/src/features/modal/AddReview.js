@@ -78,7 +78,7 @@ function AddReviewModalBody({ closeModal, extraObject }) {
                         <div className="divider font-bold mt-5">Review</div>
 
                         <textarea
-                            className="textarea w-full h-24 textarea-bordered"
+                            className="textarea w-full h-48 textarea-bordered"
                             placeholder="You can write review here..."
                             value={Review["review"]}
                             onChange={(e) => setReview({ ...Review, review: e.target.value })}

@@ -162,7 +162,7 @@ function Overview({ value, detail, id }) {
             .get(`/api/getMeanScore/${id}`)
             .then((res) => res.data)
             .then((data) => {
-                setScore(data[0]["mean_score"])
+                setScore(data[0]["mean_score"].toFixed(2))
                 setScoredBy(data[0]["scored_by"])
             })
             .catch((error) => {
@@ -361,7 +361,8 @@ function Statistics({ value, detail, id }) {
             .get(`/api/getMeanScore/${id}`)
             .then((res) => res.data)
             .then((data) => {
-                setMeanScore(data[0]["mean_score"])
+                const meanScoreValue = parseFloat(data[0]["mean_score"]).toFixed(2)
+                setMeanScore(meanScoreValue)
                 setScoredBy(data[0]["scored_by"])
             })
             .catch((error) => {
@@ -445,9 +446,12 @@ const WatchListButtons = ({ id, name, img, state }) => {
     }
 
     return (
-        <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4" onClick={openAddWatchListModal}>
+        <div
+            className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4 cursor-pointer"
+            onClick={openAddWatchListModal}
+        >
             <div className="text-left font-bold">watch status</div>
-            <div className="text-right ml-2">{state ? state : "N/A"}</div>
+            <div className="text-right ml-2 font-bold">{state ? state : "N/A"}</div>
         </div>
     )
 }
@@ -475,9 +479,9 @@ const RatingButtons = ({ id, name, img, score }) => {
     }
 
     return (
-        <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4" onClick={openAddRatingModal}>
+        <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4 cursor-pointer" onClick={openAddRatingModal}>
             <div className="text-left font-bold ">your score</div>
-            <div className="text-right  ml-2">{score ? score : "N/A"} ⭐ </div>
+            <div className="text-right  ml-2 font-bold">{score ? score : "N/A"} ⭐ </div>
         </div>
     )
 }
@@ -505,7 +509,7 @@ const ReviewButtons = ({ id, name, img, review }) => {
     }
 
     return (
-        <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4" onClick={openAddReviewModal}>
+        <div className="flex bg-base-100 rounded-xl p-4 mb-5 justify-between items-center mt-4 cursor-pointer" onClick={openAddReviewModal}>
             <div className="text-left font-bold ">your review</div>
             <div className="text-right ml-2 font-bold">{review ? "show" : "N/A"}</div>
         </div>

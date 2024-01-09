@@ -65,7 +65,7 @@ function Header() {
                 </select> */}
 
                     {/* Light and dark theme selection toogle **/}
-                    <label className="swap ">
+                    <label className="swap mx-2">
                         <input type="checkbox" />
                         <SunIcon
                             data-set-theme="light"
@@ -92,13 +92,10 @@ function Header() {
                     {/* Profile icon, opening menu on click */}
 
                     {token ? (
-                        <div className="dropdown dropdown-end ml-4">
+                        <div className="dropdown dropdown-end ml-2">
                             <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                                 <div className="w-10 rounded-full">
-                                    <img
-                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXrIBnP4Ppijsc0z3IRH6A6mQEs0OSaVlmFw&usqp=CAU"
-                                        alt="profile"
-                                    />
+                                    <img src="https://avatars.githubusercontent.com/u/63348689?v=4" alt="profile" />
                                 </div>
                             </label>
                             <ul tabIndex={0} className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
