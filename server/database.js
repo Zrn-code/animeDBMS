@@ -888,9 +888,16 @@ export async function CheckIsMember(user_id) {
 export async function AddMember(anime_id) {
     await pool.query("update anime_statistic set members = members+1 where anime_id = ?", [anime_id])
 }
+export async function ReduceMember(anime_id) {
+    await pool.query("update anime_statistic set members = members-1 where anime_id = ?", [anime_id])
+}
 
 export async function AddScored_by(anime_id) {
     await pool.query("update anime_statistic set scored_by = scored_by+1 where anime_id = ?", [anime_id])
+}
+
+export async function DecreaseScored_by(anime_id) {
+    await pool.query("update anime_statistic set scored_by = scored_by-1 where anime_id = ?", [anime_id])
 }
 
 export async function UpdateGender(user_id, anime_id) {
@@ -900,6 +907,16 @@ export async function UpdateGender(user_id, anime_id) {
         await pool.query("UPDATE anime_statistic set Male = Male + 1 where anime_id = ?", [anime_id])
     } else if (gender == "Female") {
         await pool.query("UPDATE anime_statistic set Female = Female + 1 where anime_id = ?", [anime_id])
+    }
+}
+
+export async function UpdateGenderMinus(user_id, anime_id) {
+    const gender = await pool.query("select Gender from users_details where Mal_ID = ?", [user_id])
+
+    if (gender == "Male") {
+        await pool.query("UPDATE anime_statistic set Male = Male - 1 where anime_id = ?", [anime_id])
+    } else if (gender == "Female") {
+        await pool.query("UPDATE anime_statistic set Female = Female - 1 where anime_id = ?", [anime_id])
     }
 }
 
@@ -928,7 +945,7 @@ export async function UpdateGenderWithOldGender(old_gender, anime_id) {
 export async function UpdateMeanScore(score, anime_id) {
     await pool.query(
         `update anime_statistic
-        set mean_score = (mean_score*scored_by + ?)/(scored_by+1) 
+        set mean_score = ROUND((mean_score*scored_by + ?)/(scored_by+1), 2)  
         WHERE anime_id = ?`,
         [score, anime_id]
     )
@@ -937,9 +954,18 @@ export async function UpdateMeanScore(score, anime_id) {
 export async function UpdateMeanScoreWithOldScore(old_score, new_score, anime_id) {
     await pool.query(
         `update anime_statistic
-        set mean_score = (mean_score*scored_by - ? + ?)/(scored_by) 
+        set mean_score = ROUND((mean_score*scored_by - ? + ?)/(scored_by), 2)  
         WHERE anime_id = ?`,
         [old_score, new_score, anime_id]
+    )
+}
+
+export async function UpdateMeanScoreDropScore(drop_score, anime_id) {
+    await pool.query(
+        `update anime_statistic
+        set mean_score = (mean_score*scored_by - ?)/(scored_by-1) 
+        WHERE anime_id = ?`,
+        [drop_score, anime_id]
     )
 }
 
@@ -973,4 +999,49 @@ export async function getGender(user_id) {
         [user_id]
     )
     return result[0][0].Gender
+}
+
+export async function RemoveUser(user_id) {
+    /*
+    delete user account 中的 account 
+    delete user details 中的 
+    delete user review
+    delete user score
+    delete user status
+    */
+
+    await pool.query(
+        `DELETE 
+    from users_status
+    where user_id = ?`,
+        [user_id]
+    )
+
+    await pool.query(
+        `DELETE
+    from users_score
+    WHERE user_id = ?`,
+        [user_id]
+    )
+
+    await pool.query(
+        `DELETE
+    from users_review
+    WHERE user_id = ?`,
+        [user_id]
+    )
+
+    await pool.query(
+        `DELETE
+        from users_details
+        WHERE Mal_ID = ?`,
+        [user_id]
+    )
+
+    await pool.query(
+        `DELETE
+        from users_account
+        WHERE user_id = ?`,
+        [user_id]
+    )
 }
