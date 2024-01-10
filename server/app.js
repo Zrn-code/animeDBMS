@@ -412,7 +412,7 @@ app.delete("/api/deleteWatchStatus", async (req, res) => {
 
 app.delete("/api/deleteAccount", async (req, res) => {
     const token = req.headers.authorization
-    const { password } = req.body
+    const password = req.headers.password
     if (!token) return res.status(401).send("Token not found")
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {

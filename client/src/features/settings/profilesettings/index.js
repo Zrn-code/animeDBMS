@@ -88,6 +88,7 @@ function ProfileSettings() {
         newPassword: "",
         confirmPassword: "",
     })
+    const [password, setPassword] = useState("")
 
     const handlePasswordChange = (event) => {
         const { name, value } = event.target
@@ -134,6 +135,43 @@ function ProfileSettings() {
             }
             dispatch(showNotification({ message: "Error changing password", status: 0 }))
         }
+    }
+
+    const DeleteAccount = async () => {
+        console.log(password)
+        try {
+            await axiosInstance.delete("/api/deleteAccount", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                    password: password,
+                },
+            })
+
+            window.location.href = "/app/welcome"
+            localStorage.removeItem("token")
+            dispatch(showNotification({ message: "Account deleted", status: 1 }))
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                const errorMessage = error.response.data
+                if (errorMessage === "Token expired") {
+                    console.log("Token expired. Logging out...")
+                    localStorage.removeItem("token")
+                    dispatch(showNotification({ message: "Token expired. Logging out...", status: 0 }))
+                    //window.location.href = "/app/welcome"
+                } else {
+                    console.log("Other 401 error:", errorMessage)
+                }
+            } else {
+                console.error("Error:", error)
+            }
+            dispatch(showNotification({ message: "Error deleting account", status: 0 }))
+        }
+    }
+
+    const handlePassword = (event) => {
+        const { value } = event.target
+        setPassword(value)
     }
 
     return (
@@ -228,12 +266,14 @@ function ProfileSettings() {
                                 <label className="label">
                                     <span>Confirm Password</span>
                                 </label>
-                                <input type="password" placeholder="Password" className="input input-bordered" />
+                                <input type="password" placeholder="Password" onChange={handlePassword} className="input input-bordered" />
                             </div>
                         </div>
 
                         <div className="mt-5">
-                            <button className="btn btn-primary float-right">Delete</button>
+                            <button className="btn btn-primary float-right" onClick={DeleteAccount}>
+                                Delete
+                            </button>
                         </div>
                     </TitleCard>
                 </div>
