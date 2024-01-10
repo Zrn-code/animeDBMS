@@ -101,7 +101,7 @@ function Register() {
                                 <InputText
                                     defaultValue={registerObj.check_password}
                                     type="password"
-                                    updateType="password"
+                                    updateType="check_password"
                                     containerStyle="mt-4"
                                     labelTitle="Double check password"
                                     updateFormValue={updateFormValue}
