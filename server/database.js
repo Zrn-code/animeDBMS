@@ -718,18 +718,31 @@ export async function getAnimesCntWithCondition(id, type, param, display) {
 }
 
 export async function checkEmail(email) {
-    const result = await pool.query("select COUNT(user_email) as cnt from users_account WHERE user_email = ?", [email])
+    const result = await pool.query(
+        `select COUNT(user_email) as cnt
+        from users_account
+        WHERE user_email = ?`,
+        [email]
+    )
 
     return result[0][0].cnt
 }
 
 export async function checkUserName(name) {
-    const result = await pool.query("select COUNT(Username) as cnt from users_details WHERE Username = ?", [name])
+    const result = await pool.query(
+        `select COUNT(Username) as cnt
+        from users_details
+        WHERE Username = ?`,
+        [name]
+    )
     return result[0][0].cnt
 }
 
 export async function createID() {
-    const result = await pool.query("select MAX(user_id) as mid from users_account")
+    const result = await pool.query(
+        `select MAX(user_id) as mid
+        from users_account`
+    )
     return result[0][0].mid + 1
 }
 
@@ -963,7 +976,7 @@ export async function UpdateMeanScoreWithOldScore(old_score, new_score, anime_id
 export async function UpdateMeanScoreDropScore(drop_score, anime_id) {
     await pool.query(
         `update anime_statistic
-        set mean_score = (mean_score*scored_by - ?)/(scored_by-1) 
+        set mean_score = ROUND((mean_score*scored_by - ?)/(scored_by-1), 2)  
         WHERE anime_id = ?`,
         [drop_score, anime_id]
     )
@@ -973,7 +986,7 @@ export async function UpdateWeightScore(anime_id) {
     if (getScored_by(anime_id) >= 1000) {
         await pool.query(
             `update anime_statistic
-            set weight_score = (1000 * 7.5831 /( 1000 + scored_by ) +  scored_by*mean_score / (1000+ scored_by))
+            set weight_score = ROUND((1000 * 7.5831 /( 1000 + scored_by ) +  scored_by*mean_score / (1000+ scored_by)), 2) 
             where anime_id = ?`,
             [anime_id]
         )
