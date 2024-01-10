@@ -58,7 +58,16 @@ app.post("/api/register", async (req, res) => {
             email: email,
         }
 
-        await db.insertNewUser(payload.id, name, password, email)
+        function hasChineseCharacters(str) {
+            // 使用正規表達式來檢查中文字符
+            let chinesePattern = /[\u4E00-\u9FFF\u3400-\u4DFF\uF900-\uFAFF]/
+            return chinesePattern.test(str)
+        }
+        if (hasChineseCharacters(email)) {
+            return res.status(401).send("email is not valid(contain Chinese character)")
+        } else {
+            await db.insertNewUser(payload.id, name, password, email)
+        }
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "5h" })
         return res.status(200).json({ message: "login success", token: token })
@@ -330,6 +339,9 @@ app.delete("/api/deleteReview", async (req, res) => {
         const ifreviewExist = await db.checkreview(user_id, anime_id)
         if (ifreviewExist > 0) {
             await db.removeReview(user_id, anime_id)
+            if ((await db.CheckIsMember(user_id)) === 0) {
+                db.ReduceMember(anime_id)
+            }
             return res.status(200).send("Deleted Successfully")
         } else {
             return res.status(401).send("review not found")
@@ -353,7 +365,16 @@ app.delete("/api/deleteRating", async (req, res) => {
         const user_id = authData.id
         const ifratingExist = await db.checkrating(user_id, anime_id)
         if (ifratingExist > 0) {
+            let result = await db.getRatingWithId(user_id, anime_id)
+            await db.UpdateMeanScoreDropScore(result[0].rating, anime_id)
+            await db.DecreaseScored_by(anime_id)
+            await db.UpdateWeightScore(anime_id)
+            await db.UpdateGenderMinus(user_id, anime_id)
             await db.removeRating(user_id, anime_id)
+
+            if ((await db.CheckIsMember(user_id)) === 0) {
+                db.ReduceMember(anime_id)
+            }
             return res.status(200).send("Deleted Successfully")
         } else {
             return res.status(401).send("rating not found")
@@ -378,9 +399,53 @@ app.delete("/api/deleteWatchStatus", async (req, res) => {
         const ifwatchStatusExist = await db.checkwatchStatus(user_id, anime_id)
         if (ifwatchStatusExist > 0) {
             await db.removeWatchStatus(user_id, anime_id)
+
+            if ((await db.CheckIsMember(user_id)) === 0) {
+                db.ReduceMember(anime_id)
+            }
             return res.status(200).send("Deleted Successfully")
         } else {
             return res.status(401).send("status not found")
+        }
+    })
+})
+
+app.delete("/api/deleteAccount", async (req, res) => {
+    const token = req.headers.authorization
+    const { password } = req.body
+    if (!token) return res.status(401).send("Token not found")
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, authData) => {
+        if (err) {
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).send("Token expired")
+            } else {
+                return res.status(401).send("Token is invalid")
+            }
+        }
+        const user_id = authData.id
+        const record = await db.getPassword(user_id)
+
+        if (record != password) {
+            return res.status(401).send("Password not correct")
+        } else {
+            let result = await db.getRating(user_id)
+            /*
+            anime statistic 中的
+            (如果有rate過) => mean_score 改 scored_by 減一 members 減一 weight_score 改 
+            Male or Female 改 
+            */
+            result.forEach(async (element) => {
+                let rated = await db.getRatingWithId(user_id, element.anime_id)
+                await db.UpdateMeanScoreDropScore(rated[0].rating, element.anime_id)
+                await db.DecreaseScored_by(element.anime_id)
+                await db.ReduceMember(element.anime_id)
+                await db.UpdateWeightScore(element.anime_id)
+                await db.UpdateGenderMinus(user_id, element.anime_id)
+            })
+
+            await db.RemoveUser(user_id)
+            return res.status(200).send("Deleted Successfully")
         }
     })
 })
@@ -399,7 +464,7 @@ app.get("/api/getProfile", async (req, res) => {
         }
         const id = authData.id
         const profile = await db.getProfile(id)
-        res.send(profile)
+        res.status(200).send(profile)
     })
 })
 
@@ -884,8 +949,17 @@ app.post("/api/updateProfile", async (req, res) => {
             const old_gender = await db.getGender(user_id)
 
             if (old_gender != gender) {
-                const result = await db.getRating(user_id)
+                let result = await db.getRating(user_id)
+                result.forEach(async (element) => {
+                    await db.UpdateGenderWithOldGender(old_gender, element.anime_id)
+                })
 
+                result = await db.getReview(user_id)
+                result.forEach(async (element) => {
+                    await db.UpdateGenderWithOldGender(old_gender, element.anime_id)
+                })
+
+                result = await db.getWatchList(user_id)
                 result.forEach(async (element) => {
                     await db.UpdateGenderWithOldGender(old_gender, element.anime_id)
                 })
@@ -894,16 +968,6 @@ app.post("/api/updateProfile", async (req, res) => {
             return res.status(200).send("Update Successfully")
         }
     })
-})
-
-app.get("/test/:id", (req, res) => {
-    let user_id = req.params.id
-
-    async function f() {
-        console.log(await db.getGender(user_id))
-    }
-    f()
-    return res.status(200).send("good")
 })
 
 app.get("/api/getWatchListDistribution", async (req, res) => {
