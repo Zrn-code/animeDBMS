@@ -1,7 +1,17 @@
 # AnimeDBMS
-The AnimeDBMS is a comprehensive system dedicated to managing information related to anime. It includes features such as user account registration and an anime rating and statistics system. Users can register accounts to access a database filled with anime-related data. The system not only allows users to explore and discover new anime but also provides a platform for users to contribute by rating and reviewing anime, creating a dynamic and interactive anime community.
 
-## Key Features
-* User Account Registration: Users can create accounts to personalize their experience within the Anime DBMS.
-* Anime Rating and Statistics: The system offers a robust anime rating system, allowing users to contribute their opinions and view overall statistics for each anime.
-* Comprehensive Anime Database: A well-organized database containing information on a wide range of anime titles, ensuring users can easily find and explore their favorite shows.
+## Purpose and Motivation
+
+Technology begins with human nature, and within this group, we have gathered a community of university students passionate about anime. Over the years, our experiences in following anime have led us to face various challenges, including the difficulty of finding anime that aligns with our preferences and effectively organizing our watchlists. Seizing this opportunity, we aim to create an anime management website to address these issues, benefiting ourselves and fellow enthusiasts who share the same passion.
+
+## Project Goals
+
+Within this website, our primary goals are to implement the following features:
+
+-   **Record user viewing history and ratings**
+-   **Filter anime that users have not watched yet**
+-   **Utilize text search to narrow down anime choices**
+-   **Provide anime recommendations based on users’ preferences**
+-   **Offer access to anime-related summaries, rating data, and reviews.**
+
+Feel free to explore our project and join us in enhancing the anime-watching experience!
